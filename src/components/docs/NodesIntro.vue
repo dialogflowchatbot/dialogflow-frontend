@@ -34,10 +34,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
       <img src="../../assets/dialogNode.png" class="image" />
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>Dialog node</span>
       <div class="desc">
         You can set the text returned to the user,<br />
@@ -47,10 +47,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
       <img src="../../assets/conditionNode.png" class="image" />
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>Conditions node</span>
       <div class="desc">
         In this node,<br />
@@ -61,10 +61,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
       <img src="../../assets/collectNode.png" class="image" />
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>Collect node</span>
       <div class="desc">
         Using this node,<br />
@@ -75,10 +75,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
       <img src="../../assets/gotoNode.png" class="image" />
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>Goto node</span>
       <div class="desc">
         Using this node,<br />
@@ -88,10 +88,10 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
       <img src="../../assets/externalApiNode.png" class="image" />
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>External HTTP node</span>
       <div class="desc">
         Using this node,<br />
@@ -103,9 +103,9 @@
     </el-col>
   </el-row>
   <el-row>
-    <el-col :span="6" :offset="4">
+    <el-col :span="6" :offset="3">
     </el-col>
-    <el-col :span="10">
+    <el-col :span="10" :offset="1">
       <span>Create your own node</span>
       <div class="desc">
         Use your imagination and create your own node<br />

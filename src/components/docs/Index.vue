@@ -7,6 +7,7 @@ import HowToUseDoc from './HowToUse.vue';
 import KnowledgeDoc from './KmsDoc.vue';
 import VariableDoc from './VarDoc.vue';
 import VariableHttpDoc from './VarHttpDoc.vue';
+import NodesIntro from './NodesIntro.vue';
 import { useI18n } from 'vue-i18n'
 const { t, tm, rt } = useI18n();
 const router = useRouter();
@@ -18,6 +19,7 @@ const docs = {
     KnowledgeDoc,
     VariableDoc,
     VariableHttpDoc,
+    NodesIntro,
 }
 function goBack() {
     router.push('/guide');
@@ -65,6 +67,7 @@ const menuItemClassObject = computed(() => ({
                 Dialog flow
             </div>
             <div class="item" @click="currentDoc = 'HowToUseDoc'">How to create a dialog flow?</div>
+            <div class="item" @click="currentDoc = 'NodesIntro'">Nodes introduction</div>
             <div class="item" @click="currentDoc = 'Api'">Program interface integration guide</div>
             </p>
             <p>

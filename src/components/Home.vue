@@ -7,8 +7,8 @@ import HowToUse from './docs/HowToUse.vue'
 import { copyProperties, httpReq } from '../assets/tools.js'
 
 import {
-  Printer,
-  Star,
+    Printer,
+    Star,
 } from '@element-plus/icons-vue'
 
 useI18n();
@@ -23,18 +23,15 @@ const updateLoading = ref(false)
 function guide() {
     router.push('/guide');
 }
-function introduction() {
-    router.push('/introduction');
-}
+// function introduction() {
+//     router.push('/introduction');
+// }
 // function howToUse() {
 //     VueScrollTo.scrollTo(document.getElementById('howToUse'))
 // }
 // function demo() {
 //     VueScrollTo.scrollTo(document.getElementById('demosList'))
 // }
-function github() {
-    window.location.href = 'https://github.com/dialogflowchatbot/dialogflow';
-}
 onMounted(async () => {
     const t = await httpReq('GET', 'version.json', null, null, null);
     currentVersion.value = t
@@ -128,8 +125,8 @@ const checkUpdate = async () => {
     <div id="header">
         <span class="name">Dialog flow chat bot</span>
         <p>
-            It's fast. Built on Rust and Vue3.<br/>
-            It's easy to use. Contains a visual editor.<br/>
+            It's fast. Built on Rust and Vue3.<br />
+            It's easy to use. Contains a visual editor.<br />
             It's safe. Open source and all data is saved locally.
             <!-- Create your own conversational bot in under 1 minute. -->
         </p>
@@ -140,17 +137,22 @@ const checkUpdate = async () => {
             <button class="cu" @click="introduction">Check update</button>
         </p> -->
         <el-row>
-            <el-col :span="9">
+            <el-col :span="6">
                 <button class="download" @click="guide">Get started</button>
-                <el-button :icon="Printer" type="primary" plain @click="introduction" size="large">Introductions</el-button>
-                <el-button :icon="Star" type="primary" plain @click="github" size="large">Github</el-button>
+                <!-- <el-button :icon="Printer" type="primary" plain @click="introduction" size="large">Introduction</el-button> -->
+                <router-link to="/introduction"><img src="../assets/lightbulb.png" /></router-link>
+                <!-- <el-button :icon="Star" type="primary" plain @click="github" size="large">Github</el-button> -->
+                <a href="https://github.com/dialogflowchatbot/dialogflow" style="margin-left: 20px;">
+                    <img src="../assets/github.png" />
+                </a>
             </el-col>
             <el-col :span="13" class="v">
                 <div>Current verion is: {{ currentVersion }}</div>
                 <el-button @click="checkUpdate" :loading="updateLoading">Check update</el-button>
                 <el-popover ref="popover" placement="right" title="Changelog" :width="300" trigger="hover">
                     <template #reference>
-                        <el-button v-show="checkUpdateResult == 1" class="m-2" type="warning" text>Found new verion: {{ newVersion
+                        <el-button v-show="checkUpdateResult == 1" class="m-2" type="warning" text>Found new verion: {{
+                            newVersion
                         }}</el-button>
                     </template>
                     <template #default>
@@ -163,7 +165,8 @@ const checkUpdate = async () => {
                     </template>
                 </el-popover>
                 <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
-                <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try again
+                <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
+                    again
                     later.</el-button>
             </el-col>
         </el-row>

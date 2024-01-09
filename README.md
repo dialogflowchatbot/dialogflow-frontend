@@ -1,5 +1,11 @@
 # Dialog flow chat bot front end project
 
+<img src="https://img.shields.io/badge/Vue-3-blue" />
+
+![Demo](https://github.com/dialogflowchatbot/dialogflow-showcase/blob/d8380bf728a87fb8e9df2a2d8796bd58c61015d9/screenshots/demo1.gif
+
+---
+
 Hi there.  
 This is a sub-project of [Dialog flow chat bot](https://github.com/dialogflowchatbot/dialogflow)  
 It's built on Vue3

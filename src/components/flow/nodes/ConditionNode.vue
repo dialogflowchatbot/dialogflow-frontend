@@ -95,7 +95,7 @@ onMounted(async () => {
         const d = refOptionsSet.FlowVariable;
         d.splice(0, d.length);
         t.data.forEach(function (item, index, arr) {
-            this.push({ label: item.varName, value: item.varName });
+            this.push({ label: item.varName, value: item.varName, vtype: item.varType });
         }, d);
     }
 
@@ -316,7 +316,7 @@ function addConditionGroup() {
                             <el-select v-model="c.compareType" :placeholder="t('lang.conditionNode.compareTypePH')"
                                 v-show="c.compareOptions.length > 0" class="optionWidth">
                                 <el-option v-for="item in c.compareOptions" :key="item.label" :label="item.label"
-                                    :value="item.value" @click.native="selectCompareOption(groupIndex, index, item)" />
+                                    :value="item.value" @click.native="selectCompareOption(groupIndex, index, item)" :disabled="item.belongsTo.indexOf('') > -1" />
                             </el-select>
                             <el-select v-model="c.targetValue" :placeholder="t('lang.conditionNode.targetPH')"
                                 v-show="c.targetOptions.length > 0" class="optionWidth">

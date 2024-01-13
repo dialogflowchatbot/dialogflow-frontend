@@ -39,16 +39,17 @@ const compareOptionsSet = {
     "UserIntent": [{ label: compares18[0], value: 'Eq', inputType: 0 }],
     "UserInput": [{ label: compares18[0], value: 'Eq', inputType: 1 }, { label: compares18[2], value: 'Contains', inputType: 1 }, { label: compares18[3], value: 'Timeout', inputType: 0 }],
     "FlowVariable": [
-        { label: 'Has value', value: 'HasValue', inputType: 1, belongsTo: 'StrNum' },
-        { label: 'Does not have value', value: 'DoesNotHaveValue', inputType: 1, belongsTo: 'StrNum' },
+        { label: 'Has value', value: 'HasValue', inputType: 0, belongsTo: 'StrNum' },
+        { label: 'Does not have value', value: 'DoesNotHaveValue', inputType: 0, belongsTo: 'StrNum' },
         { label: 'Is empty string', value: 'EmptyString', inputType: 0, belongsTo: 'Str' },
         { label: compares18[0], value: 'Eq', inputType: 1, belongsTo: 'StrNum' },
         { label: compares18[1], value: 'NotEq', inputType: 1, belongsTo: 'StrNum' },
-        { label: 'Greater than', value: 'GT', inputType: 1, belongsTo: 'Num' },
-        { label: 'Greater than or equal to', value: 'GTE', inputType: 1, belongsTo: 'Num' },
-        { label: 'Less than', value: 'LT', inputType: 1, belongsTo: 'Num' },
-        { label: 'Less than or equal to', value: 'LTE', inputType: 1, belongsTo: 'Num' },
-
+        { label: 'Contains', value: 'Contains', inputType: 1, belongsTo: 'Str' },
+        { label: 'Not contains', value: 'NotContains', inputType: 1, belongsTo: 'Str' },
+        { label: 'Greater than', value: 'NGT', inputType: 1, belongsTo: 'Num' },
+        { label: 'Greater than or equal to', value: 'NGTE', inputType: 1, belongsTo: 'Num' },
+        { label: 'Less than', value: 'NLT', inputType: 1, belongsTo: 'Num' },
+        { label: 'Less than or equal to', value: 'NLTE', inputType: 1, belongsTo: 'Num' },
     ]
 };
 const targetOptionsSet = {
@@ -226,10 +227,11 @@ function saveForm() {
     // console.log(node.getData());
 }
 function showOptions(v, groupIndex, conditionIdx) {
-    // console.log(v + ' ' + groupIndex + ' ' + conditionIdx);
+    console.log(v + ' ' + groupIndex + ' ' + conditionIdx);
     const condition = branch.conditionGroup[groupIndex][conditionIdx];
     condition.refChoice = '';
     condition.compareType = '';
+    condition.targetValueVariant = 'Const';
     condition.targetValue = '';
     condition.inputVariable = false;
     const refOptions = refOptionsSet[v];
@@ -247,6 +249,24 @@ function showOptions(v, groupIndex, conditionIdx) {
         condition.targetOptions = targetOptions;
     else
         condition.targetOptions = [];
+}
+function percolateCompareOptions(compareType, groupIndex, conditionIdx, refOption) {
+    const condition = branch.conditionGroup[groupIndex][conditionIdx];
+    if (condition.compareOptions[0].belongsTo) {
+        const selectedVar = refOptionsSet.FlowVariable.filter(function (curValue, index, arr) {
+            return curValue.label === refOption;
+        });
+        // console.log(selectedVar);
+        if (selectedVar.length == 1) {
+            condition.compareType = '';
+            condition.compareOptions = compareOptionsSet[compareType].filter(function (curVar, index, arr) {
+                // console.log(curVar.belongsTo);
+                // console.log(selectedVar[0].vtype);
+                // console.log(curVar.belongsTo.indexOf(selectedVar[0].vtype));
+                return curVar.belongsTo.indexOf(selectedVar[0].vtype) > -1;
+            });
+        }
+    }
 }
 function selectCompareOption(groupIndex, conditionIndex, item) {
     // console.log(item.inputType);
@@ -309,21 +329,31 @@ function addConditionGroup() {
                                     :value="item.value" />
                             </el-select>
                             <el-select v-model="c.refChoice" :placeholder="t('lang.conditionNode.comparedPH')"
-                                v-show="c.refOptions.length > 0" class="optionWidth">
+                                v-show="c.refOptions.length > 0" class="optionWidth"
+                                @change="(v) => percolateCompareOptions(c.conditionType, groupIndex, index, v)">
                                 <el-option v-for="item in c.refOptions" :key="item.label" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                             <el-select v-model="c.compareType" :placeholder="t('lang.conditionNode.compareTypePH')"
                                 v-show="c.compareOptions.length > 0" class="optionWidth">
                                 <el-option v-for="item in c.compareOptions" :key="item.label" :label="item.label"
-                                    :value="item.value" @click.native="selectCompareOption(groupIndex, index, item)" :disabled="item.belongsTo.indexOf('') > -1" />
+                                    :value="item.value" @click.native="selectCompareOption(groupIndex, index, item)" />
                             </el-select>
                             <el-select v-model="c.targetValue" :placeholder="t('lang.conditionNode.targetPH')"
                                 v-show="c.targetOptions.length > 0" class="optionWidth">
-                                <el-option v-for="item in c.targetOptions" :key="item.label" :label="item.label"
+                                <el-option v-for="item in c.compareOptions" :key="item.label" :label="item.label"
                                     :value="item.value" />
                             </el-select>
-                            <el-input v-model="c.targetValue" class="optionWidth" v-show="c.inputVariable" />
+                            <el-select v-model="c.targetValueVariant" v-show="c.inputVariable" class="optionWidth">
+                                <el-option label="to a const value" value="Const" />
+                                <el-option label="to value of a variable" value="Variable" />
+                            </el-select>
+                            <el-select v-model="c.targetValue" placeholder="Please choose a variable"
+                                v-show="c.inputVariable && c.targetValueVariant == 'Variable'" class="optionWidth">
+                                <el-option v-for="item in refOptionsSet['FlowVariable']" :key="item.label" :label="item.label"
+                                    :value="item.value" />
+                            </el-select>
+                            <el-input v-model="c.targetValue" class="optionWidth" v-show="c.inputVariable && c.targetValueVariant == 'Const'" />
                             <el-button type="primary" @click="addContidion(g)">
                                 <el-icon>
                                     <Plus />

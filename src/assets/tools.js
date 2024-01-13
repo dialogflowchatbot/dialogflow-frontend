@@ -61,6 +61,7 @@ export function getDefaultBranch() {
                     refChoice: '',
                     compareType: 'Eq',
                     // targetChoice: '',
+                    targetValueVariant: 'Const',
                     targetValue: '',
                 }
             ]

@@ -1,6 +1,6 @@
 <script>
 // import bootstrap from 'bootstrap/dist/js/bootstrap.js';
-import { defineComponent, watch } from "vue";
+import { defineComponent, watch, nextTick } from "vue";
 import { ElMessageBox } from 'element-plus'
 import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
@@ -86,6 +86,7 @@ export default defineComponent({
         // console.log(data);
         // console.log(this.nodeData);
         copyProperties(data, this.nodeData);
+        this.setPreview();
         // console.log(this.nodeData);
         // if (data) {
         //     console.log(data);
@@ -138,6 +139,9 @@ export default defineComponent({
             this.nodeSetFormVisible = true;
             // delete current.dataInit;
         });
+        nextTick(() => {
+            this.setPortPos();
+        })
     },
     methods: {
         hideForm() {
@@ -157,6 +161,16 @@ export default defineComponent({
                 m.push(this.tm('lang.dialogNode.errors')[2]);
             d.valid = m.length == 0;
         },
+        setPreview() {
+            this.preview = this.nodeData.dialogText.replace(/<[^>]+>/g, '');
+        },
+        setPortPos() {
+            const node = this.getNode();
+            const port = node.getPortAt(0);
+            const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
+            console.log(heightOffset);
+            node.setPortProp(port.id, ['args', 'y'], heightOffset);
+        },
         saveForm() {
             let text = '';
             for (let i = 0; i < this.nextSteps.length; i++) {
@@ -165,17 +179,16 @@ export default defineComponent({
                     break;
                 }
             }
-            const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
+            this.setPortPos();
             const node = this.getNode();
             const port = node.getPortAt(0);
-            node.setPortProp(port.id, ['args', 'y'], heightOffset);
             node.setPortProp(port.id, ['attrs', 'text', 'text'], text);
             // this.nodeData.dialogText = this.$refs.textArea.innerText;
             const branch = this.nodeData.branches[0];
             branch.branchName = text;
             branch.branchId = port.id;
             this.validate();
-            this.preview = this.nodeData.dialogText.replace(/<[^>]+>/g, '');
+            this.setPreview();
             // console.log(this.preview);
             node.setData(this.nodeData, { silent: false });
             this.hideForm();

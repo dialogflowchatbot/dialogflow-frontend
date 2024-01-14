@@ -24,7 +24,7 @@ const goBack = () => {
 <template>
   <el-page-header title="Home" @back="goBack">
     <template #content>
-      <span class="text-large font-600 mr-3"> Working space </span>
+      <span class="text-large font-600 mr-3"> Workspace </span>
     </template>
   </el-page-header>
   <p style="margin-left:50px">

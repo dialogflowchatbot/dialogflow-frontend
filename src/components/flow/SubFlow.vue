@@ -294,7 +294,9 @@ function addHandleNode(x, y, item) {
 }
 
 function handleDragEnd(e, item) {
-    addHandleNode(e.pageX - 150, e.pageY - 40, item)
+    const point = this.graph.pageToLocal(e.pageX, e.pageY);
+    // addHandleNode(e.pageX - 150, e.pageY - 40, item);
+    addHandleNode(point.x, point.y, item);
 }
 
 function dragoverDiv(ev) {
@@ -379,11 +381,10 @@ async function showSubFlow(idx) {
             }
         ).then(async () => {
             await saveSubFlow();
-            switchSubFlow(idx)
+            switchSubFlow(idx);
+            editedSubFlow = false;
         }).catch(() => {
-            switchSubFlow(idx)
         })
-        editedSubFlow = false;
     } else
         switchSubFlow(idx)
 }

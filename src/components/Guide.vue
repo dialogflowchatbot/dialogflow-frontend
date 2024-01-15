@@ -91,7 +91,7 @@ const goBack = () => {
     <el-icon :size="30">
       <Cpu />
     </el-icon>
-    External APIs Call
+    External APIs call
   </div>
   <p>
     <el-icon :size="15">

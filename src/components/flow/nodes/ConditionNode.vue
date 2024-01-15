@@ -7,7 +7,7 @@ const { t, tm, rt } = useI18n();
 const getNode = inject('getNode');
 const nodeSetFormVisible = ref(false);
 const branchSetFormVisible = ref(false);
-const formLabelWidth = '110px';
+const formLabelWidth = '85px';
 const defaultCondition = getDefaultBranch().conditionGroup[0][0];
 defaultCondition.refOptions = [];
 defaultCondition.compareOptions = [];
@@ -245,6 +245,7 @@ function showOptions(v, groupIndex, conditionIdx) {
         condition.compareType = condition.compareOptions[0].value;
     // console.log(compareOptions);
     const targetOptions = targetOptionsSet[v];
+    console.log(targetOptions);
     if (targetOptions)
         condition.targetOptions = targetOptions;
     else
@@ -298,7 +299,7 @@ function addConditionGroup() {
 }
 
 .optionWidth {
-    width: 110px;
+    width: 130px;
 }
 </style>
 <template>
@@ -341,7 +342,7 @@ function addConditionGroup() {
                             </el-select>
                             <el-select v-model="c.targetValue" :placeholder="t('lang.conditionNode.targetPH')"
                                 v-show="c.targetOptions.length > 0" class="optionWidth">
-                                <el-option v-for="item in c.compareOptions" :key="item.label" :label="item.label"
+                                <el-option v-for="item in c.targetOptions" :key="item.label" :label="item.label"
                                     :value="item.value" />
                             </el-select>
                             <el-select v-model="c.targetValueVariant" v-show="c.inputVariable" class="optionWidth">

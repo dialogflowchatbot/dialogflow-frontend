@@ -45,7 +45,7 @@ export default {
             delConfirm: '确认要删除该子流程吗?',
             send: '发送',
             reset: '重置',
-            changeSaveTip: '流程已经修改，需要保存吗?',
+            changeSaveTip: '流程已经修改，需要保存并切换吗?',
             guideReset: '流程结束,如需重新开始请点下方重来按钮',
         },
         dialogNode: {

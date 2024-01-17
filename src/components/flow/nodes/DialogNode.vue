@@ -4,29 +4,31 @@ import { defineComponent, watch, nextTick } from "vue";
 import { ElMessageBox } from 'element-plus'
 import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
-import {
-    // necessary extensions
-    Doc,
-    Text,
-    Paragraph,
-    //________________________
-    Color,
-    Heading,
-    FontSize,
-    Bold,
-    Underline,
-    Italic,
-    Strike,
-    BulletList,
-    OrderedList,
-    Link,
-    Table,
-    Image,
-    TaskList,
-    TextAlign,
-    FormatClear,
-    HorizontalRule,
-} from 'element-tiptap-vue3-fixed';
+import EpPlus from '~icons/ep/plus'
+import EpWarning from '~icons/ep/warning'
+// import {
+//     // necessary extensions
+//     Doc,
+//     Text,
+//     Paragraph,
+//     //________________________
+//     Color,
+//     Heading,
+//     FontSize,
+//     Bold,
+//     Underline,
+//     Italic,
+//     Strike,
+//     BulletList,
+//     OrderedList,
+//     Link,
+//     Table,
+//     Image,
+//     TaskList,
+//     TextAlign,
+//     FormatClear,
+//     HorizontalRule,
+// } from 'element-tiptap-vue3-fixed';
 // import EleTipTap from './EleTipTap.vue'
 
 export default defineComponent({
@@ -57,27 +59,27 @@ export default defineComponent({
             loading: false,
             lastEditRange: null,
             textEditor: '1',
-            extensions: [
-                Color,
-                Doc,
-                Text,
-                Paragraph,
-                Heading.configure({ level: 5 }),
-                FontSize,
-                Bold.configure({ bubble: true }), // render command-button in bubble menu.
-                Underline.configure({ bubble: true, menubar: false }), // render command-button in bubble menu but not in menubar.
-                Italic,
-                Strike,
-                BulletList,
-                OrderedList,
-                Link,
-                Table,
-                Image,
-                TaskList,
-                TextAlign,
-                FormatClear,
-                HorizontalRule,
-            ],
+            // extensions: [
+            //     Color,
+            //     Doc,
+            //     Text,
+            //     Paragraph,
+            //     Heading.configure({ level: 5 }),
+            //     FontSize,
+            //     Bold.configure({ bubble: true }), // render command-button in bubble menu.
+            //     Underline.configure({ bubble: true, menubar: false }), // render command-button in bubble menu but not in menubar.
+            //     Italic,
+            //     Strike,
+            //     BulletList,
+            //     OrderedList,
+            //     Link,
+            //     Table,
+            //     Image,
+            //     TaskList,
+            //     TextAlign,
+            //     FormatClear,
+            //     HorizontalRule,
+            // ],
         };
     },
     mounted() {
@@ -168,7 +170,7 @@ export default defineComponent({
             const node = this.getNode();
             const port = node.getPortAt(0);
             const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
-            console.log(heightOffset);
+            // console.log(heightOffset);
             node.setPortProp(port.id, ['args', 'y'], heightOffset);
         },
         saveForm() {
@@ -234,7 +236,7 @@ export default defineComponent({
             this.varDialogVisible = false;
         },
         changeEditorNote() {
-            console.log('this.nodeData.dialogText=' + this.nodeData.dialogText)
+            // console.log('this.nodeData.dialogText=' + this.nodeData.dialogText)
             // console.log('this.textEditor='+this.textEditor)
             if (this.nodeData.dialogText) {
                 if (this.textEditor == '1') {
@@ -257,7 +259,7 @@ export default defineComponent({
                         })
                 } else {
                     const c = '<p>' + this.nodeData.dialogText.replace(/\n/g, '</p><p>') + '</p>';
-                    console.log(c);
+                    // console.log(c);
                     this.$refs.editor.setContent(c);
                 }
             }
@@ -266,9 +268,11 @@ export default defineComponent({
         //     console.log('callback=' + s);
         // },
     },
-    // components: {
+    components: {
+        EpPlus,
+        EpWarning,
     //     EleTipTap,
-    // },
+    },
 });
 /*
 watch(this.nodeData.dialogText, async (newT, oldT) => {
@@ -325,7 +329,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
                     <el-icon color="red">
-                        <Warning />
+                        <EpWarning />
                     </el-icon>
                 </el-tooltip>
             </span>
@@ -340,22 +344,23 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         <el-input v-model="nodeData.nodeName" autocomplete="off" />
                     </el-form-item>
                     <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
-                        <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
+                        <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
                             <el-radio label="1">Plain text</el-radio>
                             <el-radio label="2">Rich text</el-radio>
-                        </el-radio-group>
+                        </el-radio-group> -->
                         <el-input v-show="textEditor == '1'" ref="textArea" v-model="nodeData.dialogText" type="textarea"
                             @blur="getSel" />
                         <!-- <div v-show="textEditor == '1'" ref="textArea" v-text="nodeData.dialogText" class="divInputBox"
                             contenteditable="true" @blur="getSel"></div> -->
                         <!-- <EleTipTap v-show="textEditor == '2'" :editorText="nodeData.dialogText" @updatedEditorText="editorCallback" /> -->
-                        <el-tiptap ref="editor" v-show="textEditor == '2'" v-model:content="nodeData.dialogText"
-                            :extensions="extensions" />
+                        <!-- Current using follow one -->
+                        <!-- <el-tiptap ref="editor" v-show="textEditor == '2'" v-model:content="nodeData.dialogText"
+                            :extensions="extensions" /> -->
                     </el-form-item>
                     <el-form-item label="" :label-width="formLabelWidth">
                         <el-button link @click="showVarsForm">
                             <el-icon>
-                                <Plus />
+                                <EpPlus />
                             </el-icon>
                             {{ t('lang.dialogNode.form.addVar') }}
                         </el-button>

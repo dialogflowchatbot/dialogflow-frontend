@@ -1,6 +1,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
-import VueScrollTo from 'vue-scrollto';
+// import VueScrollTo from 'vue-scrollto';
+import { winScrollTo } from '../../assets/tools.js'
 import Demos from '../Demos.vue'
 useI18n();
 // navigator.language; //"en-US"
@@ -10,7 +11,8 @@ const title3Span = isEnLanguage ? 8 : 7;
 const title3Offset = isEnLanguage ? 2 : 3;
 const fromPage = 'home';
 function demo() {
-    VueScrollTo.scrollTo(document.getElementById('demosList'))
+    // VueScrollTo.scrollTo(document.getElementById('demosList'))
+    winScrollTo(document.getElementById('demosList'))
 }
 </script>
 <style scoped>
@@ -161,7 +163,7 @@ function demo() {
             </el-col>
         </el-row>
     </div>
-    <div class="features">
+    <div class="features" id="introDocAdvantage">
         <el-row>
             <el-col :span="5" :offset="3">
                 <div class="grid-content">

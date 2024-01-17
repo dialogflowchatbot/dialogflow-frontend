@@ -2,6 +2,7 @@
 import { inject, reactive, ref, onMounted } from 'vue';
 import { copyProperties, httpReq, getDefaultBranch } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
+import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 const nodeSetFormVisible = ref(false);
 const nodeData = reactive({
@@ -152,7 +153,7 @@ const formLabelWidth = '140px'
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
                     <el-icon color="red">
-                        <Warning />
+                        <EpWarning />
                     </el-icon>
                 </el-tooltip>
             </span>

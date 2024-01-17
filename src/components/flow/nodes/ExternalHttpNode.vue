@@ -1,8 +1,9 @@
 <script setup>
 import { inject, reactive, ref, onMounted } from "vue";
-import { ElMessageBox } from 'element-plus'
+// import { ElMessageBox } from 'element-plus'
 import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
+import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 const nodeSetFormVisible = ref(false);
 const getNode = inject('getNode');
@@ -108,7 +109,7 @@ onMounted(async () => {
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
                     <el-icon color="red">
-                        <Warning />
+                        <EpWarning />
                     </el-icon>
                 </el-tooltip>
             </span>

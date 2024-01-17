@@ -2,6 +2,13 @@
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router';
 import Demos from "./Demos.vue"
+import EpArrowRightBold from '~icons/ep/arrow-right-bold'
+import BiChatSquareDots from '~icons/bi/chat-square-dots'
+import RiBardLine from '~icons/ri/bard-line'
+import SolarFolderPathConnectOutline from '~icons/solar/folder-path-connect-outline'
+import SolarRouting2Linear from '~icons/solar/routing-2-linear'
+import EpSetting from '~icons/ep/setting'
+import SolarDocumentTextLinear from '~icons/solar/document-text-linear'
 useI18n();
 const router = useRouter();
 const fromPage = 'guide';
@@ -30,12 +37,12 @@ const goBack = () => {
   <p style="margin-left:50px">
   <div class="title">
     <el-icon :size="30">
-      <Connection />
+      <BiChatSquareDots />
     </el-icon>{{ $t('lang.guide.title1') }}
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/mainflows">{{ $t('lang.guide.nav1') }}</router-link>
   <div class="description">
@@ -58,13 +65,13 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <Edit />
+      <RiBardLine />
     </el-icon>
     {{ $t('lang.guide.title2') }}
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/intents">{{ $t('lang.guide.nav2') }}</router-link>
   <div class="description">
@@ -75,13 +82,13 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <Coin />
+      <SolarFolderPathConnectOutline />
     </el-icon>
     {{ $t('lang.guide.title3') }}
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/variables">{{ $t('lang.guide.nav3') }}</router-link>
   <div class="description">{{ $t('lang.guide.desc3') }}</div>
@@ -89,13 +96,13 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <Cpu />
+      <SolarRouting2Linear />
     </el-icon>
     External APIs call
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/external/httpApis">External HTTP API list</router-link>
   <div class="description">By using this function, you can send data to external URLs and receive response.</div>
@@ -103,13 +110,13 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <Setting />
+      <EpSetting />
     </el-icon>
     {{ $t('lang.guide.title4') }}
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/settings">{{ $t('lang.guide.nav4') }}</router-link>
   <div class="description">{{ $t('lang.guide.desc4') }}</div>
@@ -117,13 +124,13 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <Document />
+      <SolarDocumentTextLinear />
     </el-icon>
     {{ $t('lang.guide.title5') }}
   </div>
   <p>
     <el-icon :size="15">
-      <ArrowRightBold />
+      <EpArrowRightBold />
     </el-icon>
     <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link>
   <div class="description">{{ $t('lang.guide.desc5') }}</div>

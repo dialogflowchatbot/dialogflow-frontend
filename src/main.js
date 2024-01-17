@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import ElementPlus from 'element-plus'
-import ElementTiptapPlugin from 'element-tiptap-vue3-fixed';
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+// import ElementPlus from 'element-plus'
+// import ElementTiptapPlugin from 'element-tiptap-vue3-fixed';
+// import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import i18n from './assets/lang/i18n'
-import VueScrollTo from 'vue-scrollto'
+// import VueScrollTo from 'vue-scrollto'
 import App from './App.vue'
 import Home from './components/Home.vue'
 import Intro from './components/Intro.vue'
@@ -20,8 +20,8 @@ import Guide from './components/Guide.vue'
 import HttpApiList from './components/external/HttpApiList.vue'
 import HttpApiDetail from './components/external/HttpApiDetail.vue'
 
-import 'element-plus/dist/index.css'
-import 'element-tiptap-vue3-fixed/lib/style.css';
+// import 'element-plus/dist/index.css'
+// import 'element-tiptap-vue3-fixed/lib/style.css';
 
 const routes = [
   { path: '/', component: Home },
@@ -55,13 +55,13 @@ import 'virtual:uno.css'
 // createApp(App).mount('#app')
 const app = createApp(App)
 
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
+// for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  // app.component(key, component)
+// }
 
-app.use(ElementPlus)
-app.use(ElementTiptapPlugin)
+// app.use(ElementPlus)
+// app.use(ElementTiptapPlugin)
 app.use(router)
 app.use(i18n)
-app.use(VueScrollTo)
+// app.use(VueScrollTo)
 app.mount('#app')

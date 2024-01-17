@@ -12,6 +12,12 @@ import { register, getTeleport } from "@antv/x6-vue-shape";
 import { atob, httpReq } from '../../assets/tools.js'
 import { ElNotification, ElMessage, ElMessageBox } from 'element-plus';
 import { useI18n } from 'vue-i18n'
+import EpDelete from '~icons/ep/delete'
+import EpEdit from '~icons/ep/edit'
+import EpFinished from '~icons/ep/finished'
+import EpPlus from '~icons/ep/plus'
+import EpPromotion from '~icons/ep/promotion'
+import EpDArrowRight from '~icons/ep/d-arrow-right'
 const { t, tm, rt } = useI18n();
 
 register({
@@ -683,18 +689,18 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
                             <el-text v-show="isDemo">
                                 {{ $tm('lang.flow.steps')[0] }}
                                 <el-icon :size="20">
-                                    <DArrowRight />
+                                    <EpDArrowRight />
                                 </el-icon>
                             </el-text>
                             <el-button type="primary" class="ml-2" @click="saveSubFlow" :loading="saveLoading" size="large"
                                 v-show="!isDemo">
                                 <el-icon :size="20">
-                                    <Edit />
+                                    <EpEdit />
                                 </el-icon>{{ $t('lang.flow.save') }}
                             </el-button>
                             <el-button type="success" @click="release" :loading="releaseLoading" size="large">
                                 <el-icon :size="20">
-                                    <Finished />
+                                    <EpFinished />
                                 </el-icon>{{ $t('lang.flow.pub') }}
                             </el-button>
                             <!-- <div class="testBtn" @click="dryrun(); testingFormVisible = true">
@@ -706,13 +712,13 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
                             <el-text v-show="isDemo">
                                 {{ $tm('lang.flow.steps')[1] }}
                                 <el-icon>
-                                    <DArrowRight />
+                                    <EpDArrowRight />
                                 </el-icon>
                             </el-text>
                             <el-button color="#626aef" class="ml-2" @click="dryrun(); testingFormVisible = true"
                                 size="large">
                                 <el-icon :size="20">
-                                    <Promotion />
+                                    <EpPromotion />
                                 </el-icon>
                                 {{ $t('lang.flow.test') }}
                             </el-button>
@@ -723,8 +729,8 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
             <el-container>
                 <el-aside width="150px">
                     <div class="newSubFlowBtn" @click="dialogFormVisible = true">
-                        <el-icon>
-                            <Plus />
+                        <el-icon size="16px">
+                            <EpPlus />
                         </el-icon>
                         {{ $t('lang.flow.addSubFlow') }}
                     </div>
@@ -733,7 +739,7 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
                         {{ item.name }}
                         <span @click="removeSubFlow(index)">
                             <el-icon>
-                                <Delete />
+                                <EpDelete />
                             </el-icon>
                         </span>
                     </div>

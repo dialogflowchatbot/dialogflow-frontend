@@ -1,3 +1,5 @@
+<script setup>
+import SolarDocumentTextLinear from '~icons/solar/document-text-linear'</script>
 <style scoped>
 .mid {
   justify-content: center;
@@ -89,7 +91,7 @@
         <div class="title">Integrate to your application</div>
         <p>
           <el-icon>
-            <Document />
+            <SolarDocumentTextLinear />
           </el-icon>
           Checkout <router-link to="/docs">requet API doc</router-link>
         </p>

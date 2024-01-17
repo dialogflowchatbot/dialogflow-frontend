@@ -7,6 +7,7 @@ export default {
 import { inject, reactive, ref, onMounted } from 'vue';
 import { copyProperties, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
+import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 
 // const getGraph = inject('getGraph');
@@ -183,7 +184,7 @@ const formLabelWidth = '110px'
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
                     <el-icon color="red">
-                        <Warning />
+                        <EpWarning />
                     </el-icon>
                 </el-tooltip>
             </span>

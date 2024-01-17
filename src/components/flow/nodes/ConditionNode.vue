@@ -3,6 +3,9 @@ import { cloneObj, copyProperties, getDefaultBranch, httpReq } from '../../../as
 import { inject, reactive, ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
+import EpPlus from '~icons/ep/plus'
+import EpMinus from '~icons/ep/minus'
+import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 const getNode = inject('getNode');
 const nodeSetFormVisible = ref(false);
@@ -310,7 +313,7 @@ function addConditionGroup() {
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
                     <el-icon color="red">
-                        <Warning />
+                        <EpWarning />
                     </el-icon>
                 </el-tooltip>
             </span>
@@ -357,13 +360,13 @@ function addConditionGroup() {
                             <el-input v-model="c.targetValue" class="optionWidth" v-show="c.inputVariable && c.targetValueVariant == 'Const'" />
                             <el-button type="primary" @click="addContidion(g)">
                                 <el-icon>
-                                    <Plus />
+                                    <EpPlus />
                                 </el-icon>
                                 {{ t('lang.conditionNode.andCond') }}
                             </el-button>
                             <el-button type="danger" v-show="g.length > 1" @click="g.splice(index, 1);">
                                 <el-icon>
-                                    <Minus />
+                                    <EpMinus />
                                 </el-icon>
                             </el-button>
                         </el-row>
@@ -371,7 +374,7 @@ function addConditionGroup() {
                     <el-form-item label="" :label-width="formLabelWidth">
                         <el-button type="primary" @click="addConditionGroup()">
                             <el-icon>
-                                <Plus />
+                                <EpPlus />
                             </el-icon>
                             {{ t('lang.conditionNode.orCond') }}
                         </el-button>
@@ -396,7 +399,7 @@ function addConditionGroup() {
                     <el-form-item :label="t('lang.conditionNode.newCond')" :label-width="formLabelWidth">
                         <el-button type="primary" @click="addNewBranch()">
                             <el-icon>
-                                <Plus />
+                                <EpPlus />
                             </el-icon>
                         </el-button>
                         <el-button v-for="(btn, index) in nodeData.branches" :key="index" type="primary"

@@ -29,7 +29,7 @@ function gotoDemo(id, name) {
         router.push({ name: 'subflow', params: { id: id, name: name } });
     }
 }
-console.log("parentPage=" + props.parentPage);
+// console.log("parentPage=" + props.parentPage);
 </script>
 <template>
     <div>

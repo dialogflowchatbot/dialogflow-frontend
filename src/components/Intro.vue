@@ -1,9 +1,15 @@
 <script setup>
+import { nextTick } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
-import VueScrollTo from 'vue-scrollto';
+// import VueScrollTo from 'vue-scrollto';
+import { winScrollTo } from '../assets/tools.js'
 import Intro from './docs/Intro.vue'
 import HowToUse from './docs/HowToUse.vue'
+import EpSetUp from '~icons/ep/set-up'
+import EpDocument from '~icons/ep/document'
+import EpMagicStick from '~icons/ep/magic-stick'
+import EpPromotion from '~icons/ep/promotion'
 useI18n();
 const router = useRouter();
 // navigator.language; //"en-US"
@@ -12,10 +18,12 @@ function guide() {
     router.push('/guide');
 }
 function howToUse() {
-    VueScrollTo.scrollTo(document.getElementById('howToUse'))
+    // VueScrollTo.scrollTo(document.getElementById('howToUse'))
+    winScrollTo(document.getElementById('howToUse'))
 }
 function demo() {
-    VueScrollTo.scrollTo(document.getElementById('demosList'))
+    // VueScrollTo.scrollTo(document.getElementById('demosList'))
+    winScrollTo(document.getElementById('demosList'))
 }
 function doc() {
     router.push('/docs');
@@ -58,23 +66,23 @@ function doc() {
             <p>
                 <el-button size="large" @click="guide">
                     <el-icon>
-                        <SetUp />
+                        <EpSetUp />
                     </el-icon>{{ $t('lang.home.btn1') }}
                 </el-button>
             </p>
             <el-button size="large" @click="doc">
                 <el-icon>
-                    <Document />
+                    <EpDocument />
                 </el-icon>{{ $t('lang.home.btn2') }}
             </el-button>
             <el-button size="large" @click="howToUse" type="primary" plain>
                 <el-icon>
-                    <MagicStick />
+                    <EpMagicStick />
                 </el-icon>Check out step by step tutorial
             </el-button>
             <el-button size="large" @click="demo" type="warning" plain>
                 <el-icon>
-                    <Promotion />
+                    <EpPromotion />
                 </el-icon>{{ $t('lang.home.btn3') }}
             </el-button>
         </div>

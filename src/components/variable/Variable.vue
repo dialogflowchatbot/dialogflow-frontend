@@ -215,7 +215,7 @@ async function saveForm() {
                     :placeholder="varData.obtainValueExpressionType == 'JsonPointer' ? '/data/book/name' : 'CSS selector syntax like: h1.foo div#bar'" />
             </el-form-item>
             <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="Cache value" :label-width="formLabelWidth">
-                <el-checkbox v-model="varData.cacheEnabled" label="Enable" />
+                <input type="checkbox" id="_cacheEnabled_" v-model="varData.cacheEnabled" :checked="varData.cacheEnabled" /><label for="_cacheEnabled_">Enable</label>
             </el-form-item>
             <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="" :label-width="formLabelWidth">
                 <span v-if="varData.cacheEnabled">After requesting once, the variable value will be stored in the cache and

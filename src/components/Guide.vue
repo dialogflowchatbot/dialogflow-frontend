@@ -5,7 +5,7 @@ import Demos from "./Demos.vue"
 import EpArrowRightBold from '~icons/ep/arrow-right-bold'
 import BiChatSquareDots from '~icons/bi/chat-square-dots'
 import RiBardLine from '~icons/ri/bard-line'
-import SolarFolderPathConnectOutline from '~icons/solar/folder-path-connect-outline'
+import SolarDownloadOutline from '~icons/solar/download-outline'
 import SolarRouting2Linear from '~icons/solar/routing-2-linear'
 import EpSetting from '~icons/ep/setting'
 import SolarDocumentTextLinear from '~icons/solar/document-text-linear'
@@ -82,7 +82,7 @@ const goBack = () => {
 
   <div class="title">
     <el-icon :size="30">
-      <SolarFolderPathConnectOutline />
+      <SolarDownloadOutline />
     </el-icon>
     {{ $t('lang.guide.title3') }}
   </div>

@@ -51,13 +51,40 @@ function demo() {
     padding-left: 60px;
 }
 
-.speed-progress {
-    margin-top: 30px;
+.progress-bg {
+    width: 500px;
+    height: 30px;
+    border-radius: 20px;
+    background-color: rgb(235, 238, 245);
+    margin-bottom: 10px;
 }
 
-.speed-progress .el-progress--line {
-    margin-bottom: 15px;
+.progress1 {
+    width: 150px;
+    height: 30px;
+    border-radius: 20px;
+    background-color: rgb(103, 194, 58);
+}
+
+.progress2 {
     width: 500px;
+    height: 30px;
+    border-radius: 20px;
+    background-color: rgb(64, 158, 255);
+}
+
+.progress3 {
+    width: 450px;
+    height: 30px;
+    border-radius: 20px;
+    background-color: rgb(230, 162, 60);
+}
+
+.progress4 {
+    width: 270px;
+    height: 30px;
+    border-radius: 20px;
+    background-color: rgb(245, 108, 108);
 }
 
 .intro .el-row {
@@ -199,13 +226,17 @@ function demo() {
         </el-row>
         <el-row>
             <el-col :span="9" :offset="3">
-                <div class="grid-content">
-                    <div class="speed-progress">
-                        <el-progress :stroke-width="26" :percentage="30" :show-text="false" status="success" />
-                        <el-progress :stroke-width="26" :percentage="100" :show-text="false" />
-                        <el-progress :stroke-width="26" :percentage="70" :show-text="false" status="warning" />
-                        <el-progress :stroke-width="26" :percentage="50" :show-text="false" status="exception" />
-                    </div>
+                <div class="progress-bg">
+                    <div class="progress1"></div>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress2"></div>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress3"></div>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress4"></div>
                 </div>
             </el-col>
             <el-col :span="10" :offset="2">

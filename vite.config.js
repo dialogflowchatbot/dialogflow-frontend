@@ -12,6 +12,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { visualizer } from "rollup-plugin-visualizer";
+import viteImagemin from 'vite-plugin-imagemin'
 
 const pathSrc = path.resolve(__dirname, 'src')
 
@@ -43,15 +44,42 @@ export default ({ command, mode }) => {
       }),
       Components({
         resolvers: [
+          ElementPlusResolver(),
           IconsResolver({
             enabledCollections: ['ep'],
           }),
-          ElementPlusResolver()
         ],
         dts: path.resolve(pathSrc, 'components.d.ts'),
       }),
       Icons({
         autoInstall: true,
+      }),
+      viteImagemin({
+        gifsicle: {
+          optimizationLevel: 7,
+          interlaced: false,
+        },
+        optipng: {
+          optimizationLevel: 7,
+        },
+        mozjpeg: {
+          quality: 20,
+        },
+        pngquant: {
+          quality: [0.8, 0.9],
+          speed: 4,
+        },
+        svgo: {
+          plugins: [
+            {
+              name: 'removeViewBox',
+            },
+            {
+              name: 'removeEmptyAttrs',
+              active: false,
+            },
+          ],
+        },
       }),
     ],
     define: {

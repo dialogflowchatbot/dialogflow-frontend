@@ -9,6 +9,8 @@ import VariableDoc from './VarDoc.vue';
 import VariableHttpDoc from './VarHttpDoc.vue';
 import NodesIntro from './NodesIntro.vue';
 import { useI18n } from 'vue-i18n'
+import BiChatSquareDots from '~icons/bi/chat-square-dots'
+import SolarDownloadOutline from '~icons/solar/download-outline'
 const { t, tm, rt } = useI18n();
 const router = useRouter();
 const currentDoc = ref('Api')
@@ -62,7 +64,7 @@ const menuItemClassObject = computed(() => ({
             <p>
             <div class="title">
                 <el-icon size="20">
-                    <ChatLineRound />
+                    <BiChatSquareDots />
                 </el-icon>
                 Dialog flow
             </div>
@@ -70,17 +72,17 @@ const menuItemClassObject = computed(() => ({
             <div class="item" @click="currentDoc = 'NodesIntro'">Nodes introduction</div>
             <div class="item" @click="currentDoc = 'Api'">Program interface integration guide</div>
             </p>
-            <p>
+            <!-- <p>
             <div class="title">
                 <el-icon size="20">
                     <Orange />
                 </el-icon>Intents (WIP)
             </div>
-            </p>
+            </p> -->
             <p>
             <div class="title">
                 <el-icon size="20">
-                    <Switch />
+                    <SolarDownloadOutline />
                 </el-icon>Variables
             </div>
             <div class="item" @click="currentDoc = 'VariableHttpDoc'">How to retrieve data from HTTP?</div>

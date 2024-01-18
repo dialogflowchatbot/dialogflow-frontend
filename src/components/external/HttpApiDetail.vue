@@ -270,7 +270,8 @@ const changeTab = (v) => {
         <el-input v-model="httpApiData.userAgent" />
       </el-form-item>
       <el-form-item label="Sync/Async" :label-width="formLabelWidth">
-        <el-switch v-model="httpApiData.asyncReq" class="mb-2" active-text="Asynchronous" inactive-text="Synchronous" />
+        <!-- <el-switch v-model="httpApiData.asyncReq" class="mb-2" active-text="Asynchronous" inactive-text="Synchronous" /> -->
+        <input type="checkbox" id="_asyncReq_" v-model="httpApiData.asyncReq" :checked="httpApiData.asyncReq" /><label for="_asyncReq_">Asynchronous</label>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="save">Save</el-button>

@@ -86,6 +86,18 @@ export default ({ command, mode }) => {
       // 'process.env': env,
     },
     bulid: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            console.log(id);
+            if (id.includes('antv')) {
+              return 'antv';
+            } else {
+              return 'index';
+            }
+          },
+        },
+      },
       minify: 'terser', // <-- add
       terserOptions: {
         compress: {

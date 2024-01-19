@@ -357,6 +357,7 @@ function removeSubFlow(index) {
         ).then(async () => {
             const r = await httpReq('DELETE', 'subflow', { mainFlowId: mainFlowId, data: selectedSubFlowIdx }, null, null);
             if (r.status == 200) {
+                selectedSubFlowIdx = -1;
                 subFlows.value.splice(index, 1);
                 showSubFlow(0);
             }

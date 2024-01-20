@@ -349,8 +349,8 @@ function addConditionGroup() {
                                     :value="item.value" />
                             </el-select>
                             <el-select v-model="c.targetValueVariant" v-show="c.inputVariable" class="optionWidth">
-                                <el-option label="to a const value" value="Const" />
-                                <el-option label="to value of a variable" value="Variable" />
+                                <el-option label="const value" value="Const" />
+                                <el-option label="variable value" value="Variable" />
                             </el-select>
                             <el-select v-model="c.targetValue" placeholder="Please choose a variable"
                                 v-show="c.inputVariable && c.targetValueVariant == 'Variable'" class="optionWidth">

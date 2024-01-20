@@ -16,19 +16,28 @@ import viteImagemin from 'vite-plugin-imagemin'
 
 const pathSrc = path.resolve(__dirname, 'src')
 
+function manualChunks(id) {
+  console.log(id);
+  if (id.includes('antv')) {
+    return 'antv';
+  } else {
+    return 'index';
+  }
+}
+
 // https://vitejs.dev/config/
 export default ({ command, mode }) => {
   return defineConfig({
-    resolve: {
-      alias: {
-        '@': pathSrc,
-      },
-    },
     // resolve: {
     //   alias: {
-    //     '@': fileURLToPath(new URL('./src', import.meta.url))
-    //   }
+    //     '@': pathSrc,
+    //   },
     // },
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
     plugins: [
       UnoCSS(),
       vue(),
@@ -88,14 +97,10 @@ export default ({ command, mode }) => {
     bulid: {
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            console.log(id);
-            if (id.includes('antv')) {
-              return 'antv';
-            } else {
-              return 'index';
-            }
-          },
+          dir: 'dist',
+          entryFileNames: 'index.js',
+          manualChunks,
+          chunkFilename: 'vendor_locale_[name].js',
         },
       },
       minify: 'terser', // <-- add

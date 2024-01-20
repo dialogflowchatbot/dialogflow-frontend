@@ -20,7 +20,7 @@ import Guide from './components/Guide.vue'
 import HttpApiList from './components/external/HttpApiList.vue'
 import HttpApiDetail from './components/external/HttpApiDetail.vue'
 
-import 'element-plus/dist/index.css'
+// import 'element-plus/dist/index.css'
 // import 'element-tiptap-vue3-fixed/lib/style.css';
 
 const routes = [

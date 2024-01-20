@@ -10,7 +10,7 @@ import { Graph } from '@antv/x6';
 // https://x6.antv.vision/zh/docs/tutorial/advanced/react#%E6%B8%B2%E6%9F%93-vue-%E8%8A%82%E7%82%B9
 import { register, getTeleport } from "@antv/x6-vue-shape";
 import { atob, httpReq } from '../../assets/tools.js'
-import { ElNotification, ElMessage, ElMessageBox } from 'element-plus';
+// import { ElNotification, ElMessage, ElMessageBox } from 'element-plus';
 import { useI18n } from 'vue-i18n'
 import EpDelete from '~icons/ep/delete'
 import EpEdit from '~icons/ep/edit'

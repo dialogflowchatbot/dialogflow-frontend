@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { btoa, httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
-import { ElMessage, ElMessageBox } from 'element-plus';
+// import { ElMessage, ElMessageBox } from 'element-plus';
 const { t, tm, rt } = useI18n();
 const router = useRouter();
 const mainFlowData = reactive({

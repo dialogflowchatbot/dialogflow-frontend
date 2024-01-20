@@ -1,7 +1,7 @@
 <script>
 // import bootstrap from 'bootstrap/dist/js/bootstrap.js';
 import { defineComponent, watch, nextTick } from "vue";
-import { ElMessageBox } from 'element-plus'
+// import { ElMessageBox } from 'element-plus'
 import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 import EpPlus from '~icons/ep/plus'

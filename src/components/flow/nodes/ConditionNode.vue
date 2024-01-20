@@ -1,7 +1,7 @@
 <script setup>
 import { cloneObj, copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { inject, reactive, ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
+// import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
 import EpPlus from '~icons/ep/plus'
 import EpMinus from '~icons/ep/minus'

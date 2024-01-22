@@ -13,6 +13,7 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { visualizer } from "rollup-plugin-visualizer";
 import viteImagemin from 'vite-plugin-imagemin'
+import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
 
 const pathSrc = path.resolve(__dirname, 'src')
 
@@ -90,17 +91,25 @@ export default ({ command, mode }) => {
           ],
         },
       }),
-    ],
+      chunkSplitPlugin({
+        customSplitting: {
+          'canvas': [/\/node_modules\/@antv\//]
+        }
+      }),
+      ],
     define: {
       // 'process.env': env,
     },
     bulid: {
       rollupOptions: {
         output: {
-          dir: 'dist',
-          entryFileNames: 'index.js',
-          manualChunks,
-          chunkFilename: 'vendor_locale_[name].js',
+          // dir: 'dist',
+          // entryFileNames: 'index.js',
+          // manualChunks,
+          // chunkFilename: 'vendor_locale_[name].js',
+          manualChunks: {
+            'canvas': ['@antv/x6', '@antv/x6-vue-shape']
+          }
         },
       },
       minify: 'terser', // <-- add

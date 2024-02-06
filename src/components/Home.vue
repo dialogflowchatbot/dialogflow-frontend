@@ -6,10 +6,10 @@ import NodesIntro from './docs/NodesIntro.vue'
 import HowToUse from './docs/HowToUse.vue'
 import { copyProperties, httpReq } from '../assets/tools.js'
 
-import {
-    Printer,
-    Star,
-} from '@element-plus/icons-vue'
+// import {
+//     Printer,
+//     Star,
+// } from '@element-plus/icons-vue'
 
 useI18n();
 const router = useRouter();

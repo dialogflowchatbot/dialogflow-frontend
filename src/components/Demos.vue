@@ -7,7 +7,7 @@ const props = defineProps({
 })
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
-import { ElMessageBox } from 'element-plus'
+// import { ElMessageBox } from 'element-plus'
 import { isOnGithub } from '../assets/tools.js'
 const { t, locale } = useI18n();
 const router = useRouter();

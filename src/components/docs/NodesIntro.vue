@@ -20,6 +20,10 @@
 .el-row span {
   font-weight: bold;
 }
+
+.b {
+    border: #eee 1px solid;
+}
 </style>
 <template>
   <el-row class="mid" id="howToUse">
@@ -35,7 +39,7 @@
   </el-row>
   <el-row>
     <el-col :span="6" :offset="3">
-      <img src="../../assets/dialogNode.png" class="image" />
+      <img src="../../assets/dialogNode.png" class="b" />
     </el-col>
     <el-col :span="10" :offset="1">
       <span>Dialog node</span>
@@ -48,7 +52,7 @@
   </el-row>
   <el-row>
     <el-col :span="6" :offset="3">
-      <img src="../../assets/conditionNode.png" class="image" />
+      <img src="../../assets/conditionNode.png" class="b" />
     </el-col>
     <el-col :span="10" :offset="1">
       <span>Conditions node</span>
@@ -62,7 +66,7 @@
   </el-row>
   <el-row>
     <el-col :span="6" :offset="3">
-      <img src="../../assets/collectNode.png" class="image" />
+      <img src="../../assets/collectNode.png" class="b" />
     </el-col>
     <el-col :span="10" :offset="1">
       <span>Collect node</span>
@@ -76,7 +80,7 @@
   </el-row>
   <el-row>
     <el-col :span="6" :offset="3">
-      <img src="../../assets/gotoNode.png" class="image" />
+      <img src="../../assets/gotoNode.png" class="b" />
     </el-col>
     <el-col :span="10" :offset="1">
       <span>Goto node</span>
@@ -89,7 +93,7 @@
   </el-row>
   <el-row>
     <el-col :span="6" :offset="3">
-      <img src="../../assets/externalApiNode.png" class="image" />
+      <img src="../../assets/externalApiNode.png" class="b" />
     </el-col>
     <el-col :span="10" :offset="1">
       <span>External HTTP node</span>

@@ -26,6 +26,8 @@ const goBack = () => {
 .description {
   font-size: 16px;
   color: #b8b8b8;
+  padding-bottom: 20px;
+  border-bottom: #b8b8b8 1px solid;
 }
 </style>
 <template>

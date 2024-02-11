@@ -163,8 +163,48 @@ export default defineComponent({
                 m.push(this.tm('lang.dialogNode.errors')[2]);
             d.valid = m.length == 0;
         },
+        getTextWidth() {
+            // let twts = document.getElementById('_twts');
+            // if (!twts) {
+            //     twts = document.createElement("span");
+            //     twts.setAttribute("id", '_twts');
+            //     twts.style.whiteSpace = 'no-wrap';
+            //     twts.style.visibility = 'hidden';
+            //     document.body.appendChild(twts);
+            // }
+            // twts.innerText = t;
+            // return Math.ceil(twts.offsetWidth)
+            // console.log(this.$refs.nodeAnswer.scrollWidth)
+            return this.$refs.nodeAnswer.offsetWidth
+        },
         setPreview() {
-            this.preview = this.nodeData.dialogText.replace(/<[^>]+>/g, '');
+            let p = this.nodeData.dialogText.replace(/<[^>]+>/g, '').replace(/\r/g, '');
+            if (p) {
+                const array = p.split('\n');
+                // console.log(array.splice(3, array.length - 3))
+                if (array.length > 3) {
+                    array.splice(3, array.length - 3, '......')
+                }
+                const node = this.getNode();
+                // console.log(node.size().width)
+                // console.log(this.getTextWidth())
+                array.forEach(function (item, idx, arr) {
+                    if (this.$refs.nodeAnswer.scrollWidth > node.size().width) {
+                        const shortPercent = (this.$refs.nodeAnswer.scrollWidth - node.size().width) / node.size().width;
+                        console.log(shortPercent)
+                        console.log(shortPercent * item.length)
+                        console.log(Math.floor(shortPercent * item.length))
+                        arr[idx] = item.substring(0, Math.floor(shortPercent * item.length) - 5) + "...";
+                    }
+                    // if (item.length > 20)
+                    //     arr[idx] = item.substring(0, 20) + "...";
+                }, this);
+                p = array.join('\n');
+                nextTick(() => {
+                    this.setPortPos();
+                })
+            }
+            this.preview = p;
         },
         setPortPos() {
             const node = this.getNode();
@@ -172,6 +212,7 @@ export default defineComponent({
             const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
             // console.log(heightOffset);
             node.setPortProp(port.id, ['args', 'y'], heightOffset);
+            node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom' })
         },
         saveForm() {
             let text = '';
@@ -271,7 +312,7 @@ export default defineComponent({
     components: {
         EpPlus,
         EpWarning,
-    //     EleTipTap,
+        //     EleTipTap,
     },
 });
 /*
@@ -297,6 +338,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     height: 100%;
     width: 100%;
     background-color: white;
+    overflow: hidden;
 }
 
 .nodeTitle {
@@ -307,19 +349,19 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     padding: 5px;
 }
 
-.optionWidth {
+/* .optionWidth {
     width: 110px;
-}
+} */
 
-.divInputBox {
+/* .divInputBox {
     height: 100px;
     width: 100%;
     padding: 5px;
     overflow-y: auto;
     border: 1px solid #000;
-    /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
     line-height: 150%;
-}
+} */
+    /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
 </style>
 <template>
     <div class="nodeBox">
@@ -334,7 +376,10 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 </el-tooltip>
             </span>
         </div>
-        <div ref="nodeAnswer" style="white-space: pre-wrap;font-size:12px">{{ preview }}</div>
+        <div ref="nodeAnswer" style="white-space: pre-wrap;font-size:12px;">{{ preview }}</div>
+        <!-- <el-text ref="nodeAnswer" line-clamp="2">
+            {{ preview }}
+        </el-text> -->
         <!-- <el-text truncated ref="nodeAnswer">{{ nodeData.dialogText }}</el-text> -->
         <!-- <teleport to="#modal-container"> -->
         <teleport to="body">

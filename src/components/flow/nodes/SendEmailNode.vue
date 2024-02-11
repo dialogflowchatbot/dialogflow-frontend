@@ -1,7 +1,9 @@
 <script setup>
-import { inject,reactive, ref } from 'vue'
+import { inject, onMounted, reactive, ref } from 'vue'
+import { copyProperties, httpReq } from '../../../assets/tools.js'
+
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n();
+const { t, tm } = useI18n();
 
 const nodeData = reactive({
     nodeName: 'Send email node',
@@ -10,15 +12,93 @@ const nodeData = reactive({
     bcc: '',
     subject: '',
     content: '',
-    invalidMessages:[],
+    asyncSend: true,
+    valid: false,
+    invalidMessages: [],
+    branches: [],
+    newNode: true,
 })
+const nodeName = ref();
 const nodeSetFormVisible = ref(false)
 const getNode = inject('getNode');
 const node = getNode();
+const variables = []
 node.on("change:data", ({ current }) => {
     nodeSetFormVisible.value = true;
 });
-const saveForm = () => {}
+onMounted(async () => {
+    const data = node.getData();
+    // console.log(data);
+    copyProperties(data, nodeData);
+    // if (data) {
+    //     if (data.nodeName)
+    //         nodeData.nodeName = data.nodeName;
+    //     nodeData.collectType = data.collectType;
+    //     nodeData.collectSaveVarName = data.collectSaveVarName;
+    //     if (data.newNode)
+    //         nodeData.newNode = data.newNode;
+    // }
+    // console.log(nodeData.newNode);
+    if (nodeData.newNode) {
+        nodeData.nodeName += data.nodeCnt.toString();
+        resetPorts()
+        nodeData.newNode = false;
+        // console.log(nodeData);
+    }
+    const t = await httpReq('GET', 'variable', null, null, null);
+    // console.log(t);
+    if (t && t.status == 200 && t.data) {
+        variables.splice(0, variables.length);
+        t.data.forEach(function (item, index, arr) {
+            this.push({ label: item.varName, value: item.varName });
+        }, variables);
+    }
+    validate();
+});
+const resetPorts = () => {
+    node.removePorts();
+    const heightOffset = nodeName.value.offsetHeight + 50;
+    const x = nodeName.value.offsetWidth - 15;
+    if (nodeData.asyncSend) {
+        node.addPort({
+            group: 'absolute',
+            args: { x: x, y: heightOffset },
+            attrs: {
+                text: {
+                    text: tm('lang.dialogNode.nextSteps')[1],
+                    fontSize: 12,
+                },
+            },
+        });
+    } else {
+        node.addPort({
+            group: 'absolute',
+            args: { x: x, y: heightOffset },
+            attrs: {
+                text: {
+                    text: tm('lang.collectNode.branches')[0],
+                    fontSize: 12,
+                },
+            },
+        });
+        node.addPort({
+            group: 'absolute',
+            args: { x: x, y: heightOffset + 20 },
+            attrs: {
+                text: {
+                    text: tm('lang.collectNode.branches')[1],
+                    fontSize: 12,
+                },
+            },
+        });
+        node.resize(node.size().width, 40 + heightOffset, { direction: 'bottom' })
+    }
+}
+const validate = () => { }
+const saveForm = () => {
+    resetPorts()
+    hideForm();
+}
 const hideForm = () => {
     nodeSetFormVisible.value = false;
 }
@@ -82,6 +162,10 @@ const hideForm = () => {
                     </el-form-item>
                     <el-form-item label="Content" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.content" :rows="2" type="textarea" placeholder="Please input" />
+                    </el-form-item>
+                    <el-form-item label="" :label-width="formLabelWidth">
+                        <input type="checkbox" id="_asyncSend_" v-model="nodeData.asyncSend"
+                            :checked="nodeData.asyncSend" /><label for="_asyncSend_">Send asynchronously</label>
                     </el-form-item>
                 </el-form>
                 <div class="demo-drawer__footer">

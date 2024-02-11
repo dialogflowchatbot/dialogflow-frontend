@@ -6,6 +6,7 @@ import ConditionNode from './nodes/ConditionNode.vue';
 import DialogNode from './nodes/DialogNode.vue';
 import GotoNode from './nodes/GotoNode.vue';
 import ExternalHttpNode from './nodes/ExternalHttpNode.vue';
+import SendEmailNode from './nodes/SendEmailNode.vue';
 import { Graph } from '@antv/x6';
 // https://x6.antv.vision/zh/docs/tutorial/advanced/react#%E6%B8%B2%E6%9F%93-vue-%E8%8A%82%E7%82%B9
 import { register, getTeleport } from "@antv/x6-vue-shape";
@@ -175,6 +176,38 @@ register({
     }
 });
 
+register({
+    shape: "SendEmailNode",
+    width: 270,
+    height: 100,
+    component: SendEmailNode,
+    ports: {
+        groups: {
+            absolute: {
+                position: {
+                    name: 'absolute',
+                },
+                attrs: {
+                    circle: {
+                        r: 5,
+                        magnet: true,
+                        stroke: 'black',
+                        strokeWidth: 1,
+                        fill: '#fff',
+                        style: {
+                            visibility: 'show',
+                        },
+                    },
+                },
+                label: {
+                    position: 'left',
+                }
+            },
+        },
+    }
+});
+
+
 const route = useRoute();
 const router = useRouter();
 const TeleportContainer = getTeleport();
@@ -185,6 +218,7 @@ const nodes = [
     { name: tm('lang.flow.nodes')[2], type: 'CollectNode', desc: tm('lang.flow.nodesDesc')[2], cnt: 1 },
     { name: tm('lang.flow.nodes')[3], type: 'GotoNode', desc: tm('lang.flow.nodesDesc')[3], cnt: 1 },
     { name: 'ExternalHttpNode', type: 'ExternalHttpNode', desc: 'Request and send data to external HTTP API with variables', cnt: 1 },
+    { name: 'SendEmailNode', type: 'SendEmailNode', desc: 'Sending an email an many recipients', cnt: 1 },
 ]
 let selectedSubFlowIdx = -1;
 const subFlows = ref([]);
@@ -607,6 +641,10 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
 
 .ExternalHttpNode {
     border-left: 5px solid rgb(1, 165, 188);
+}
+
+.SendEmailNode {
+    border-left: 5px solid rgb(255, 101, 85);
 }
 
 .nodesBox {

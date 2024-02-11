@@ -10,6 +10,9 @@ const nodeData = reactive({
     ip: '127.0.0.1',
     port: '12715',
     maxSessionDurationMin: '30',
+    smtpHost: '',
+    smtpUsername: '',
+    smtpPassword: '',
 });
 const formLabelWidth = '130px'
 
@@ -31,7 +34,7 @@ async function save() {
         ElMessage({ type: 'success', message: t('lang.common.saved'), })
     } else {
         const m = t(r.err.message);
-        ElMessage.error(m?m:r.err.message);
+        ElMessage.error(m ? m : r.err.message);
     }
 }
 
@@ -64,6 +67,30 @@ const goBack = () => {
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     {{ $t('lang.settings.note') }}
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button type="primary" @click="save">
+                        {{ $t('lang.common.save') }}
+                    </el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <p>&nbsp;</p>
+    <el-row>
+        <el-col :span="11" :offset="1">
+            <el-form :model="nodeData">
+                <el-form-item label="Email SMTP" :label-width="formLabelWidth">
+                </el-form-item>
+                <el-form-item label="Host" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.smtpHost" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Username" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.smtpUsername" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Password" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.smtpPassword" placeholder="" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

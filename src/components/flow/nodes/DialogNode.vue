@@ -371,7 +371,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
             <span v-show="nodeData.invalidMessages.length > 0">
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
-                    <el-icon color="red">
+                    <el-icon color="red" size="16">
                         <EpWarning />
                     </el-icon>
                 </el-tooltip>

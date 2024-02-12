@@ -1,6 +1,6 @@
 <script setup>
 import { inject, onMounted, reactive, ref } from 'vue'
-import { copyProperties, httpReq } from '../../../assets/tools.js'
+import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import EpWarning from '~icons/ep/warning'
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
@@ -18,8 +18,9 @@ const nodeData = reactive({
     branches: [],
     newNode: true,
 })
+let lastTimeAsyncSendChoice = true;
 const nodeName = ref();
-const emailRegex = ref('')
+const emailVerificationRegex = ref('')
 const nodeSetFormVisible = ref(false)
 const getNode = inject('getNode');
 const node = getNode();
@@ -45,6 +46,8 @@ onMounted(async () => {
         resetPorts()
         nodeData.newNode = false;
         // console.log(nodeData);
+    } else {
+        lastTimeAsyncSendChoice = nodeData.asyncSend
     }
     let t = await httpReq('GET', 'variable', null, null, null);
     // console.log(t);
@@ -54,10 +57,11 @@ onMounted(async () => {
             this.push({ label: item.varName, value: item.varName });
         }, variables);
     }
-    t = await httpReq('GET', '/management/settings', null, null, null);
+    t = await httpReq('GET', 'management/settings', null, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
-        emailRegex.value = t.emailRegex
+        // console.log(t.data.emailVerificationRegex)
+        emailVerificationRegex.value = t.data.emailVerificationRegex
     }
     validate();
 });
@@ -106,24 +110,27 @@ const validate = () => {
     m.splice(0, m.length);
     if (!d.nodeName)
         m.push('Need to fill in the node name');
+    // console.log(emailVerificationRegex)
+    const re = new RegExp(emailVerificationRegex.value);
     if (!d.to)
         m.push('Need to fill in the email recipient');
-    const re = new RegExp(emailRegex.value);
-    d.to.split(';').forEach(function (item) {
-        if (!re.match(item)) {
-            m.push(item + ' is not a valid email format');
-        }
-    })
+    else {
+        d.to.split(';').forEach(function (item) {
+            if (!item.match(re)) {
+                m.push(item + ' is not a valid email format');
+            }
+        })
+    }
     if (d.cc) {
         d.cc.split(';').forEach(function (item) {
-            if (!re.match(item)) {
+            if (!item.match(re)) {
                 m.push(item + ' is not a valid email format');
             }
         })
     }
     if (d.bcc) {
         d.bcc.split(';').forEach(function (item) {
-            if (!re.match(item)) {
+            if (!item.match(re)) {
                 m.push(item + ' is not a valid email format');
             }
         })
@@ -134,10 +141,31 @@ const validate = () => {
         m.push('Need to fill in the email content');
     if (d.branches == null || d.branches.length == 0)
         m.push('Wrong node branch information');
+    else {
+        d.branches.forEach(function (item) {
+            if (!item.target_node_id)
+                m.push(item.branchName + ' is not connected to other nodes');
+        })
+    }
     d.valid = m.length == 0;
 }
 const saveForm = () => {
-    resetPorts()
+    console.log(lastTimeAsyncSendChoice + "|" + nodeData.asyncSend)
+    if (lastTimeAsyncSendChoice != nodeData.asyncSend) {
+        lastTimeAsyncSendChoice = nodeData.asyncSend
+        resetPorts()
+    }
+    const node = getNode();
+    const ports = node.getPorts();
+    nodeData.branches.splice(0, nodeData.branches.length);
+    for (let i = 0; i < ports.length; i++) {
+        const branch = getDefaultBranch();
+        branch.branchName = ports[i].attrs.text.text;
+        branch.branchId = ports[i].id;
+        branch.branchType = i == 0 && ports.length > 1 ? 'EmailSentSuccessfully' : 'GotoAnotherNode';
+        nodeData.branches.push(branch);
+    }
+    validate()
     hideForm();
 }
 const hideForm = () => {
@@ -172,7 +200,7 @@ const hideForm = () => {
             <span v-show="nodeData.invalidMessages.length > 0">
                 <el-tooltip class="box-item" effect="dark" :content="nodeData.invalidMessages.join('<br/>')"
                     placement="bottom" raw-content>
-                    <el-icon color="red">
+                    <el-icon color="yellow" size="16">
                         <EpWarning />
                     </el-icon>
                 </el-tooltip>

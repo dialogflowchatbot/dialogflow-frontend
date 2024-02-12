@@ -1,7 +1,7 @@
 <script setup>
 import { inject, onMounted, reactive, ref } from 'vue'
 import { copyProperties, httpReq } from '../../../assets/tools.js'
-
+import EpWarning from '~icons/ep/warning'
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
 
@@ -19,6 +19,7 @@ const nodeData = reactive({
     newNode: true,
 })
 const nodeName = ref();
+const emailRegex = ref('')
 const nodeSetFormVisible = ref(false)
 const getNode = inject('getNode');
 const node = getNode();
@@ -45,13 +46,18 @@ onMounted(async () => {
         nodeData.newNode = false;
         // console.log(nodeData);
     }
-    const t = await httpReq('GET', 'variable', null, null, null);
+    let t = await httpReq('GET', 'variable', null, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
         variables.splice(0, variables.length);
         t.data.forEach(function (item, index, arr) {
             this.push({ label: item.varName, value: item.varName });
         }, variables);
+    }
+    t = await httpReq('GET', '/management/settings', null, null, null);
+    // console.log(t);
+    if (t && t.status == 200 && t.data) {
+        emailRegex.value = t.emailRegex
     }
     validate();
 });
@@ -94,7 +100,42 @@ const resetPorts = () => {
         node.resize(node.size().width, 40 + heightOffset, { direction: 'bottom' })
     }
 }
-const validate = () => { }
+const validate = () => {
+    const d = nodeData;
+    const m = d.invalidMessages;
+    m.splice(0, m.length);
+    if (!d.nodeName)
+        m.push('Need to fill in the node name');
+    if (!d.to)
+        m.push('Need to fill in the email recipient');
+    const re = new RegExp(emailRegex.value);
+    d.to.split(';').forEach(function (item) {
+        if (!re.match(item)) {
+            m.push(item + ' is not a valid email format');
+        }
+    })
+    if (d.cc) {
+        d.cc.split(';').forEach(function (item) {
+            if (!re.match(item)) {
+                m.push(item + ' is not a valid email format');
+            }
+        })
+    }
+    if (d.bcc) {
+        d.bcc.split(';').forEach(function (item) {
+            if (!re.match(item)) {
+                m.push(item + ' is not a valid email format');
+            }
+        })
+    }
+    if (!d.subject)
+        m.push('Need to fill in the email subject');
+    if (!d.content)
+        m.push('Need to fill in the email content');
+    if (d.branches == null || d.branches.length == 0)
+        m.push('Wrong node branch information');
+    d.valid = m.length == 0;
+}
 const saveForm = () => {
     resetPorts()
     hideForm();
@@ -142,28 +183,28 @@ const hideForm = () => {
         <teleport to="body">
             <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
                 <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
-                    <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-form-item :label="t('lang.common.nodeName')">
                         <el-input v-model="nodeData.nodeName" />
                     </el-form-item>
-                    <el-form-item label="To" :label-width="formLabelWidth">
+                    <el-form-item label="To">
                         <el-input v-model="nodeData.to" placeholder="" />
                     </el-form-item>
-                    <el-form-item label="" :label-width="formLabelWidth">
+                    <el-form-item label="">
                         Separate multiple recipients with semicolons
                     </el-form-item>
-                    <el-form-item label="Cc" :label-width="formLabelWidth">
+                    <el-form-item label="Cc">
                         <el-input v-model="nodeData.cc" placeholder="" />
                     </el-form-item>
-                    <el-form-item label="Bcc" :label-width="formLabelWidth">
+                    <el-form-item label="Bcc">
                         <el-input v-model="nodeData.bcc" placeholder="" />
                     </el-form-item>
-                    <el-form-item label="Subject" :label-width="formLabelWidth">
+                    <el-form-item label="Subject">
                         <el-input v-model="nodeData.subject" placeholder="" />
                     </el-form-item>
-                    <el-form-item label="Content" :label-width="formLabelWidth">
+                    <el-form-item label="Content">
                         <el-input v-model="nodeData.content" :rows="2" type="textarea" placeholder="Please input" />
                     </el-form-item>
-                    <el-form-item label="" :label-width="formLabelWidth">
+                    <el-form-item label="">
                         <input type="checkbox" id="_asyncSend_" v-model="nodeData.asyncSend"
                             :checked="nodeData.asyncSend" /><label for="_asyncSend_">Send asynchronously</label>
                     </el-form-item>

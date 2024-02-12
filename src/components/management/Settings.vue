@@ -6,6 +6,7 @@ import { httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
 const router = useRouter();
+const defaultEmailRegex = '\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}';
 const nodeData = reactive({
     ip: '127.0.0.1',
     port: '12715',
@@ -13,6 +14,7 @@ const nodeData = reactive({
     smtpHost: '',
     smtpUsername: '',
     smtpPassword: '',
+    emailRegex: '',
 });
 const formLabelWidth = '130px'
 
@@ -90,7 +92,13 @@ const goBack = () => {
                     <el-input v-model="nodeData.smtpUsername" placeholder="" />
                 </el-form-item>
                 <el-form-item label="Password" :label-width="formLabelWidth">
-                    <el-input v-model="nodeData.smtpPassword" placeholder="" />
+                    <el-input v-model="nodeData.smtpPassword" placeholder="" type="password" />
+                </el-form-item>
+                <el-form-item label="Email verification regex" label-width="200px">
+                    <el-input v-model="nodeData.emailRegex" :placeholder="defaultEmailRegex" />
+                </el-form-item>
+                <el-form-item label="" label-width="200px">
+                    You can customize the email verification regular expression, or leave it blank and the system will automatically use the general verification rules.
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

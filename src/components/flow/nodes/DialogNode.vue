@@ -188,11 +188,12 @@ export default defineComponent({
                 const node = this.getNode();
                 // console.log(node.size().width)
                 // console.log(this.getTextWidth())
+                // console.log(this.$refs.nodeAnswer.getBoundingClientRect())
                 array.forEach(function (item, idx, arr) {
-                    if (this.$refs.nodeAnswer.scrollWidth > node.size().width) {
+                    if (this.$refs.nodeAnswer.getBoundingClientRect().width > node.size().width) {
                         const shortPercent = (this.$refs.nodeAnswer.scrollWidth - node.size().width) / node.size().width;
-                        console.log(shortPercent)
-                        console.log(shortPercent * item.length)
+                        // console.log(shortPercent)
+                        // console.log(shortPercent * item.length)
                         console.log(Math.floor(shortPercent * item.length))
                         arr[idx] = item.substring(0, Math.floor(shortPercent * item.length) - 5) + "...";
                     }

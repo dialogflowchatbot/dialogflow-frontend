@@ -7,6 +7,7 @@ import EpPlus from '~icons/ep/plus'
 import EpMinus from '~icons/ep/minus'
 import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
+const lastTimeBranchIdMap = new Map();
 const getNode = inject('getNode');
 const nodeSetFormVisible = ref(false);
 const branchSetFormVisible = ref(false);
@@ -94,7 +95,7 @@ onMounted(async () => {
         }, d);
     }
     t = await httpReq('GET', 'variable', null, null, null);
-    // console.log(t);
+    console.log(t);
     if (t && t.status == 200 && t.data) {
         const d = refOptionsSet.FlowVariable;
         d.splice(0, d.length);
@@ -105,7 +106,7 @@ onMounted(async () => {
 
     const node = getNode();
     const data = node.getData();
-    // console.log(data);
+    console.log(data);
     copyProperties(data, nodeData);
     // console.log(nodeData);
     // if (data) {
@@ -117,6 +118,11 @@ onMounted(async () => {
     // }
     if (nodeData.newNode)
         nodeData.nodeName += data.nodeCnt.toString();
+    else {
+        nodeData.branches.forEach(function (b, idx) {
+            lastTimeBranchIdMap.set(b.branchId, idx)
+        })
+    }
     nodeData.newNode = false;
     validate();
 });
@@ -202,26 +208,52 @@ function saveForm() {
     // if (!hasFallbackBranch)
     //     nodeData.branches.push(fallbackBranch);
     const x = nodeName.value.offsetWidth - 15;
-    node.removePorts();
-    let n;
+    // node.removePorts();
+    let port, id;
+    const newBranchIdMap = new Map()
+    // console.log(node)
     for (let i = 0; i < len; i++) {
         heightOffset += 20;
-        n = node.addPort({
-            group: 'absolute',
-            args: { x: x, y: heightOffset },
-            attrs: {
-                text: {
-                    text: nodeData.branches[i].branchName,
-                    fontSize: 12,
+        id = nodeData.branches[i].branchId
+        // console.log(nodeData.branches[i].branchName + ' ' + heightOffset)
+        if (id) {
+            // console.log(nodeData.branches[i].branchName + ' has id ' + id)
+            lastTimeBranchIdMap.delete(id)
+            port = node.getPort(id)
+            // console.log('n2=' + JSON.stringify(port))
+            if (port)
+                node.setPortProp(port.id, ['args', 'y'], heightOffset);
+        } else {
+            // console.log(nodeData.branches[i].branchName + ' dose not have id ')
+            // nodeData.branches[i].branchId = Math.random().toString(36).substring(2);
+            node.addPort({
+                // id: nodeData.branches[i].branchId,
+                group: 'absolute',
+                args: { x: x, y: heightOffset },
+                attrs: {
+                    text: {
+                        text: nodeData.branches[i].branchName,
+                        fontSize: 12,
+                    },
                 },
-            },
 
-        });
-        nodeData.branches[i].branchId = n.ports.items[i].id;
+            });
+            // console.log(node.ports)
+            // console.log(node.ports.items[node.ports.items.length - 1].id)
+            nodeData.branches[i].branchId = node.ports.items[node.ports.items.length - 1].id;
+        }
+        newBranchIdMap.set(nodeData.branches[i].branchId, i)
         // console.log(nodeData.branches[i].branchId);
         if (branch.branchType == 'GotoAnotherNode') {
             hasFallbackBranch = true;
         }
+    }
+    lastTimeBranchIdMap.forEach((value, key, map) => {
+        // console.log('remove ' + key)
+        node.removePort(key, { silent: false })
+    })
+    for (const [key, value] of newBranchIdMap) {
+        lastTimeBranchIdMap.set(key, value);
     }
     node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom' })
     validate();
@@ -354,10 +386,11 @@ function addConditionGroup() {
                             </el-select>
                             <el-select v-model="c.targetValue" placeholder="Please choose a variable"
                                 v-show="c.inputVariable && c.targetValueVariant == 'Variable'" class="optionWidth">
-                                <el-option v-for="item in refOptionsSet['FlowVariable']" :key="item.label" :label="item.label"
-                                    :value="item.value" />
+                                <el-option v-for="item in refOptionsSet['FlowVariable']" :key="item.label"
+                                    :label="item.label" :value="item.value" />
                             </el-select>
-                            <el-input v-model="c.targetValue" class="optionWidth" v-show="c.inputVariable && c.targetValueVariant == 'Const'" />
+                            <el-input v-model="c.targetValue" class="optionWidth"
+                                v-show="c.inputVariable && c.targetValueVariant == 'Const'" />
                             <el-button type="primary" @click="addContidion(g)">
                                 <el-icon>
                                     <EpPlus />

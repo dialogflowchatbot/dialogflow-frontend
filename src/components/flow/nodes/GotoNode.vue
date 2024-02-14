@@ -12,7 +12,7 @@ const { t, tm, rt } = useI18n();
 
 // const getGraph = inject('getGraph');
 const getNode = inject('getNode');
-const getSubFlowNames = inject('getSubFlowNames');
+const {subflowNames, updateSubFlowNames} = inject('subFlowNamesFn');
 const nodeSetFormVisible = ref(false);
 const mainFlows = ref([])
 const subFlowNames = ref([])
@@ -76,10 +76,10 @@ onMounted(async () => {
 })
 
 async function selectGotoType(t) {
-    // console.log(getSubFlowNames());
+    // console.log(updateSubFlowNames());
     if ('GotoMainFlow' == t) {
     } else if ('GotoSubFlow' == t) {
-        subFlowNames.value = getSubFlowNames();
+        subFlowNames.value = updateSubFlowNames();
         showSubFlowOptions.value = true;
     }
 }
@@ -190,8 +190,8 @@ const formLabelWidth = '110px'
             </span>
         </div>
         <div>{{ nodeData.brief }}</div>
-        <teleport to="body">
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
+        <!-- <teleport to="body"> -->
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 700px">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" />
@@ -230,6 +230,6 @@ const formLabelWidth = '110px'
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

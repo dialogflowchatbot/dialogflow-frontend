@@ -160,8 +160,8 @@ const formLabelWidth = '140px'
         </div>
         <div>{{ t('lang.collectNode.cTypeName') }}: {{ nodeData.collectTypeName }}</div>
         <div>{{ t('lang.collectNode.varName') }}: {{ nodeData.collectSaveVarName }}</div>
-        <teleport to="body">
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
+        <!-- <teleport to="body"> -->
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 460px">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" />
@@ -187,6 +187,6 @@ const formLabelWidth = '140px'
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

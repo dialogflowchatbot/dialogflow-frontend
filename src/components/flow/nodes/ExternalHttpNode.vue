@@ -57,7 +57,7 @@ node.on("change:data", ({ current }) => {
 });
 onMounted(async () => {
     const t = await httpReq('GET', 'external/http', null, null, null);
-    // console.log(t);
+    console.log(t);
     if (t.status == 200) {
         for (var x in t.data) {
             if (t.data.hasOwnProperty(x)) {
@@ -115,8 +115,8 @@ onMounted(async () => {
             </span>
         </div>
         <div>Call Http: {{ nodeData.httpApiName }}</div>
-        <teleport to="body">
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
+        <!-- <teleport to="body"> -->
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 850px">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" />
@@ -143,6 +143,6 @@ onMounted(async () => {
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

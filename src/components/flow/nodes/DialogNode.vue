@@ -83,6 +83,7 @@ export default defineComponent({
         };
     },
     mounted() {
+        console.log('mounted dialognode')
         const node = this.getNode();
         const data = node.getData();
         // console.log(data);
@@ -383,8 +384,8 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
         </el-text> -->
         <!-- <el-text truncated ref="nodeAnswer">{{ nodeData.dialogText }}</el-text> -->
         <!-- <teleport to="#modal-container"> -->
-        <teleport to="body">
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="72%">
+        <!-- <teleport to="body"> -->
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="72%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :model="nodeData">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" autocomplete="off" />
@@ -423,7 +424,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-            <el-dialog v-model="varDialogVisible" :title="t('lang.dialogNode.var.title')" width="30%">
+            <el-dialog v-model="varDialogVisible" :title="t('lang.dialogNode.var.title')" width="30%" :append-to-body="true" :destroy-on-close="true">
                 <el-select v-model="selectedVar" class="m-2" :placeholder="t('lang.dialogNode.var.choose')" size="large">
                     <el-option v-for="item in vars" :key="item.varName" :label="item.varName" :value="item.varName" />
                 </el-select>
@@ -436,6 +437,6 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                     </span>
                 </template>
             </el-dialog>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

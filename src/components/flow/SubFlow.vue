@@ -319,8 +319,6 @@ onMounted(async () => {
 
 });
 
-provide('getSubFlowNames', readonly(getSubFlowNames))
-
 function addHandleNode(x, y, item) {
     const node = graph.addNode({
         shape: item.type,
@@ -343,7 +341,9 @@ function dragoverDiv(ev) {
     ev.preventDefault();
 }
 
-function getSubFlowNames() {
+const subflowNames = ref([])
+
+function updateSubFlowNames() {
     // console.log(subFlows);
     const names = new Array();
     for (let i = 0; i < subFlows.value.length; i++) {
@@ -353,6 +353,9 @@ function getSubFlowNames() {
     // console.log(names);
     return names;
 }
+
+// provide('getSubFlowNames', readonly(subflowNames), updateSubFlowNames)
+provide('subFlowNamesFn', subflowNames, updateSubFlowNames)
 
 function cacheSubFlows(t) {
     if (t && t.status == 200 && t.data) {
@@ -594,8 +597,8 @@ async function dryrunClear() {
     await dryrun();
 }
 
-const isEnLanguage = navigator.language ? navigator.language.split('-')[0] == 'en' : false
-const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
+// const isEnLanguage = navigator.language ? navigator.language.split('-')[0] == 'en' : false
+// const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
 </script>
 <style scoped>
 .el-container,
@@ -619,7 +622,8 @@ const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
     padding: 10px;
     margin-bottom: 6px;
     font-size: 9pt;
-    width: v-bind(nodesBtnWidth);
+    /* width: v-bind(nodesBtnWidth); */
+    width: 100px;
     background-color: white;
 }
 

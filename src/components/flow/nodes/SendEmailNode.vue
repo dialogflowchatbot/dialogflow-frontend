@@ -208,8 +208,8 @@ const hideForm = () => {
         </div>
         <div>To: {{ nodeData.to }}</div>
         <div>Subject: {{ nodeData.subject }}</div>
-        <teleport to="body">
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
+        <!-- <teleport to="body"> -->
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
                     <el-form-item :label="t('lang.common.nodeName')">
                         <el-input v-model="nodeData.nodeName" />
@@ -242,6 +242,6 @@ const hideForm = () => {
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

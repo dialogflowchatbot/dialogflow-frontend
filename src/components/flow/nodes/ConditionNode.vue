@@ -237,7 +237,7 @@ function saveForm() {
                     },
                 },
 
-            });
+            }, { silent: false });
             // console.log(node.ports)
             // console.log(node.ports.items[node.ports.items.length - 1].id)
             nodeData.branches[i].branchId = node.ports.items[node.ports.items.length - 1].id;
@@ -251,13 +251,14 @@ function saveForm() {
     lastTimeBranchIdMap.forEach((value, key, map) => {
         // console.log('remove ' + key)
         node.removePort(key, { silent: false })
+        lastTimeBranchIdMap.delete(key)
     })
     for (const [key, value] of newBranchIdMap) {
         lastTimeBranchIdMap.set(key, value);
     }
-    node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom' })
+    node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom', silent: false })
     validate();
-    node.setData(nodeData, { silent: false });
+    node.setData(nodeData, { silent: true });
     hideForm();
     // console.log(node.getData());
 }
@@ -350,8 +351,8 @@ function addConditionGroup() {
                 </el-tooltip>
             </span>
         </div>
-        <teleport to="body">
-            <el-dialog v-model="branchSetFormVisible" :title="t('lang.conditionNode.newBranch')" width="70%">
+        <!-- <teleport to="body"> -->
+            <el-dialog v-model="branchSetFormVisible" :title="t('lang.conditionNode.newBranch')" width="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :model="branch" :rules="branchValidators">
                     <el-form-item :label="t('lang.conditionNode.condName')" :label-width="formLabelWidth" prop="branchName">
                         <el-input v-model="branch.branchName" autocomplete="off" minlength="1" maxlength="15" />
@@ -424,7 +425,7 @@ function addConditionGroup() {
                     </span>
                 </template>
             </el-dialog>
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%">
+            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :model="nodeData">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" autocomplete="off" />
@@ -439,11 +440,11 @@ function addConditionGroup() {
                             @click="editBranch(index)" :disabled="!btn.editable">{{ btn.branchName }}</el-button>
                     </el-form-item>
                 </el-form>
-                <div class="demo-drawer__footer">
+                <div>
                     <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
             </el-drawer>
-        </teleport>
+        <!-- </teleport> -->
     </div>
 </template>

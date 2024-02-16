@@ -1,12 +1,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { httpReq } from '../../assets/tools.js'
+import { copyProperties, httpReq } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
 const router = useRouter();
-const defaultEmailVerificationRegex = '\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}';
+const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const nodeData = reactive({
     ip: '127.0.0.1',
     port: '12715',
@@ -22,10 +22,10 @@ onMounted(async () => {
     const t = await httpReq("GET", 'management/settings', null, null, null)
     console.log(t);
     if (t.status == 200) {
-        const d = t.data;
-        nodeData.port = d.port;
-        nodeData.maxSessionDurationMin = d.maxSessionDurationMin;
-        nodeData.dbFileName = d.dbFileName;
+        copyProperties(t.data, nodeData);
+        // const d = t.data;
+        // nodeData.port = d.port;
+        // nodeData.maxSessionDurationMin = d.maxSessionDurationMin;
     }
 })
 

@@ -231,7 +231,7 @@ const mainFlowName = atob(route.params.name);
 const isDemo = mainFlowId.indexOf('demo') > -1;
 
 onMounted(async () => {
-    // console.log("onMounted1");
+    // console.log("subflow onMounted");
     const canvas = document.getElementById('canvas');
     // offsetLeft = canvas.offsetLeft;
     // console.log('offsetLeft=' + offsetLeft);
@@ -415,6 +415,7 @@ async function showSubFlow(idx) {
     if (idx == selectedSubFlowIdx)
         return;
     if (editedSubFlow) {
+        // console.log('editedSubFlow')
         ElMessageBox.confirm(
             t('lang.flow.changeSaveTip'),
             'Warning',
@@ -658,7 +659,7 @@ async function dryrunClear() {
     top: 20px;
     left: 20px;
     z-index: 100;
-    width: 80px;
+    width: 100px;
 }
 
 .subFlowBtn {

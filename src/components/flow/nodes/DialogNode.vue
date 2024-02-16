@@ -83,7 +83,7 @@ export default defineComponent({
         };
     },
     mounted() {
-        console.log('mounted dialognode')
+        // console.log('mounted dialognode')
         const node = this.getNode();
         const data = node.getData();
         // console.log(data);

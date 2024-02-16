@@ -29,6 +29,7 @@ node.on("change:data", ({ current }) => {
     nodeSetFormVisible.value = true;
 });
 onMounted(async () => {
+    console.log('emailNode')
     const data = node.getData();
     // console.log(data);
     copyProperties(data, nodeData);
@@ -141,12 +142,12 @@ const validate = () => {
         m.push('Need to fill in the email content');
     if (d.branches == null || d.branches.length == 0)
         m.push('Wrong node branch information');
-    else {
-        d.branches.forEach(function (item) {
-            if (!item.target_node_id)
-                m.push(item.branchName + ' is not connected to other nodes');
-        })
-    }
+    // else {
+    //     d.branches.forEach(function (item) {
+    //         if (!item.target_node_id)
+    //             m.push(item.branchName + ' is not connected to other nodes');
+    //     })
+    // }
     d.valid = m.length == 0;
 }
 const saveForm = () => {
@@ -166,6 +167,7 @@ const saveForm = () => {
         nodeData.branches.push(branch);
     }
     validate()
+    node.setData(nodeData, { silent: false });
     hideForm();
 }
 const hideForm = () => {

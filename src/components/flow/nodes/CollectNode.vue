@@ -25,6 +25,7 @@ node.on("change:data", ({ current }) => {
 const collectionTypes = [{ label: tm('lang.collectNode.cTypes')[0], value: 'UserInput' }, { label: tm('lang.collectNode.cTypes')[1], value: 'Number' }, { label: tm('lang.collectNode.cTypes')[2], value: 'CustomizeRegex' }];
 const variables = []
 onMounted(async () => {
+    // console.log('collectNode')
     const node = getNode();
     const data = node.getData();
     // console.log(data);

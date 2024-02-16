@@ -56,8 +56,9 @@ node.on("change:data", ({ current }) => {
     nodeSetFormVisible.value = true;
 });
 onMounted(async () => {
+    // console.log('httpNode')
     const t = await httpReq('GET', 'external/http', null, null, null);
-    console.log(t);
+    // console.log(t);
     if (t.status == 200) {
         for (var x in t.data) {
             if (t.data.hasOwnProperty(x)) {

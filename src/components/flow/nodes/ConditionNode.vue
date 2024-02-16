@@ -85,6 +85,7 @@ getNode().on("change:data", ({ current }) => {
 defaultConditionGroup[0].push(cloneObj(defaultCondition));
 
 onMounted(async () => {
+    // console.log('conditionNode')
     let t = await httpReq('GET', 'intent', null, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
@@ -95,7 +96,7 @@ onMounted(async () => {
         }, d);
     }
     t = await httpReq('GET', 'variable', null, null, null);
-    console.log(t);
+    // console.log(t);
     if (t && t.status == 200 && t.data) {
         const d = refOptionsSet.FlowVariable;
         d.splice(0, d.length);

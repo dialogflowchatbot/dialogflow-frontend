@@ -45,6 +45,7 @@ getNode().on("change:data", ({ current }) => {
 });
 
 onMounted(async () => {
+    // console.log('gotoNode')
     const node = getNode();
     const data = node.getData();
     copyProperties(data, nodeData);
@@ -191,7 +192,7 @@ const formLabelWidth = '110px'
         </div>
         <div>{{ nodeData.brief }}</div>
         <!-- <teleport to="body"> -->
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
+            <el-drawer v-if="nodeSetFormVisible" v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
                 <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 700px">
                     <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                         <el-input v-model="nodeData.nodeName" />
@@ -225,7 +226,7 @@ const formLabelWidth = '110px'
                         </el-form-item>
                     </div>
                 </el-form>
-                <div class="demo-drawer__footer">
+                <div>
                     <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
                     <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>

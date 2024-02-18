@@ -23,6 +23,7 @@ const nodeData = reactive({
 })
 let lastTimeAsyncSendChoice = true;
 const nodeName = ref();
+const smtpHost = ref('')
 const emailVerificationRegex = ref('')
 const nodeSetFormVisible = ref(false)
 const getNode = inject('getNode');
@@ -112,6 +113,8 @@ const validate = () => {
     const d = nodeData;
     const m = d.invalidMessages;
     m.splice(0, m.length);
+    if (!smtpHost.value)
+        m.push('SMTP host is not configured');
     if (!d.nodeName)
         m.push('Need to fill in the node name');
     // console.log(emailVerificationRegex)

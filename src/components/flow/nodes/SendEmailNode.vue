@@ -8,8 +8,11 @@ const { t, tm } = useI18n();
 const nodeData = reactive({
     nodeName: 'Send email node',
     to: '',
+    toRecipients: [],
     cc: '',
+    ccRecipients: [],
     bcc: '',
+    bccRecipients: [],
     subject: '',
     content: '',
     asyncSend: true,
@@ -119,21 +122,21 @@ const validate = () => {
         d.to.split(';').forEach(function (item) {
             if (!item.match(re)) {
                 m.push(item + ' is not a valid email format');
-            }
+            } else d.toRecipients.push(item)
         })
     }
     if (d.cc) {
         d.cc.split(';').forEach(function (item) {
             if (!item.match(re)) {
                 m.push(item + ' is not a valid email format');
-            }
+            } else d.ccRecipients.push(item)
         })
     }
     if (d.bcc) {
         d.bcc.split(';').forEach(function (item) {
             if (!item.match(re)) {
                 m.push(item + ' is not a valid email format');
-            }
+            } else d.bccRecipients.push(item)
         })
     }
     if (!d.subject)

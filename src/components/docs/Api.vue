@@ -25,13 +25,14 @@ const tableData = [{
     required: false,
     comment: 'An intent representing a user input hit. if this field is absent, system will detect intent instead.',
 }];
+const host = window.location.host;
 </script>
 <template>
     <h1>Program interface integration guide</h1>
     <p>This tool provides an API based on the HTTP protocol</p>
     <h3>Request url</h3>
     <pre class="bg-#eee">
-        POST http:://{ip_address}:{port}/flow/answer
+        POST http://{{ host }}/flow/answer
     </pre>
     <h3>Request body</h3>
     <pre class="bg-#eee">

@@ -198,10 +198,6 @@ const hideForm = () => {
     font-size: 14px;
     padding: 5px;
 }
-
-.optionWidth {
-    width: 110px;
-}
 </style>
 <template>
     <div class="nodeBox">
@@ -221,7 +217,7 @@ const hideForm = () => {
         <!-- <teleport to="body"> -->
         <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true"
             :destroy-on-close="true">
-            <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
+            <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 500px">
                 <el-form-item :label="t('lang.common.nodeName')">
                     <el-input v-model="nodeData.nodeName" />
                 </el-form-item>

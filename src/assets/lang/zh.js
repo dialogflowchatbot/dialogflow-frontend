@@ -122,10 +122,11 @@ export default {
         settings: {
             title: '配置管理',
             ipNote: '如果配置的IP地址错误导致应用启动失败, 请在启动是, 加上 -rs 来重置配置参数',
-            prompt2: '监听端口',
+            prompt2: '应用端口',
+            prompt2_2: '当指定端口被占用, 随机选择一个可用的端口',
             prompt3: '会话时长',
             prompt4: '分钟',
-            note: '修改了IP地址, 端口或会话时长，需要重启才会生效',
+            note: '修改了IP地址, 端口或会话时长，需要重启应用才能生效',
             invalidIp: '设置的IP地址不正确',
         },
         var: {

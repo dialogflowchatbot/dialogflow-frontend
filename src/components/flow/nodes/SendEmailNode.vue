@@ -15,6 +15,7 @@ const nodeData = reactive({
     bccRecipients: [],
     subject: '',
     content: '',
+    contentType: 'TextHtml',
     asyncSend: true,
     valid: false,
     invalidMessages: [],
@@ -217,39 +218,46 @@ const hideForm = () => {
         <div>To: {{ nodeData.to }}</div>
         <div>Subject: {{ nodeData.subject }}</div>
         <!-- <teleport to="body"> -->
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
-                <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
-                    <el-form-item :label="t('lang.common.nodeName')">
-                        <el-input v-model="nodeData.nodeName" />
-                    </el-form-item>
-                    <el-form-item label="To">
-                        <el-input v-model="nodeData.to" placeholder="" />
-                    </el-form-item>
-                    <el-form-item label="">
-                        Separate multiple recipients with semicolons
-                    </el-form-item>
-                    <el-form-item label="Cc">
-                        <el-input v-model="nodeData.cc" placeholder="" />
-                    </el-form-item>
-                    <el-form-item label="Bcc">
-                        <el-input v-model="nodeData.bcc" placeholder="" />
-                    </el-form-item>
-                    <el-form-item label="Subject">
-                        <el-input v-model="nodeData.subject" placeholder="" />
-                    </el-form-item>
-                    <el-form-item label="Content">
-                        <el-input v-model="nodeData.content" :rows="2" type="textarea" placeholder="Please input" />
-                    </el-form-item>
-                    <el-form-item label="">
-                        <input type="checkbox" id="_asyncSend_" v-model="nodeData.asyncSend"
-                            :checked="nodeData.asyncSend" /><label for="_asyncSend_">Send asynchronously</label>
-                    </el-form-item>
-                </el-form>
-                <div class="demo-drawer__footer">
-                    <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
-                    <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
-                </div>
-            </el-drawer>
+        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true"
+            :destroy-on-close="true">
+            <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
+                <el-form-item :label="t('lang.common.nodeName')">
+                    <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
+                <el-form-item label="To">
+                    <el-input v-model="nodeData.to" placeholder="" />
+                </el-form-item>
+                <el-form-item label="">
+                    Separate multiple recipients with semicolons
+                </el-form-item>
+                <el-form-item label="Cc">
+                    <el-input v-model="nodeData.cc" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Bcc">
+                    <el-input v-model="nodeData.bcc" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Subject">
+                    <el-input v-model="nodeData.subject" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Content">
+                    <el-input v-model="nodeData.content" :rows="2" type="textarea" placeholder="Please input" />
+                </el-form-item>
+                <el-form-item label="Content type">
+                    <el-radio-group v-model="nodeData.contentType" class="ml-4">
+                        <el-radio label="TextHtml" size="large">text/html</el-radio>
+                        <el-radio label="TextPlain" size="large">text/plain</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="">
+                    <input type="checkbox" id="_asyncSend_" v-model="nodeData.asyncSend"
+                        :checked="nodeData.asyncSend" /><label for="_asyncSend_">Send asynchronously</label>
+                </el-form-item>
+            </el-form>
+            <div class="demo-drawer__footer">
+                <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
+                <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
+            </div>
+        </el-drawer>
         <!-- </teleport> -->
     </div>
 </template>

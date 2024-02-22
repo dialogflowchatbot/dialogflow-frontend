@@ -10,6 +10,7 @@ const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Z
 const nodeData = reactive({
     ip: '127.0.0.1',
     port: '12715',
+    randomPort: false,
     maxSessionDurationMin: '30',
     smtpHost: '',
     smtpUsername: '',
@@ -64,6 +65,10 @@ const goBack = () => {
                 </el-form-item>
                 <el-form-item :label="$t('lang.settings.prompt2')" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.port" :min="1024" :max="65530" @change="handleChange" />
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <input type="checkbox" id="_randomPort_" v-model="nodeData.randomPort" :checked="nodeData.randomPort" />
+                    <label for="_randomPort_">{{$t('lang.settings.prompt2_2')}}</label>
                 </el-form-item>
                 <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.maxSessionDurationMin" :min="1" :max="1440" @change="handleChange" />

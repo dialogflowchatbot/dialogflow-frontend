@@ -122,6 +122,7 @@ export default {
             title: 'Settings',
             ipNote: 'If the configured IP address is wrong and the application fails to start, please reset the configuration parameters by adding the startup parameter: -rs.',
             prompt2: 'Listening port',
+            prompt2_2: 'When the set port is occupied, automatically randomly select other available ports',
             prompt3: 'Session length',
             prompt4: 'Minutes',
             note: 'Modified IP address, ports or session duration require a reboot to take effect',

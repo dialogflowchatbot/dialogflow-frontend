@@ -15,6 +15,7 @@ const nodeData = reactive({
     smtpHost: '',
     smtpUsername: '',
     smtpPassword: '',
+    smtpTimeoutSec: 60,
     emailVerificationRegex: '',
 });
 const formLabelWidth = '130px'
@@ -68,7 +69,7 @@ const goBack = () => {
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <input type="checkbox" id="_randomPort_" v-model="nodeData.randomPort" :checked="nodeData.randomPort" />
-                    <label for="_randomPort_">{{$t('lang.settings.prompt2_2')}}</label>
+                    <label for="_randomPort_">{{ $t('lang.settings.prompt2_2') }}</label>
                 </el-form-item>
                 <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.maxSessionDurationMin" :min="1" :max="1440" @change="handleChange" />
@@ -100,6 +101,10 @@ const goBack = () => {
                 </el-form-item>
                 <el-form-item label="Password" :label-width="formLabelWidth">
                     <el-input v-model="nodeData.smtpPassword" placeholder="" type="password" />
+                </el-form-item>
+                <el-form-item label="Timeout" :label-width="formLabelWidth">
+                    <el-input-number v-model="nodeData.smtpTimeoutSec" :min="1" :max="600" @change="handleChange" />
+                    Seconds
                 </el-form-item>
                 <el-form-item label="Email verification regex" label-width="200px">
                     <el-input v-model="nodeData.emailVerificationRegex" :placeholder="defaultEmailVerificationRegex" />

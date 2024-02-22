@@ -7,6 +7,7 @@ const { t, tm } = useI18n();
 
 const nodeData = reactive({
     nodeName: 'Send email node',
+    from: '',
     to: '',
     toRecipients: [],
     cc: '',
@@ -223,6 +224,9 @@ const hideForm = () => {
             <el-form :label-position="labelPosition" label-width="90px" :model="nodeData" style="max-width: 500px">
                 <el-form-item :label="t('lang.common.nodeName')">
                     <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
+                <el-form-item label="From" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.from" placeholder="" />
                 </el-form-item>
                 <el-form-item label="To">
                     <el-input v-model="nodeData.to" placeholder="" />

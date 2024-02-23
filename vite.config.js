@@ -96,7 +96,7 @@ export default ({ command, mode }) => {
           'canvas': [/\/node_modules\/@antv\//]
         }
       }),
-      ],
+    ],
     define: {
       // 'process.env': env,
     },
@@ -107,9 +107,9 @@ export default ({ command, mode }) => {
           // entryFileNames: 'index.js',
           // manualChunks,
           // chunkFilename: 'vendor_locale_[name].js',
-          manualChunks: {
-            'canvas': ['@antv/x6', '@antv/x6-vue-shape']
-          }
+          // manualChunks: {
+          //   'canvas': ['@antv/x6', '@antv/x6-vue-shape']
+          // }
         },
       },
       minify: 'terser', // <-- add

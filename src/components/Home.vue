@@ -126,7 +126,7 @@ const checkUpdate = async () => {
         <span class="name">Dialog flow chat bot</span>
         <p>
             It's fast. Built on Rust and Vue3.<br />
-            It's easy to use. Contains a visual editor.<br />
+            It's easy to use. Build powerful chatbots in minutes with our intuitive node-based editor.<br />
             It's safe. Open source and all data is saved locally.
             <!-- Create your own conversational bot in under 1 minute. -->
         </p>
@@ -139,8 +139,11 @@ const checkUpdate = async () => {
         <el-row>
             <el-col :span="6">
                 <button class="download" @click="guide">Get started</button>
+                <a href="https://github.com/dialogflowchatbot/dialogflow/releases" style="margin-left: 20px;">
+                    <img src="../assets/downloading.png" />
+                </a>
                 <!-- <el-button :icon="Printer" type="primary" plain @click="introduction" size="large">Introduction</el-button> -->
-                <router-link to="/introduction"><img src="../assets/lightbulb.png" /></router-link>
+                <!-- <router-link to="/introduction"><img src="../assets/lightbulb.png" /></router-link> -->
                 <!-- <el-button :icon="Star" type="primary" plain @click="github" size="large">Github</el-button> -->
                 <a href="https://github.com/dialogflowchatbot/dialogflow" style="margin-left: 20px;">
                     <img src="../assets/github.png" />

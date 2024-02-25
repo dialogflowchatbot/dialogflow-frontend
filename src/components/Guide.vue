@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router';
 import Demos from "./Demos.vue"
@@ -12,7 +13,27 @@ import SolarDocumentTextLinear from '~icons/solar/document-text-linear'
 import BiBoxArrowUpRight from '~icons/bi/box-arrow-up-right'
 useI18n();
 const router = useRouter();
+const checkUpdateResult = ref(0)
 const fromPage = 'guide';
+const checkUpdate = async () => {
+  updateLoading.value = true
+  const t = await httpReq('GET', 'check-new-version.json', null, null, null);
+  // console.log(t)
+  if (t.status == 200) {
+    if (t.data != null) {
+      newVersion.value = t.data.version;
+      changelog.splice(0, changelog.length)
+      copyProperties(t.data.changelog, changelog)
+      // changelog.push(t.data.changelog)
+      checkUpdateResult.value = 1
+    } else {
+      checkUpdateResult.value = 2
+    }
+  } else {
+    checkUpdateResult.value = 3
+  }
+  updateLoading.value = false
+}
 </script>
 <style scoped>
 .header {
@@ -21,6 +42,7 @@ const fromPage = 'guide';
   font-size: 38px;
   font-weight: bold;
 }
+
 .title {
   font-size: 28px;
   font-weight: bold;
@@ -41,6 +63,25 @@ const fromPage = 'guide';
     </template>
   </el-page-header> -->
   <span class="header"> Workspace </span>
+  <el-popover ref="popover" placement="right" title="Changelog" :width="300" trigger="hover">
+    <template #reference>
+      <el-button v-show="checkUpdateResult == 1" class="m-2" type="warning" text>Found new verion: {{
+        newVersion
+      }}</el-button>
+    </template>
+    <template #default>
+      <ol style="margin:0;padding:0">
+        <li v-for="(item, index) in changelog" :id="index" :key="index">
+          {{ item }}
+        </li>
+      </ol>
+      <a href="https://github.com/dialogflowchatbot/dialogflow/releases">Go to download</a>
+    </template>
+  </el-popover>
+  <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
+  <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
+    again
+    later.</el-button>
   <p style="margin-left:50px">
   <div class="title">
     <el-icon :size="30">

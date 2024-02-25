@@ -6,10 +6,10 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import i18n from './assets/lang/i18n'
 // import VueScrollTo from 'vue-scrollto'
 import App from './App.vue'
-import Home from './components/Home.vue'
-import Intro from './components/Intro.vue'
-import Doc from './components/docs/Index.vue'
-import Tutorial from './components/docs/Tutorial.vue'
+// import Home from './components/Home.vue'
+// import Intro from './components/Intro.vue'
+// import Doc from './components/docs/Index.vue'
+// import Tutorial from './components/docs/Tutorial.vue'
 import Settings from './components/management/Settings.vue'
 import MainFlow from './components/flow/MainFlow.vue'
 import SubFlow from './components/flow/SubFlow.vue'
@@ -24,9 +24,9 @@ import HttpApiDetail from './components/external/HttpApiDetail.vue'
 // import 'element-tiptap-vue3-fixed/lib/style.css';
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/introduction', component: Intro },
-  { path: '/docs', component: Doc },
+  { path: '/', component: Guide },
+  // { path: '/introduction', component: Intro },
+  // { path: '/docs', component: Doc },
   { path: '/demo/:demo', component: SubFlow },
   { path: '/mainflows', component: MainFlow },
   { path: '/subflow/:id/:name', name: 'subflow', component: SubFlow, props: true },
@@ -35,7 +35,7 @@ const routes = [
   { path: '/intents', component: IntentList },
   { path: '/intent/detail', component: IntentDetail },
   { path: '/variables', component: Variable },
-  { path: '/tutorial', component: Tutorial },
+  // { path: '/tutorial', component: Tutorial },
   { path: '/external/httpApis', component: HttpApiList },
   { path: '/external/httpApi/:id', name: 'externalHttpApiDetail', component: HttpApiDetail },
 ]

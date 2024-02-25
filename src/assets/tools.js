@@ -87,18 +87,3 @@ export function isOnGithub() {
     const u = window.location.href;
     return u.indexOf('dialogflowchatbot.github.io') > -1;
 }
-
-export function winScrollTo(t) {
-    let top = 0
-    let left = 0
-    do {
-        top += t.offsetTop || 0;
-        left += t.offsetLeft || 0;
-        t = t.offsetParent;
-    } while (t)
-    window.scrollTo({
-        top: top,
-        left: left,
-        behavior: "smooth",
-    });
-}

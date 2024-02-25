@@ -9,14 +9,18 @@ import SolarDownloadOutline from '~icons/solar/download-outline'
 import SolarRouting2Linear from '~icons/solar/routing-2-linear'
 import EpSetting from '~icons/ep/setting'
 import SolarDocumentTextLinear from '~icons/solar/document-text-linear'
+import BiBoxArrowUpRight from '~icons/bi/box-arrow-up-right'
 useI18n();
 const router = useRouter();
 const fromPage = 'guide';
-const goBack = () => {
-  router.push('/')
-}
 </script>
 <style scoped>
+.header {
+  margin-left: 20px;
+  margin-top: 20px;
+  font-size: 38px;
+  font-weight: bold;
+}
 .title {
   font-size: 28px;
   font-weight: bold;
@@ -31,11 +35,12 @@ const goBack = () => {
 }
 </style>
 <template>
-  <el-page-header title="Home" @back="goBack">
+  <!-- <el-page-header title="Home">
     <template #content>
       <span class="text-large font-600 mr-3"> Workspace </span>
     </template>
-  </el-page-header>
+  </el-page-header> -->
+  <span class="header"> Workspace </span>
   <p style="margin-left:50px">
   <div class="title">
     <el-icon :size="30">
@@ -134,7 +139,13 @@ const goBack = () => {
     <el-icon :size="15">
       <EpArrowRightBold />
     </el-icon>
-    <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link>
+    <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
+    <a href="https://dialogflowchatbot.github.io/#/docs" target="_blank">
+      {{ $t('lang.guide.nav5') }}
+      <el-icon>
+        <BiBoxArrowUpRight />
+      </el-icon>
+    </a>
   <div class="description">{{ $t('lang.guide.desc5') }}</div>
   </p>
   </p>

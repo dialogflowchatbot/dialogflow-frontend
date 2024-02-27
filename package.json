@@ -1,6 +1,6 @@
 {
   "name": "dialogflow",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,9 +19,9 @@
     "@antv/x6": "^2.18.1",
     "@antv/x6-vue-shape": "^2.1.2",
     "element-plus": "^2.5.6",
-    "vue": "^3.4.19",
+    "vue": "^3.4.20",
     "vue-i18n": "^9.9.1",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@iconify-json/bi": "^1.1.23",

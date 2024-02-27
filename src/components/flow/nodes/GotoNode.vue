@@ -68,7 +68,7 @@ onMounted(async () => {
     validate();
 
     const r = await httpReq('GET', 'mainflow', null, null, null);
-    console.log(r);
+    // console.log(r);
     if (r.status == 200)
         mainFlows.value = r.data;
     if (data.gotoSubFlowId) {
@@ -89,11 +89,11 @@ async function selectedMainFlow(id) {
     // console.log(id);
     if (id) {
         const r = await httpReq('GET', 'subflow/simple', { mainFlowId: id, data: '' }, null, null);
-        console.log(r);
+        // console.log(r);
         if (r.status == 200)
             subFlowNames.value = r.data;
     } else {
-        subFlowNames.value = getSubFlowNames();
+        subFlowNames.value = updateSubFlowNames();
     }
     showSubFlowOptions.value = true;
 }
@@ -173,9 +173,9 @@ const formLabelWidth = '110px'
     padding: 5px;
 }
 
-.optionWidth {
+/* .optionWidth {
     width: 110px;
-}
+} */
 </style>
 <template>
     <div class="nodeBox">

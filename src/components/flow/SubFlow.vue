@@ -21,6 +21,22 @@ import EpPromotion from '~icons/ep/promotion'
 import EpDArrowRight from '~icons/ep/d-arrow-right'
 const { t, tm, rt } = useI18n();
 
+const subflowNames = ref([])
+
+function updateSubFlowNames() {
+    // console.log(subFlows);
+    const names = new Array();
+    for (let i = 0; i < subFlows.value.length; i++) {
+        // console.log(subFlows.value[i].id);
+        names.push({ id: subFlows.value[i].id, name: subFlows.value[i].name });
+    }
+    // console.log(names);
+    return names;
+}
+
+// provide('getSubFlowNames', readonly(subflowNames), updateSubFlowNames)
+provide('subFlowNamesFn', subflowNames, updateSubFlowNames)
+
 register({
     shape: "CollectNode",
     width: 270,
@@ -320,6 +336,7 @@ onMounted(async () => {
 });
 
 function addHandleNode(x, y, item) {
+    // console.log('addHandleNode' + x);
     const node = graph.addNode({
         shape: item.type,
         x: x,
@@ -332,7 +349,7 @@ function addHandleNode(x, y, item) {
 }
 
 function handleDragEnd(e, item) {
-    const point = this.graph.pageToLocal(e.pageX, e.pageY);
+    const point = graph.pageToLocal(e.pageX, e.pageY);
     // addHandleNode(e.pageX - 150, e.pageY - 40, item);
     addHandleNode(point.x, point.y, item);
 }
@@ -340,22 +357,6 @@ function handleDragEnd(e, item) {
 function dragoverDiv(ev) {
     ev.preventDefault();
 }
-
-const subflowNames = ref([])
-
-function updateSubFlowNames() {
-    // console.log(subFlows);
-    const names = new Array();
-    for (let i = 0; i < subFlows.value.length; i++) {
-        // console.log(subFlows.value[i].id);
-        names.push({ id: subFlows.value[i].id, name: subFlows.value[i].name });
-    }
-    // console.log(names);
-    return names;
-}
-
-// provide('getSubFlowNames', readonly(subflowNames), updateSubFlowNames)
-provide('subFlowNamesFn', subflowNames, updateSubFlowNames)
 
 function cacheSubFlows(t) {
     if (t && t.status == 200 && t.data) {

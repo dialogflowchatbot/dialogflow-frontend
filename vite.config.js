@@ -91,11 +91,11 @@ export default ({ command, mode }) => {
           ],
         },
       }),
-      chunkSplitPlugin({
-        customSplitting: {
-          'canvas': [/\/node_modules\/@antv\//]
-        }
-      }),
+      // chunkSplitPlugin({
+      //   customSplitting: {
+      //     'canvas': [/\/node_modules\/@antv\//]
+      //   }
+      // }),
     ],
     define: {
       // 'process.env': env,
@@ -112,7 +112,7 @@ export default ({ command, mode }) => {
           // }
         },
       },
-      minify: 'terser', // <-- add
+      minify: 'esbuild', // <-- add
       terserOptions: {
         compress: {
           drop_console: true,

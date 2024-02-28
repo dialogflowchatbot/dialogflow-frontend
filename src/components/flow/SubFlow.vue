@@ -573,7 +573,7 @@ async function dryrun() {
         const data = r.data;
         const answers = data.answers;
         for (let i = 0; i < answers.length; i++)
-            addChat(answers[i], 'responseText');
+            addChat(answers[i].text, 'responseText');
         userAsk.value = '';
         if (data.nextAction == 'Terminate') {
             addChat(t('lang.flow.guideReset'), 'terminateText');

@@ -10,7 +10,7 @@ const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Z
 const nodeData = reactive({
     ip: '127.0.0.1',
     port: '12715',
-    randomPortWhenConflict: false,
+    selectRandomPortWhenConflict: false,
     maxSessionDurationMin: '30',
     smtpHost: '',
     smtpUsername: '',
@@ -56,7 +56,7 @@ const goBack = () => {
     </el-page-header>
     <p>&nbsp;</p>
     <el-row>
-        <el-col :span="11" :offset="1">
+        <el-col :span="12" :offset="1">
             <el-form :model="nodeData">
                 <el-form-item label="IP addr (v4 or v6)" :label-width="formLabelWidth">
                     <el-input v-model="nodeData.ip" placeholder="" />
@@ -68,7 +68,7 @@ const goBack = () => {
                     <el-input-number v-model="nodeData.port" :min="1024" :max="65530" @change="handleChange" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
-                    <input type="checkbox" id="_randomPortWhenConflict_" v-model="nodeData.randomPortWhenConflict" :checked="nodeData.randomPortWhenConflict" />
+                    <input type="checkbox" id="_randomPortWhenConflict_" v-model="nodeData.selectRandomPortWhenConflict" :checked="nodeData.selectRandomPortWhenConflict" />
                     <label for="_randomPortWhenConflict_">{{ $t('lang.settings.prompt2_2') }}</label>
                 </el-form-item>
                 <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">

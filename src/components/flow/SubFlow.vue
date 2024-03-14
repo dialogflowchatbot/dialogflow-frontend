@@ -1,5 +1,5 @@
 <script setup>
-import { h, ref, onMounted, nextTick, provide, readonly } from "vue";
+import { h, ref, onMounted, onUnmounted, nextTick, provide, readonly } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import CollectNode from './nodes/CollectNode.vue';
 import ConditionNode from './nodes/ConditionNode.vue';
@@ -334,6 +334,13 @@ onMounted(async () => {
     // console.log("onMounted2");
 
 });
+
+onUnmounted(
+    () => {
+        if (graph != null)
+            graph.dispose()
+    }
+);
 
 function addHandleNode(x, y, item) {
     // console.log('addHandleNode' + x);
@@ -737,8 +744,8 @@ async function dryrunClear() {
                                     <EpDArrowRight />
                                 </el-icon>
                             </el-text>
-                            <el-button type="primary" class="ml-2" @click="saveSubFlow" :loading="saveLoading" size="large"
-                                v-show="!isDemo">
+                            <el-button type="primary" class="ml-2" @click="saveSubFlow" :loading="saveLoading"
+                                size="large" v-show="!isDemo">
                                 <el-icon :size="20">
                                     <EpEdit />
                                 </el-icon>{{ $t('lang.flow.save') }}
@@ -839,7 +846,7 @@ async function dryrunClear() {
                         @keypress="(e) => { if (e.keyCode == 13) dryrun(); }" />
                     <el-button-group>
                         <el-button type="primary" :disabled="dryrunDisabled" @click="dryrun">{{ $t('lang.flow.send')
-                        }}</el-button>
+                            }}</el-button>
                         <el-button @click="dryrunClear">{{ $t('lang.flow.reset') }}</el-button>
                     </el-button-group>
                 </div>

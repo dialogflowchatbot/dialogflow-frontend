@@ -35,7 +35,7 @@ node.on("change:data", ({ current }) => {
     nodeSetFormVisible.value = true;
 });
 onMounted(async () => {
-    console.log('emailNode')
+    // console.log('emailNode')
     const data = node.getData();
     // console.log(data);
     copyProperties(data, nodeData);

@@ -55,6 +55,11 @@ const checkUpdate = async () => {
   padding-bottom: 20px;
   border-bottom: #b8b8b8 1px solid;
 }
+
+.tips {
+  text-align: right;
+  margin-right: 30px;
+}
 </style>
 <template>
   <!-- <el-page-header title="Home">
@@ -62,7 +67,28 @@ const checkUpdate = async () => {
       <span class="text-large font-600 mr-3"> Workspace </span>
     </template>
   </el-page-header> -->
-  <span class="header"> Workspace </span>
+  <el-row>
+    <el-col :span="6">
+      <span class="header"> Workspace </span>
+    </el-col>
+    <el-col :span="6">
+      <el-button size="large">
+        <el-icon size="large">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M21 4H7V2H5v20h2v-8h14l-2-5l2-5zm-3.86 5.74l.9 2.26H7V6h11.05l-.9 2.26l-.3.74l.29.74zM14 9c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2z" fill="currentColor"></path></svg>
+        </el-icon>
+      </el-button>
+      <el-button size="large">
+        <el-icon size="large">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M256 504c137 0 248-111 248-248S393 8 256 8S8 119 8 256s111 248 248 248zm0-448c110.5 0 200 89.5 200 200s-89.5 200-200 200S56 366.5 56 256S145.5 56 256 56zm20 328h-40c-6.6 0-12-5.4-12-12V256h-67c-10.7 0-16-12.9-8.5-20.5l99-99c4.7-4.7 12.3-4.7 17 0l99 99c7.6 7.6 2.2 20.5-8.5 20.5h-67v116c0 6.6-5.4 12-12 12z" fill="currentColor"></path></svg>
+        </el-icon>
+      </el-button>
+      <el-button size="large">
+        <el-icon size="large">
+          <EpSetting />
+        </el-icon>
+      </el-button>
+    </el-col>
+  </el-row>
   <el-popover ref="popover" placement="right" title="Changelog" :width="300" trigger="hover">
     <template #reference>
       <el-button v-show="checkUpdateResult == 1" class="m-2" type="warning" text>Found new verion: {{
@@ -181,7 +207,7 @@ const checkUpdate = async () => {
       <EpArrowRightBold />
     </el-icon>
     <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
-    <a href="https://dialogflowchatbot.github.io/#/docs" target="_blank">
+    <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
       {{ $t('lang.guide.nav5') }}
       <el-icon>
         <BiBoxArrowUpRight />

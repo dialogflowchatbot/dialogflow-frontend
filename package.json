@@ -20,7 +20,7 @@
     "@antv/x6-vue-shape": "^2.1.2",
     "element-plus": "^2.6.1",
     "vue": "^3.4.21",
-    "vue-i18n": "^9.9.1",
+    "vue-i18n": "^9.10.2",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

@@ -19,6 +19,10 @@ const nodeData = reactive({
     emailVerificationRegex: '',
 });
 const formLabelWidth = '130px'
+const loading = ref(false)
+const smtpPassed = ref(false)
+const smtpFailed = ref(false)
+const smtpFailedDetail = ref('')
 
 onMounted(async () => {
     const t = await httpReq("GET", 'management/settings', null, null, null)
@@ -42,6 +46,21 @@ async function save() {
         const m = t(r.err.message);
         ElMessage.error(m ? m : r.err.message);
     }
+}
+
+const smtpTest = async () => {
+    loading.value = true
+    const r = await httpReq("POST", 'management/settings/smtp/test', null, null, nodeData)
+    console.log(r);
+    if (r.status == 200) {
+        smtpPassed.value = true
+        smtpFailed.value = false
+    } else {
+        smtpFailedDetail.value = t(r.err.message);
+        smtpPassed.value = false
+        smtpFailed.value = true
+    }
+    loading.value = false
 }
 
 const goBack = () => {
@@ -112,6 +131,13 @@ const goBack = () => {
                 <el-form-item label="" label-width="200px">
                     You can customize the email verification regular expression, or leave it blank and the system will
                     automatically use the general verification rules.
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button :loading="loading" type="info" @click="smtpTest">
+                        Test SMTP settings
+                    </el-button>
+                    <el-alert v-if="smtpPassed" title="SMTP test passed" type="success" />
+                    <el-alert v-if="smtpFailed" :title="smtpFailedDetail" type="error" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

@@ -67,6 +67,7 @@ onMounted(async () => {
     t = await httpReq('GET', 'management/settings', null, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
+        smtpHost.value = t.data.smtpHost
         // console.log(t.data.emailVerificationRegex)
         emailVerificationRegex.value = t.data.emailVerificationRegex
     }

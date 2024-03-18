@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router';
+import { copyProperties, httpReq } from '../assets/tools.js'
 import Demos from "./Demos.vue"
 import EpArrowRightBold from '~icons/ep/arrow-right-bold'
 import BiChatSquareDots from '~icons/bi/chat-square-dots'
@@ -15,6 +16,9 @@ useI18n();
 const router = useRouter();
 const checkUpdateResult = ref(0)
 const fromPage = 'guide';
+const updateLoading = ref(false)
+const newVersion = ref('')
+const changelog  = reactive([])
 const checkUpdate = async () => {
   updateLoading.value = true
   const t = await httpReq('GET', 'check-new-version.json', null, null, null);
@@ -24,7 +28,6 @@ const checkUpdate = async () => {
       newVersion.value = t.data.version;
       changelog.splice(0, changelog.length)
       copyProperties(t.data.changelog, changelog)
-      // changelog.push(t.data.changelog)
       checkUpdateResult.value = 1
     } else {
       checkUpdateResult.value = 2
@@ -34,11 +37,16 @@ const checkUpdate = async () => {
   }
   updateLoading.value = false
 }
+const toSettings = () => {
+  router.push('/settings')
+}
 </script>
 <style scoped>
+.header-row {
+  margin-top: 20px;
+}
 .header {
   margin-left: 20px;
-  margin-top: 20px;
   font-size: 38px;
   font-weight: bold;
 }
@@ -67,22 +75,21 @@ const checkUpdate = async () => {
       <span class="text-large font-600 mr-3"> Workspace </span>
     </template>
   </el-page-header> -->
-  <el-row>
-    <el-col :span="6">
+  <div></div>
+  <el-row class="header-row">
+    <el-col :span="8">
       <span class="header"> Workspace </span>
-    </el-col>
-    <el-col :span="6">
-      <el-button size="large">
+      <!-- <el-button size="large">
         <el-icon size="large">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><path d="M21 4H7V2H5v20h2v-8h14l-2-5l2-5zm-3.86 5.74l.9 2.26H7V6h11.05l-.9 2.26l-.3.74l.29.74zM14 9c0 1.1-.9 2-2 2s-2-.9-2-2s.9-2 2-2s2 .9 2 2z" fill="currentColor"></path></svg>
         </el-icon>
-      </el-button>
-      <el-button size="large">
+      </el-button> -->
+      <el-button size="large" :loading="updateLoading" @click="checkUpdate">
         <el-icon size="large">
           <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M256 504c137 0 248-111 248-248S393 8 256 8S8 119 8 256s111 248 248 248zm0-448c110.5 0 200 89.5 200 200s-89.5 200-200 200S56 366.5 56 256S145.5 56 256 56zm20 328h-40c-6.6 0-12-5.4-12-12V256h-67c-10.7 0-16-12.9-8.5-20.5l99-99c4.7-4.7 12.3-4.7 17 0l99 99c7.6 7.6 2.2 20.5-8.5 20.5h-67v116c0 6.6-5.4 12-12 12z" fill="currentColor"></path></svg>
         </el-icon>
       </el-button>
-      <el-button size="large">
+      <el-button size="large" @click="toSettings">
         <el-icon size="large">
           <EpSetting />
         </el-icon>
@@ -104,10 +111,12 @@ const checkUpdate = async () => {
       <a href="https://github.com/dialogflowchatbot/dialogflow/releases">Go to download</a>
     </template>
   </el-popover>
-  <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
+  <el-alert v-show="checkUpdateResult == 2" title="You're using the latest verion." type="success" @close="checkUpdateResult = 0" />
+  <el-alert v-show="checkUpdateResult == 3" title="Failed to query update information, please try again later." type="danger" @close="checkUpdateResult = 0" />
+  <!-- <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
   <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
     again
-    later.</el-button>
+    later.</el-button> -->
   <p style="margin-left:50px">
   <div class="title">
     <el-icon :size="30">

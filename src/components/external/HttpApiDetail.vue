@@ -216,7 +216,7 @@ const changeTab = (v) => {
                 </template>
               </el-table-column>
             </el-table>
-            <el-button @click="newParam">+Add header</el-button>
+            <el-button type="warning" @click="newParam">+Add header</el-button>
           </el-tab-pane>
           <el-tab-pane label="Query parameters" name="q">
             <el-table :data="httpApiData.queryParams" stripe style="width: 100%">
@@ -233,7 +233,7 @@ const changeTab = (v) => {
                 </template>
               </el-table-column>
             </el-table>
-            <el-button @click="newParam">+Add query parameter</el-button>
+            <el-button type="warning" @click="newParam">+Add query parameter</el-button>
           </el-tab-pane>
           <el-tab-pane label="Request body" name="f" v-if="httpApiData.method == 'POST'">
             Request body type:
@@ -257,11 +257,11 @@ const changeTab = (v) => {
                 </template>
               </el-table-column>
             </el-table>
-            <el-button v-if="httpApiData.postContentType == 'UrlEncoded'" @click="newParam">+Add form data</el-button>
+            <el-button type="warning" v-if="httpApiData.postContentType == 'UrlEncoded'" @click="newParam">+Add form data</el-button>
             <!-- <div style="margin: 20px 0" /> -->
             <el-input ref="requestBodyRef" v-if="httpApiData.postContentType == 'JSON'" v-model="httpApiData.requestBody"
               maxlength="10240" placeholder="JSON" show-word-limit type="textarea" />
-            <el-button v-if="httpApiData.postContentType == 'JSON'" @click="varDialogVisible = true">+Insert a
+            <el-button type="warning" v-if="httpApiData.postContentType == 'JSON'" @click="varDialogVisible = true">+Insert a
               variable</el-button>
           </el-tab-pane>
         </el-tabs>

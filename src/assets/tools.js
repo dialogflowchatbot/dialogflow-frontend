@@ -58,11 +58,16 @@ export function getDefaultBranch() {
             [
                 {
                     conditionType: 'UserInput',
+                    refOptions: [],
                     refChoice: '',
+                    compareOptions: [],
                     compareType: 'Eq',
+                    targetOptions: [],
                     // targetChoice: '',
                     targetValueVariant: 'Const',
                     targetValue: '',
+                    inputVariable: false,
+                    caseSensitiveComparison: true,
                 }
             ]
         ],

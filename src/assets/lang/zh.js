@@ -104,6 +104,7 @@ export default {
         intent: {
             title: '意图管理',
             add: '新增意图',
+            delConfirm: '确认要删除该意图吗?',
             table: ['意图名', '关键词数量', '正则数量', '相似问数量', '操作'],
             form: {
                 title: '新增意图',

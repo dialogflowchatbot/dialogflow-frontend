@@ -35,12 +35,31 @@ async function newIntent() {
 function editIntent(idx, row) {
     router.push({ path: '/intent/detail', query: { id: intentData.value[idx].id, idx: idx, name: row.name } });
 }
-async function deleteVar(idx, row) {
-    const formData = { id: intentData.value[idx].id, data: idx.toString() };
-    const t = await httpReq('DELETE', 'intent', null, null, formData);
-    console.log(t.data);
-    if (t.status == 200)
-        await list();
+async function deleteIntent(idx, row) {
+    ElMessageBox.confirm(
+        t('lang.intent.delConfirm'),
+        'Warning',
+        {
+            confirmButtonText: t('lang.common.del'),
+            cancelButtonText: t('lang.common.cancel'),
+            type: 'warning',
+        }
+    ).then(async () => {
+        const formData = { id: intentData.value[idx].id, data: idx.toString() };
+        const t = await httpReq('DELETE', 'intent', null, null, formData);
+        console.log(t.data);
+        if (t.status == 200)
+            await list();
+        ElMessage({
+            type: 'success',
+            message: t('lang.common.deleted'),
+        })
+    }).catch(() => {
+        // ElMessage({
+        //     type: 'info',
+        //     message: 'Delete canceled',
+        // })
+    })
 }
 </script>
 <template>
@@ -51,7 +70,7 @@ async function deleteVar(idx, row) {
         <template #extra>
             <div class="flex items-center">
                 <el-button type="primary" class="ml-2" @click="dialogFormVisible = true">{{ $t('lang.intent.add')
-                }}</el-button>
+                    }}</el-button>
             </div>
         </template>
     </el-page-header>
@@ -63,9 +82,9 @@ async function deleteVar(idx, row) {
         <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" width="120">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editIntent(scope.$index, scope.row)">{{
-                    $t('lang.common.edit') }}</el-button>
-                <el-button link type="primary" size="small" @click="deleteVar(scope.$index, scope.row)">{{
-                    $t('lang.common.del') }}</el-button>
+        $t('lang.common.edit') }}</el-button>
+                <el-button link type="primary" size="small" @click="deleteIntent(scope.$index, scope.row)">{{
+        $t('lang.common.del') }}</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -83,4 +102,4 @@ async function deleteVar(idx, row) {
                 <el-button @click="dialogFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
             </span>
         </template>
-</el-dialog></template>
+    </el-dialog></template>

@@ -21,6 +21,12 @@ import EpPromotion from '~icons/ep/promotion'
 import EpDArrowRight from '~icons/ep/d-arrow-right'
 const { t, tm, rt } = useI18n();
 
+const route = useRoute();
+const router = useRouter();
+// console.log(router.currentRoute.from)
+const TeleportContainer = getTeleport();
+
+const subFlows = ref([]);
 const subflowNames = ref([])
 
 function updateSubFlowNames() {
@@ -34,8 +40,8 @@ function updateSubFlowNames() {
     return names;
 }
 
-// provide('getSubFlowNames', readonly(subflowNames), updateSubFlowNames)
-provide('subFlowNamesFn', subflowNames, updateSubFlowNames)
+// provide('getSubFlowNames', {readonly(subflowNames), updateSubFlowNames})
+provide('subFlowNamesFn', {subflowNames, updateSubFlowNames})
 
 register({
     shape: "CollectNode",
@@ -223,11 +229,6 @@ register({
     }
 });
 
-
-const route = useRoute();
-const router = useRouter();
-const TeleportContainer = getTeleport();
-
 const nodes = [
     { name: tm('lang.flow.nodes')[0], type: 'DialogNode', desc: tm('lang.flow.nodesDesc')[0], cnt: 1 },
     { name: tm('lang.flow.nodes')[1], type: 'ConditionNode', desc: tm('lang.flow.nodesDesc')[1], cnt: 1 },
@@ -237,7 +238,6 @@ const nodes = [
     { name: 'SendEmailNode', type: 'SendEmailNode', desc: 'Sending an email an many recipients', cnt: 1 },
 ]
 let selectedSubFlowIdx = -1;
-const subFlows = ref([]);
 // let offsetLeft = 0;
 // let offsetTop = 0;
 let graph = null;
@@ -508,7 +508,10 @@ function subFlowId(idx) {
 }
 
 function goBack() {
-    router.push('/mainflows');
+    if (isDemo)
+        router.push('/guide');
+    else
+        router.push('/mainflows');
 }
 
 async function release() {

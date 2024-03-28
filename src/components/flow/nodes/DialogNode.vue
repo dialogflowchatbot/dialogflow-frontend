@@ -211,6 +211,7 @@ export default defineComponent({
         setPortPos() {
             const node = this.getNode();
             const port = node.getPortAt(0);
+            // console.log(this.$refs)
             const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
             // console.log(heightOffset);
             node.setPortProp(port.id, ['args', 'y'], heightOffset);

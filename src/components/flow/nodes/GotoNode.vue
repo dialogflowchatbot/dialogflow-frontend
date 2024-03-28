@@ -4,7 +4,7 @@ export default {
 };
 </script> -->
 <script setup>
-import { inject, reactive, ref, onMounted } from 'vue';
+import { inject, reactive, ref, onMounted, nextTick } from 'vue';
 import { copyProperties, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 import EpWarning from '~icons/ep/warning'

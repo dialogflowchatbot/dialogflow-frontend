@@ -57,7 +57,7 @@ export function getDefaultBranch() {
         conditionGroup: [
             [
                 {
-                    conditionType: 'UserInput',
+                    conditionType: '',
                     refOptions: [],
                     refChoice: '',
                     compareOptions: [],
@@ -72,6 +72,52 @@ export function getDefaultBranch() {
             ]
         ],
         editable: true,
+    };
+}
+
+function constructBranchInvalidMessage(idx, m, gIdx, cIdx, cM) {
+    let errMsg;
+    if (cM)
+        errMsg = 'No. ' + (idx + 1) + ' branch, condition: ' + (gIdx + 1) + '-' + (cIdx + 1) + ' ' + cM;
+    else
+        errMsg = 'No. ' + (idx + 1) + ' branch, ' + m;
+    const ret = {
+        r: false,
+        m: errMsg,
+    };
+    return ret;
+}
+
+export function checkConditionBranches(branches) {
+    for (let bIdx = 0; bIdx < branches.length; bIdx++) {
+        const b = branches[bIdx];
+        if (b.branchType === 'GotoAnotherNode')
+            continue;
+        if (!b.branchId)
+            return constructBranchInvalidMessage(bIdx, 'branchId is missing', 0, null);
+        if (!b.branchName)
+            return constructBranchInvalidMessage(bIdx, 'branchName is missing');
+        if (!b.conditionGroup || !Array.isArray(b.conditionGroup) || b.conditionGroup.length < 1)
+            return constructBranchInvalidMessage(bIdx, 'conditions is missing', 0, null);
+        if (!Array.isArray(b.conditionGroup[0]) || b.conditionGroup[0].length < 1)
+            return constructBranchInvalidMessage(bIdx, 'conditions is missing', 0, null);
+        for (let gIdx = 0; gIdx < b.conditionGroup.length; gIdx++) {
+            for (let cIdx = 0; cIdx < b.conditionGroup[gIdx].length; cIdx++) {
+                const c = b.conditionGroup[gIdx][cIdx];
+                if (!c.conditionType)
+                    return constructBranchInvalidMessage(bIdx, null, gIdx, cIdx, 'conditionType is missing');
+                if (!c.compareType)
+                    return constructBranchInvalidMessage(bIdx, null, gIdx, cIdx, 'compareType is missing');
+                if (c.compareType !== 'Timeout') {
+                    if (!c.targetValue || c.targetValue.trim() === '') {
+                        return constructBranchInvalidMessage(bIdx, null, gIdx, cIdx, 'targetValue is missing');
+                    }
+                }
+            }
+        }
+    }
+    return {
+        r: true,
     };
 }
 

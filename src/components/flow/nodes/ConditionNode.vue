@@ -1,5 +1,5 @@
 <script setup>
-import { cloneObj, copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
+import { checkConditionBranches, cloneObj, copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { inject, reactive, ref, onMounted } from 'vue';
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
@@ -29,6 +29,7 @@ const defaultCondition = getDefaultBranch().conditionGroup[0][0];
 const fallbackBranch = getDefaultBranch();
 fallbackBranch.branchName = t('lang.common.else');
 fallbackBranch.branchType = 'GotoAnotherNode';
+fallbackBranch.conditionGroup[0][0].conditionType = 'UserInput';
 fallbackBranch.editable = false;
 // const defaultCondition = {
 //     conditionType: '',
@@ -166,6 +167,10 @@ function validate() {
         m.push(errors18[2]);
     if (d.branches.length == 0)
         m.push(errors18[3]);
+    const ret = checkConditionBranches(d.branches);
+    console.log(ret)
+    if (!ret.r)
+        m.push(ret.m);
     d.valid = m.length == 0;
 }
 function addNewBranch() {
@@ -189,13 +194,18 @@ function saveBranch() {
     }
     if (editConditionIndex == -1)
         nodeData.branches.unshift(cloneObj(branch));
+    else {
+        nodeData.branches[editConditionIndex].branchName = branch.branchName;
+        console.log(branch.conditionGroup);
+        nodeData.branches[editConditionIndex].conditionGroup = cloneObj(branch.conditionGroup);
+    }
     hideBranchForm();
 }
 function editBranch(i) {
     // branch = cloneObj(nodeData.branches[i]);
     // branch = nodeData.branches[i];
     branch.branchName = nodeData.branches[i].branchName;
-    branch.conditionGroup = nodeData.branches[i].conditionGroup;
+    branch.conditionGroup = cloneObj(nodeData.branches[i].conditionGroup);
     editConditionIndex = i;
     branchSetFormVisible.value = true;
 }
@@ -333,6 +343,9 @@ function addConditionGroup() {
     branch.conditionGroup.push(...cloneObj(defaultConditionGroup));
     // console.log(branch);
 }
+function removeConditionGroup(groupIdx) {
+    branch.conditionGroup.splice(groupIdx, 1);
+}
 </script>
 <style scoped>
 .nodeBox {
@@ -418,14 +431,18 @@ function addConditionGroup() {
                                 </el-icon>
                                 <!-- {{ t('lang.conditionNode.andCond') }} -->
                             </el-button>
-                            <el-button type="danger" v-show="g.length > 1" @click="g.splice(index, 1);">
+                            <el-button type="danger" v-show="g.length > 1" @click="g.splice(index, 1); console.log(g)">
                                 <el-icon>
                                     <EpMinus />
                                 </el-icon>
                             </el-button>
                         </el-button-group>
+                        <el-divider border-style="dashed" />
                     </div>
                     <el-divider />
+                    <el-button type="danger" v-show="branch.conditionGroup.length > 1" @click="removeConditionGroup(groupIndex)">
+                        X
+                    </el-button>
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="addConditionGroup()">

@@ -189,10 +189,10 @@ export default {
             nav3: 'Variables management',
             desc3: 'Variables are used to store user input, or external data from HTTP, which is used in the answer of the dialog flow, conditional judgment.',
             title4: 'System settings',
-            nav4: 'Modify Configuration',
+            nav4: 'Modify Configurations',
             desc4: 'Modify the listening port, session length, etc.',
             title5: 'Operation manual and integration documentation',
-            nav5: 'View document',
+            nav5: 'View documents',
             desc5: 'Understand how to quickly build a dialog flow through the canvas. Learn how to connect to the answering interface through code',
         },
     }

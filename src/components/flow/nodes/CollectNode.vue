@@ -103,7 +103,8 @@ function saveForm() {
         const branch = getDefaultBranch();
         branch.branchName = ports[i].attrs.text.text;
         branch.branchId = ports[i].id;
-        branch.branchType = i == 0 ? 'CollectSuccessful' : 'GotoAnotherNode';
+        branch.branchType = i == 0 ? 'InfoCollectedSuccessfully' : 'GotoAnotherNode';
+        // branch.conditionGroup[0][0].conditionType = 'UserInput';
         nodeData.branches.push(branch);
     }
     validate();

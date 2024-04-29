@@ -57,7 +57,7 @@ export function getDefaultBranch() {
         conditionGroup: [
             [
                 {
-                    conditionType: '',
+                    conditionType: 'UserInput',
                     refOptions: [],
                     refChoice: '',
                     compareOptions: [],
@@ -91,12 +91,12 @@ function constructBranchInvalidMessage(idx, m, gIdx, cIdx, cM) {
 export function checkConditionBranches(branches) {
     for (let bIdx = 0; bIdx < branches.length; bIdx++) {
         const b = branches[bIdx];
-        if (b.branchType === 'GotoAnotherNode')
-            continue;
         if (!b.branchId)
             return constructBranchInvalidMessage(bIdx, 'branchId is missing', 0, null);
         if (!b.branchName)
             return constructBranchInvalidMessage(bIdx, 'branchName is missing');
+        if (b.branchType === 'GotoAnotherNode')
+            continue;
         if (!b.conditionGroup || !Array.isArray(b.conditionGroup) || b.conditionGroup.length < 1)
             return constructBranchInvalidMessage(bIdx, 'conditions is missing', 0, null);
         if (!Array.isArray(b.conditionGroup[0]) || b.conditionGroup[0].length < 1)

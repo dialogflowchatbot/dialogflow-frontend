@@ -13,6 +13,8 @@ const nodeSetFormVisible = ref(false);
 const branchSetFormVisible = ref(false);
 const formLabelWidth = '85px';
 const defaultCondition = getDefaultBranch().conditionGroup[0][0];
+defaultCondition.conditionType = '';
+// defaultCondition.compareType = '';
 // function resetDefaultCondition(c) {
 //     c.refOptions = [];
 //     c.compareOptions = [];
@@ -29,7 +31,6 @@ const defaultCondition = getDefaultBranch().conditionGroup[0][0];
 const fallbackBranch = getDefaultBranch();
 fallbackBranch.branchName = t('lang.common.else');
 fallbackBranch.branchType = 'GotoAnotherNode';
-fallbackBranch.conditionGroup[0][0].conditionType = 'UserInput';
 fallbackBranch.editable = false;
 // const defaultCondition = {
 //     conditionType: '',
@@ -210,8 +211,23 @@ function editBranch(i) {
     branchSetFormVisible.value = true;
 }
 function removeBranch(i) {
-    nodeData.branches.splice(i, 1);
-    hideBranchForm();
+    ElMessageBox.confirm(
+        'Do you delete this branch?',
+        'Warning',
+        {
+            confirmButtonText: t('lang.common.del'),
+            cancelButtonText: t('lang.common.cancel'),
+            type: 'warning',
+        }
+    ).then(() => {
+        nodeData.branches.splice(i, 1);
+        hideBranchForm();
+    }).catch(() => {
+        // ElMessage({
+        //     type: 'info',
+        //     message: 'Delete canceled',
+        // })
+    })
 }
 function hideForm() {
     // const { nodeSetFormVisible } = .getNode().getData();
@@ -300,9 +316,9 @@ function showOptions(v, groupIndex, conditionIdx) {
         condition.refOptions = [];
     // compareOptions.splice(0, compareOptions.length);
     condition.compareOptions = compareOptionsSet[v];
-    if (condition.compareOptions.length == 1)
-        condition.compareType = condition.compareOptions[0].value;
-    // console.log(compareOptions);
+    condition.compareType = '';
+    // if (condition.compareOptions.length == 1)
+    //     condition.compareType = condition.compareOptions[0].value;
     const targetOptions = targetOptionsSet[v];
     console.log(targetOptions);
     if (targetOptions)
@@ -440,7 +456,8 @@ function removeConditionGroup(groupIdx) {
                         <el-divider border-style="dashed" />
                     </div>
                     <el-divider />
-                    <el-button type="danger" v-show="branch.conditionGroup.length > 1" @click="removeConditionGroup(groupIndex)">
+                    <el-button type="danger" v-show="branch.conditionGroup.length > 1"
+                        @click="removeConditionGroup(groupIndex)">
                         X
                     </el-button>
                 </el-form-item>

@@ -64,7 +64,7 @@ export default {
         },
         conditionNode: {
             types: ['User intent', 'User input', 'Variable'],
-            compares: ['Equals', 'NotEquals', 'Contains', 'User input timeout'],
+            compares: ['Equals', 'NotEquals', 'Contains', 'Timeout'],
             nodeName: 'Condition node',
             errors: ['Condition name not filled in', 'Duplicate condition name', 'Node name not filled in', 'Branches were missing'],
             newBranch: 'Add a new branch',

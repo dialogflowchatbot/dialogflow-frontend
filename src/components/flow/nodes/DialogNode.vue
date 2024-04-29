@@ -105,7 +105,10 @@ export default defineComponent({
         // console.log(node.getData().dialogText);
         if (this.nodeData.newNode) {
             this.nodeData.nodeName += data.nodeCnt.toString();
-            this.nodeData.branches.push(getDefaultBranch());
+            const b = getDefaultBranch();
+            b.branchType = 'GotoAnotherNode';
+            // b.conditionGroup[0][0].conditionType = 'UserInput';
+            this.nodeData.branches.push(b);
             const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
             const x = this.$refs.nodeName.offsetWidth - 15;
             this.getNode().addPort({

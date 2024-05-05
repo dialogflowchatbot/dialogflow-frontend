@@ -439,7 +439,7 @@ function removeConditionGroup(groupIdx) {
                         <el-input v-model="c.targetValue" class="optionWidth"
                             v-show="c.inputVariable && c.targetValueVariant == 'Const'" />
                         <el-checkbox v-show="c.showCaseSensitiveCheckBox" v-model="c.caseSensitiveComparison"
-                            label="Case-sensitive" />
+                            label="CaseSensitive" />
                         <el-button-group>
                             <el-button type="primary" @click="addContidion(g)">
                                 <el-icon>

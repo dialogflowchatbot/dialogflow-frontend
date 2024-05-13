@@ -61,6 +61,20 @@ async function deleteIntent(idx, row) {
         // })
     })
 }
+
+const testIntentDetectionText = ref('')
+const intentDetectResult = ref('')
+async function detectIntent() {
+    const formData = { id: '', data: testIntentDetectionText.value };
+    const t = await httpReq('POST', 'intent/detect', null, null, formData);
+    console.log(t.data);
+    if (t.status == 200) {
+        if (t.data == null)
+            intentDetectResult.value = 'No intention detected.';
+        else
+            intentDetectResult.value = 'The detected intention is: ' + t.data;
+    }
+}
 </script>
 <template>
     <el-page-header :title="t('lang.common.back')" @back="goBack">
@@ -82,12 +96,16 @@ async function deleteIntent(idx, row) {
         <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" width="120">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editIntent(scope.$index, scope.row)">{{
-        $t('lang.common.edit') }}</el-button>
+                    $t('lang.common.edit') }}</el-button>
                 <el-button link type="primary" size="small" @click="deleteIntent(scope.$index, scope.row)">{{
-        $t('lang.common.del') }}</el-button>
+                    $t('lang.common.del') }}</el-button>
             </template>
         </el-table-column>
     </el-table>
+    <el-divider />
+    <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts" />
+    <el-button type="primary" @click="detectIntent">Test intent detection</el-button>
+    <div>{{ intentDetectResult }}</div>
     <el-dialog v-model="dialogFormVisible" :title="t('lang.intent.form.title')">
         <el-form :model="form">
             <el-form-item :label="t('lang.intent.form.name')" :label-width="formLabelWidth">
@@ -102,4 +120,5 @@ async function deleteIntent(idx, row) {
                 <el-button @click="dialogFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
             </span>
         </template>
-    </el-dialog></template>
+    </el-dialog>
+</template>

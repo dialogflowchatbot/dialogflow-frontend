@@ -6,6 +6,11 @@ import { copyProperties, httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
 const router = useRouter();
+
+const goBack = () => {
+    router.push('/guide')
+}
+
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const settings = reactive({
     ip: '127.0.0.1',
@@ -72,16 +77,12 @@ const smtpTest = async () => {
     loading.value = false
 }
 
-const goBack = () => {
-    router.push('/guide')
-}
-
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
 const embeddingProviders = [
     {
         id: 'HuggingFace',
         name: 'HuggingFace',
-        apiURL: 'Model will be downloaded locally at ./data/models',
+        apiUrl: 'Model will be downloaded locally at ./data/models',
         apiUrlDisabled: true,
         showApiKeyInput: false,
         models: ['BAAI/bge-base-en-v1.5', 'BAAI/bge-small-en-v1.5', 'BAAI/bge-large-en-v1.5', 'BAAI/bge-m3', 'BAAI/bge-small-zh-v1.5', 'sentence-transformers/all-MiniLM-L6-v2', 'sentence-transformers/paraphrase-MiniLM-L12-v2', 'sentence-transformers/paraphrase-multilingual-mpnet-base-v2', 'nomic-ai/nomic-embed-text-v1', 'nomic-ai/nomic-embed-text-v1.5', 'intfloat/multilingual-e5-small', 'intfloat/multilingual-e5-base', 'intfloat/multilingual-e5-large', 'mixedbread-ai/mxbai-embed-large-v1']
@@ -89,7 +90,7 @@ const embeddingProviders = [
     {
         id: 'OpenAI',
         name: 'OpenAI',
-        apiURL: 'https://api.openai.com/v1/embeddings',
+        apiUrl: 'https://api.openai.com/v1/embeddings',
         apiUrlDisabled: true,
         showApiKeyInput: true,
         models: ['text-embedding-3-small', 'text-embedding-3-large', 'text-embedding-ada-002']
@@ -97,29 +98,31 @@ const embeddingProviders = [
     {
         id: 'Ollama',
         name: 'Ollama',
-        apiURL: 'http://localhost:11434/api/embeddings',
+        apiUrl: 'http://localhost:11434/api/embeddings',
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: ['llama3', 'phi3', 'mistral', 'gemma', 'llama2', 'qwen', 'mixtral', 'tinyllama', 'yi', 'all-minilm', 'llama2-chinese'],
         model: '',
     },
-    // {
-    //     id: 'MistralAI',
-    //     name: 'Mistral AI',
-    //     apiURL: 'https://api.mistral.ai',
-    //     apiUrlDisabled: true,
-    //     showApiKeyInput: true,
-    //     models: ['']
-    // },
 ]
 const modelOptions = reactive([])
+const dynamicReqUrlMap = new Map();
+const choosedEmbeddingProvider = ref('')
 const changeEmbeddingProvider = (n) => {
+    if (choosedEmbeddingProvider.value)
+        dynamicReqUrlMap.set(choosedEmbeddingProvider.value, settings.embeddingProvider.apiUrl);
     for (let i = 0; i < embeddingProviders.length; i++) {
         if (embeddingProviders[i].id == n) {
-            if (!settings.embeddingProvider.apiUrl || embeddingProviders[i].apiUrlDisabled)
-                settings.embeddingProvider.apiUrl = embeddingProviders[i].apiURL;
+            if (embeddingProviders[i].apiUrlDisabled)
+                settings.embeddingProvider.apiUrl = embeddingProviders[i].apiUrl;
+            else {
+                settings.embeddingProvider.apiUrl = dynamicReqUrlMap.get(settings.embeddingProvider.provider);
+                if (!settings.embeddingProvider.apiUrl)
+                    settings.embeddingProvider.apiUrl = embeddingProviders[i].apiUrl;
+            }
             settings.embeddingProvider.apiUrlDisabled = embeddingProviders[i].apiUrlDisabled;
             settings.embeddingProvider.showApiKeyInput = embeddingProviders[i].showApiKeyInput;
+            choosedEmbeddingProvider.value = n;
             modelOptions.splice(0, modelOptions.length, ...embeddingProviders[i].models)
             // console.log(modelOptions.length)
             break;

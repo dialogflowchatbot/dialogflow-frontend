@@ -85,7 +85,21 @@ const embeddingProviders = [
         apiUrl: 'Model will be downloaded locally at ./data/models',
         apiUrlDisabled: true,
         showApiKeyInput: false,
-        models: ['BAAI/bge-base-en-v1.5', 'BAAI/bge-small-en-v1.5', 'BAAI/bge-large-en-v1.5', 'BAAI/bge-m3', 'BAAI/bge-small-zh-v1.5', 'sentence-transformers/all-MiniLM-L6-v2', 'sentence-transformers/paraphrase-MiniLM-L12-v2', 'sentence-transformers/paraphrase-multilingual-mpnet-base-v2', 'nomic-ai/nomic-embed-text-v1', 'nomic-ai/nomic-embed-text-v1.5', 'intfloat/multilingual-e5-small', 'intfloat/multilingual-e5-base', 'intfloat/multilingual-e5-large', 'mixedbread-ai/mxbai-embed-large-v1']
+        models: [
+            { name: 'sentence-transformers/all-MiniLM-L6-v2', size: '91MB', 'value': 'AllMiniLML6V2', dimenssions: 384 },
+            // {name:'sentence-transformers/paraphrase-MiniLM-L12-v2', size:''},
+            // {name:'sentence-transformers/paraphrase-multilingual-mpnet-base-v2', size:''},
+            { name: 'BAAI/bge-small-en-v1.5', size: '135MB' },
+            { name: 'BAAI/bge-base-en-v1.5', size: '439MB' },
+            { name: 'BAAI/bge-large-en-v1.5', size: '1.35GB' },
+            { name: 'BAAI/bge-m3', size: '2.27GB' },
+            // {name:'nomic-ai/nomic-embed-text-v1', size:'548MB'},
+            { name: 'nomic-ai/nomic-embed-text-v1.5', size: '550MB' },
+            { name: 'intfloat/multilingual-e5-small', size: '472MB' },
+            { name: 'intfloat/multilingual-e5-base', size: '1.11GB' },
+            { name: 'intfloat/multilingual-e5-large', size: '2.24GB' },
+            { name: 'mixedbread-ai/mxbai-embed-large-v1', size: '1.34GB' },
+        ]
     },
     {
         id: 'OpenAI',
@@ -93,7 +107,10 @@ const embeddingProviders = [
         apiUrl: 'https://api.openai.com/v1/embeddings',
         apiUrlDisabled: true,
         showApiKeyInput: true,
-        models: ['text-embedding-3-small', 'text-embedding-3-large', 'text-embedding-ada-002']
+        models: [
+            { name: 'text-embedding-3-small' },
+            { name: 'text-embedding-3-large' },
+            { name: 'text-embedding-ada-002' }]
     },
     {
         id: 'Ollama',
@@ -101,7 +118,19 @@ const embeddingProviders = [
         apiUrl: 'http://localhost:11434/api/embeddings',
         apiUrlDisabled: false,
         showApiKeyInput: false,
-        models: ['llama3', 'phi3', 'mistral', 'gemma', 'llama2', 'qwen', 'mixtral', 'tinyllama', 'yi', 'all-minilm', 'llama2-chinese'],
+        models: [
+            { name: 'llama3' },
+            { name: 'phi3' },
+            { name: 'mistral' },
+            { name: 'gemma' },
+            { name: 'llama2' },
+            { name: 'qwen' },
+            { name: 'mixtral' },
+            { name: 'tinyllama' },
+            { name: 'yi' },
+            { name: 'all-minilm' },
+            { name: 'llama2-chinese' }
+        ],
         model: '',
     },
 ]
@@ -191,7 +220,8 @@ const changeEmbeddingProvider = (n) => {
                 </el-form-item>
                 <el-form-item label="Model">
                     <el-select v-model="settings.embeddingProvider.model" placeholder="Choose a model">
-                        <el-option v-for="item in modelOptions" :id="item" :key="item" :label="item" :value="item" />
+                        <el-option v-for="item in modelOptions" :id="item.name" :key="item.name" :label="item.name"
+                            :value="item.name" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">

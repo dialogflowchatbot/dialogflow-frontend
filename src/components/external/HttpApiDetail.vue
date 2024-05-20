@@ -20,7 +20,7 @@ const httpApiData = reactive({
   protocol: 'http://',
   method: 'GET',
   address: '',
-  timedoutMilliseconds: '1500',
+  timeoutMilliseconds: '1500',
   postContentType: 'UrlEncoded',
   headers: [],
   queryParams: [],
@@ -197,7 +197,7 @@ const changeTab = (v) => {
     <el-text tag="b" size="large">Advanced</el-text>
     <el-form :model="httpApiData" label-width="90px">
       <el-form-item label="Timed out">
-        <el-input-number v-model="httpApiData.timedoutMilliseconds" :min="200" :max="600000" /> milliseconds
+        <el-input-number v-model="httpApiData.timeoutMilliseconds" :min="200" :max="600000" /> milliseconds
       </el-form-item>
       <el-form-item label="Parameters">
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">

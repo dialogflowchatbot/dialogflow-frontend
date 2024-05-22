@@ -23,12 +23,14 @@ const settings = reactive({
     smtpTimeoutSec: 60,
     emailVerificationRegex: '',
     embeddingProvider: {
-        provider: '',
+        provider: {
+            id: '',
+            model: '',
+        },
         apiUrl: '',
         apiUrlDisabled: false,
         showApiKeyInput: true,
         apiKey: '',
-        model: '',
     },
 });
 const formLabelWidth = '130px'
@@ -36,6 +38,8 @@ const loading = ref(false)
 const smtpPassed = ref(false)
 const smtpFailed = ref(false)
 const smtpFailedDetail = ref('')
+const showHfIncorrectModelTip = ref(false)
+const showHfModelDownloadProgress = ref(false)
 
 onMounted(async () => {
     const t = await httpReq("GET", 'management/settings', null, null, null)
@@ -45,20 +49,44 @@ onMounted(async () => {
         // const d = t.data;
         // settings.port = d.port;
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
-        changeEmbeddingProvider(settings.embeddingProvider.provider);
+        changeEmbeddingProvider(settings.embeddingProvider.provider.id);
     }
 })
 
 async function save() {
     if (!settings.emailVerificationRegex)
         settings.emailVerificationRegex = defaultEmailVerificationRegex;
-    const r = await httpReq("POST", 'management/settings', null, null, settings)
+    let r = await httpReq("POST", 'management/settings', null, null, settings)
     console.log(r);
     if (r.status == 200) {
-        ElMessage({ type: 'success', message: t('lang.common.saved'), })
+        ElMessage({ type: 'success', message: t('lang.common.saved'), });
+        if (settings.embeddingProvider.provider.id == 'HuggingFace') {
+            r = await httpReq("GET", 'management/settings/model/check', null, null, null);
+            console.log(r);
+            if (r && r.status != 200)
+                showHfIncorrectModelTip.value = true;
+            // ElMessage.error(r.err.message);
+        }
     } else {
         const m = t(r.err.message);
         ElMessage.error(m ? m : r.err.message);
+    }
+}
+
+async function downloadModels() {
+    showHfModelDownloadProgress.value = true;
+    await showDownloadProgress();
+    const r = await httpReq("GET", 'management/settings/model/download', null, null, null);
+    console.log(r);
+}
+
+async function showDownloadProgress() {
+    const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
+    console.log(r);
+    if (r != null && r.data != null) {
+        setTimeout(async () => {
+            await showDownloadProgress();
+        }, 1000);
     }
 }
 
@@ -119,19 +147,19 @@ const embeddingProviders = [
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: [
-            { label: 'llama3' },
-            { label: 'phi3' },
-            { label: 'mistral' },
-            { label: 'gemma' },
-            { label: 'llama2' },
-            { label: 'qwen' },
-            { label: 'mixtral' },
-            { label: 'tinyllama' },
-            { label: 'yi' },
-            { label: 'all-minilm' },
-            { label: 'llama2-chinese' }
+            { label: 'Meta Llama 3', value: 'llama3' },
+            { label: 'Phi-3', value: 'phi3' },
+            { label: 'WizardLM-2', value: 'wizardlm2' },
+            { label: 'Mistral', value: 'mistral' },
+            { label: 'Gemma', value: 'gemma' },
+            { label: 'Mixtral', value: 'mixtral' },
+            { label: 'Llama 2', value: 'llama2' },
+            { label: 'Qwen', value: 'qwen' },
+            { label: 'TinyLlama', value: 'tinyllama' },
+            { label: 'Yi 1.5', value: 'yi' },
+            { label: 'All Mini LM', value: 'all-minilm' },
+            { label: 'Llama 2 Chinese', value: 'llama2-chinese' }
         ],
-        model: '',
     },
 ]
 const modelOptions = reactive([])
@@ -145,7 +173,7 @@ const changeEmbeddingProvider = (n) => {
             if (embeddingProviders[i].apiUrlDisabled)
                 settings.embeddingProvider.apiUrl = embeddingProviders[i].apiUrl;
             else {
-                settings.embeddingProvider.apiUrl = dynamicReqUrlMap.get(settings.embeddingProvider.provider);
+                settings.embeddingProvider.apiUrl = dynamicReqUrlMap.get(settings.embeddingProvider.provider.id);
                 if (!settings.embeddingProvider.apiUrl)
                     settings.embeddingProvider.apiUrl = embeddingProviders[i].apiUrl;
             }
@@ -205,10 +233,10 @@ const changeEmbeddingProvider = (n) => {
         <el-col :span="11" :offset="1">
             <el-form :model="settings.embeddingProvider" :label-width="formLabelWidth" style="max-width: 600px">
                 <el-form-item label="Provider">
-                    <el-radio-group v-model="settings.embeddingProvider.provider" size="large"
+                    <el-radio-group v-model="settings.embeddingProvider.provider.id" size="large"
                         @change="changeEmbeddingProvider">
                         <el-radio-button v-for="item in embeddingProviders" :id="item.id" :key="item.id"
-                            :label="item.name" :value="item.id" />
+                            :label="item.id" :value="item.id" />
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="Request address">
@@ -219,10 +247,19 @@ const changeEmbeddingProvider = (n) => {
                     <el-input v-model="settings.embeddingProvider.apiKey" />
                 </el-form-item>
                 <el-form-item label="Model">
-                    <el-select v-model="settings.embeddingProvider.model" placeholder="Choose a model">
-                        <el-option v-for="item in modelOptions" :id="item.name" :key="item.name" :label="item.name"
-                            :value="item.name" />
+                    <el-select v-model="settings.embeddingProvider.provider.model" placeholder="Choose a model">
+                        <el-option v-for="item in modelOptions" :id="item.value" :key="item.value" :label="item.label"
+                            :value="item.value" />
                     </el-select>
+                </el-form-item>
+                <el-form-item label="" v-show="showHfIncorrectModelTip">
+                    HuggingFace model files were incorrect or missing, please <el-button type="primary" text
+                        @click="downloadModels">
+                        click here to download model files again
+                    </el-button>.
+                </el-form-item>
+                <el-form-item label="" v-show="showHfModelDownloadProgress">
+                    Downloading: {}, {}%
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

@@ -73,14 +73,15 @@ async function save() {
                         let l = modelOptions[i].label;
                         const p = l.lastIndexOf(' ');
                         if (p > -1)
-                            l = l.substring(0, p - 1);
+                            l = l.substring(0, p);
                         modelRepository.value = l;
                         break;
                     }
                 }
                 showHfIncorrectModelTip.value = true;
                 // ElMessage.error(r.err.message);
-            }
+            } else
+                showHfIncorrectModelTip.value = false;
         }
     } else {
         const m = t(r.err.message);
@@ -146,19 +147,18 @@ const embeddingProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: false,
         models: [
-            { label: 'sentence-transformers/all-MiniLM-L6-v2 (91MB)', 'value': 'AllMiniLML6V2', dimenssions: 384 },
-            // {label:'sentence-transformers/paraphrase-MiniLM-L12-v2', size:''},
-            // {label:'sentence-transformers/paraphrase-multilingual-mpnet-base-v2', size:''},
-            { label: 'BAAI/bge-small-en-v1.5 (135MB)', value: '' },
-            { label: 'BAAI/bge-base-en-v1.5 (439MB)', value: '' },
-            { label: 'BAAI/bge-large-en-v1.5 (1.35GB)', value: '' },
-            { label: 'BAAI/bge-m3 (2.27GB)', value: '' },
-            // {label:'nomic-ai/nomic-embed-text-v1', size:'548MB'},
-            { label: 'nomic-ai/nomic-embed-text-v1.5 (550MB)', value: '' },
-            { label: 'intfloat/multilingual-e5-small (472MB)', value: '' },
-            { label: 'intfloat/multilingual-e5-base (1.11GB)', value: '' },
-            { label: 'intfloat/multilingual-e5-large (2.24GB)', value: '' },
-            { label: 'mixedbread-ai/mxbai-embed-large-v1 (1.34GB)', value: '' },
+            { label: 'sentence-transformers/all-MiniLM-L6-v2 (91MB)', value: 'AllMiniLML6V2', dimenssions: 384 },
+            { label: 'sentence-transformers/paraphrase-MiniLM-L12-v2 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
+            { label: 'sentence-transformers/paraphrase-multilingual-mpnet-base-v2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
+            { label: 'BAAI/bge-small-en-v1.5 (135MB)', value: 'BgeSmallEnV1_5' },
+            { label: 'BAAI/bge-base-en-v1.5 (439MB)', value: 'BgeBaseEnV1_5' },
+            { label: 'BAAI/bge-large-en-v1.5 (1.35GB)', value: 'BgeLargeEnV1_5' },
+            { label: 'BAAI/bge-m3 (2.27GB)', value: 'BgeM3' },
+            { label: 'nomic-ai/nomic-embed-text-v1.5 (550MB)', value: 'NomicEmbedTextV1_5' },
+            { label: 'intfloat/multilingual-e5-small (472MB)', value: 'MultilingualE5Small' },
+            { label: 'intfloat/multilingual-e5-base (1.11GB)', value: 'MultilingualE5Base' },
+            { label: 'intfloat/multilingual-e5-large (2.24GB)', value: 'MultilingualE5Large' },
+            { label: 'mixedbread-ai/mxbai-embed-large-v1 (1.34GB)', value: 'MxbaiEmbedLargeV1' },
         ]
     },
     {

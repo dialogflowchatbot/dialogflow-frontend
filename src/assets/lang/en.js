@@ -115,8 +115,8 @@ export default {
                 addKw: 'Add keyword',
                 re: 'Regular expressions',
                 addRe: 'Add regex',
-                sp: 'Similar phrases',
-                addSp: 'Add phrase'
+                sp: 'Similar sentences',
+                addSp: 'Add sentence'
             },
         },
         settings: {

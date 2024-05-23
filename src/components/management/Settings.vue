@@ -40,6 +40,9 @@ const smtpFailed = ref(false)
 const smtpFailedDetail = ref('')
 const showHfIncorrectModelTip = ref(false)
 const showHfModelDownloadProgress = ref(false)
+const modelRepository = ref('')
+const downloadingUrl = ref('')
+const downloadingProgress = ref('')
 
 onMounted(async () => {
     const t = await httpReq("GET", 'management/settings', null, null, null)
@@ -63,9 +66,21 @@ async function save() {
         if (settings.embeddingProvider.provider.id == 'HuggingFace') {
             r = await httpReq("GET", 'management/settings/model/check', null, null, null);
             console.log(r);
-            if (r && r.status != 200)
+            if (r && r.status != 200) {
+                for (let i = 0; i < modelOptions.length; i++) {
+                    console.log(modelOptions[i].value)
+                    if (modelOptions[i].value == settings.embeddingProvider.provider.model) {
+                        let l = modelOptions[i].label;
+                        const p = l.lastIndexOf(' ');
+                        if (p > -1)
+                            l = l.substring(0, p - 1);
+                        modelRepository.value = l;
+                        break;
+                    }
+                }
                 showHfIncorrectModelTip.value = true;
-            // ElMessage.error(r.err.message);
+                // ElMessage.error(r.err.message);
+            }
         }
     } else {
         const m = t(r.err.message);
@@ -73,20 +88,37 @@ async function save() {
     }
 }
 
+let timeoutID = null;
+
 async function downloadModels() {
+    httpReq("GET", 'management/settings/model/download', null, null, null).then((r) => {
+        console.log(r);
+        if (r.status != 200) {
+            ElMessage.error('Download failed: ' + r.err.message);
+            clearTimeout(timeoutID);
+        }
+        showHfModelDownloadProgress.value = false;
+        showHfIncorrectModelTip.value = true;
+    });
+    showHfIncorrectModelTip.value = false;
     showHfModelDownloadProgress.value = true;
-    await showDownloadProgress();
-    const r = await httpReq("GET", 'management/settings/model/download', null, null, null);
-    console.log(r);
+    timeoutID = setTimeout(async () => {
+        await showDownloadProgress();
+    }, 1000);
 }
 
 async function showDownloadProgress() {
     const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
     console.log(r);
-    if (r != null && r.data != null) {
-        setTimeout(async () => {
+    if (r != null && r.data != null && r.data.downloading) {
+        downloadingUrl.value = r.data.url;
+        downloadingProgress.value = (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2);;
+        timeoutID = setTimeout(async () => {
             await showDownloadProgress();
         }, 1000);
+    } else {
+        showHfIncorrectModelTip.value = false;
+        showHfModelDownloadProgress.value = false;
     }
 }
 
@@ -255,11 +287,11 @@ const changeEmbeddingProvider = (n) => {
                 <el-form-item label="" v-show="showHfIncorrectModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
                         @click="downloadModels">
-                        click here to download model files again
-                    </el-button>.
+                        click here to download model files
+                    </el-button>, or you can download manually and put them in ./data/model/{{ modelRepository }}
                 </el-form-item>
                 <el-form-item label="" v-show="showHfModelDownloadProgress">
-                    Downloading: {}, {}%
+                    Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

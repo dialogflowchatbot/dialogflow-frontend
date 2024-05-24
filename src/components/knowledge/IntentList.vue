@@ -92,7 +92,7 @@ async function detectIntent() {
         <el-table-column prop="name" :label="tm('lang.intent.table')[0]" width="180" />
         <el-table-column prop="keyword_num" :label="tm('lang.intent.table')[1]" width="180" />
         <el-table-column prop="regex_num" :label="tm('lang.intent.table')[2]" width="180" />
-        <el-table-column prop="phrase_num" :label="tm('lang.intent.table')[3]" width="180" />
+        <el-table-column prop="phrase_num" :label="tm('lang.intent.table')[3]" width="230" />
         <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" width="120">
             <template #default="scope">
                 <el-button link type="primary" size="small" @click="editIntent(scope.$index, scope.row)">{{

@@ -21,13 +21,17 @@ const formData = {
 
 onMounted(async () => {
     formData.id = route.query.id;
-    const t = await httpReq('GET', 'intent/detail', formData, null, null);
+    let t = await httpReq('GET', 'intent/detail', formData, null, null);
     console.log(t.data);
     if (t.status == 200 && t.data) {
         intentData.keywords = t.data.keywords;
         intentData.regexes = t.data.regexes;
         intentData.phrases = t.data.phrases;
     }
+    t = await httpReq("GET", 'management/settings/model/check', null, null, null);
+    // console.log(t);
+    phraseInputDisabled.value = t == null || t.status == null || t.status != 200;
+    // console.log(phraseInputDisabled.value)
 });
 
 //keyword
@@ -144,6 +148,7 @@ async function removeRegex(w) {
 
 //phrase
 const phraseValue = ref('');
+const phraseInputDisabled = ref(true);
 const phraseInputVisible = ref(false);
 const phraseInputRef = ref();
 const showPhraseInput = () => {
@@ -239,7 +244,10 @@ const goBack = () => {
     </el-tag>
     <el-input v-if="phraseInputVisible" ref="phraseInputRef" v-model="phraseValue" class="ml-1 w-20" size="small"
         @keyup.enter="newPhrase" @blur="newPhrase" />
-    <el-button v-else class="button-new-tag ml-1" size="small" @click="showPhraseInput">
+    <el-button v-else class="button-new-tag ml-1" size="small" @click="showPhraseInput" :disabled="phraseInputDisabled">
         + {{ $t('lang.intent.detail.addSp') }}
     </el-button>
+    <div v-show="phraseInputDisabled">
+        This feature was disabled since model files were missing, please goto <router-link to="/settings">settings</router-link> and select one model first.
+    </div>
 </template>

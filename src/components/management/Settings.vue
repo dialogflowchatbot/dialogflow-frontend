@@ -54,7 +54,29 @@ onMounted(async () => {
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
         changeEmbeddingProvider(settings.embeddingProvider.provider.id);
     }
+    await checkHfModelFiles();
 })
+
+async function checkHfModelFiles() {
+    const r = await httpReq("GET", 'management/settings/model/check', null, null, null);
+    console.log(r);
+    if (r && r.status != 200) {
+        for (let i = 0; i < modelOptions.length; i++) {
+            console.log(modelOptions[i].value)
+            if (modelOptions[i].value == settings.embeddingProvider.provider.model) {
+                let l = modelOptions[i].label;
+                const p = l.lastIndexOf(' ');
+                if (p > -1)
+                    l = l.substring(0, p);
+                modelRepository.value = l;
+                break;
+            }
+        }
+        showHfIncorrectModelTip.value = true;
+        // ElMessage.error(r.err.message);
+    } else
+        showHfIncorrectModelTip.value = false;
+}
 
 async function save() {
     if (!settings.emailVerificationRegex)
@@ -64,24 +86,7 @@ async function save() {
     if (r.status == 200) {
         ElMessage({ type: 'success', message: t('lang.common.saved'), });
         if (settings.embeddingProvider.provider.id == 'HuggingFace') {
-            r = await httpReq("GET", 'management/settings/model/check', null, null, null);
-            console.log(r);
-            if (r && r.status != 200) {
-                for (let i = 0; i < modelOptions.length; i++) {
-                    console.log(modelOptions[i].value)
-                    if (modelOptions[i].value == settings.embeddingProvider.provider.model) {
-                        let l = modelOptions[i].label;
-                        const p = l.lastIndexOf(' ');
-                        if (p > -1)
-                            l = l.substring(0, p);
-                        modelRepository.value = l;
-                        break;
-                    }
-                }
-                showHfIncorrectModelTip.value = true;
-                // ElMessage.error(r.err.message);
-            } else
-                showHfIncorrectModelTip.value = false;
+            await checkHfModelFiles();
         }
     } else {
         const m = t(r.err.message);

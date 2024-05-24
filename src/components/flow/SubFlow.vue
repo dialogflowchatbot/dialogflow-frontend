@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CollectNode from './nodes/CollectNode.vue';
 import ConditionNode from './nodes/ConditionNode.vue';
 import DialogNode from './nodes/DialogNode.vue';
+import EndNode from './nodes/EndNode.vue';
 import GotoNode from './nodes/GotoNode.vue';
 import ExternalHttpNode from './nodes/ExternalHttpNode.vue';
 import SendEmailNode from './nodes/SendEmailNode.vue';
@@ -229,13 +230,45 @@ register({
     }
 });
 
+register({
+    shape: "EndNode",
+    width: 270,
+    height: 100,
+    component: EndNode,
+    ports: {
+        groups: {
+            absolute: {
+                position: {
+                    name: 'absolute',
+                },
+                attrs: {
+                    circle: {
+                        r: 5,
+                        magnet: true,
+                        stroke: 'black',
+                        strokeWidth: 1,
+                        fill: '#fff',
+                        style: {
+                            visibility: 'show',
+                        },
+                    },
+                },
+                label: {
+                    position: 'left',
+                }
+            },
+        },
+    }
+});
+
 const nodes = [
     { name: tm('lang.flow.nodes')[0], type: 'DialogNode', desc: tm('lang.flow.nodesDesc')[0], cnt: 1 },
     { name: tm('lang.flow.nodes')[1], type: 'ConditionNode', desc: tm('lang.flow.nodesDesc')[1], cnt: 1 },
     { name: tm('lang.flow.nodes')[2], type: 'CollectNode', desc: tm('lang.flow.nodesDesc')[2], cnt: 1 },
-    { name: tm('lang.flow.nodes')[3], type: 'GotoNode', desc: tm('lang.flow.nodesDesc')[3], cnt: 1 },
     { name: 'ExternalHttpNode', type: 'ExternalHttpNode', desc: 'Request and send data to external HTTP API with variables', cnt: 1 },
     { name: 'SendEmailNode', type: 'SendEmailNode', desc: 'Sending an email an many recipients', cnt: 1 },
+    { name: tm('lang.flow.nodes')[3], type: 'GotoNode', desc: tm('lang.flow.nodesDesc')[3], cnt: 1 },
+    { name: 'EndNode', type: 'EndNode', desc: 'Ending node', cnt: 1 },
 ]
 let selectedSubFlowIdx = -1;
 // let offsetLeft = 0;
@@ -661,6 +694,10 @@ async function dryrunClear() {
 
 .SendEmailNode {
     border-left: 5px solid rgb(255, 101, 85);
+}
+
+.EndNode {
+    border-left: 5px solid rgb(34, 25, 106);
 }
 
 .nodesBox {

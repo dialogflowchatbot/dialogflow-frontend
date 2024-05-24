@@ -19,7 +19,7 @@ const subFlowNames = ref([])
 
 const types18 = tm('lang.gotoNode.types');
 const gotoTypes = [
-    { label: types18[0], value: 'Terminate', disabled: false },
+    // { label: types18[0], value: 'Terminate', disabled: false },
     { label: types18[1], value: 'GotoMainFlow', disabled: false },
     { label: types18[2], value: 'GotoSubFlow', disabled: false },
     { label: types18[3], value: 'GotoExternalLink', disabled: false }

@@ -104,7 +104,7 @@ export default {
             title: 'Intent management',
             add: 'Add new intent',
             delConfirm: 'Are you sure you want to delete this intent?',
-            table: ['Name', 'Number of keywords', 'Number of regex', 'Number of phrases', 'Operations'],
+            table: ['Name', 'Number of keywords', 'Number of regex', 'Number of similar sentences', 'Operations'],
             form: {
                 title: 'Add new intent',
                 name: 'name',

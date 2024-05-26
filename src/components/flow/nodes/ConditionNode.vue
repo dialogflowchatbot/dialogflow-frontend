@@ -107,6 +107,7 @@ onMounted(async () => {
         const d = targetOptionsSet.UserIntent;
         d.splice(0, d.length);
         t.data.forEach(function (item, index, arr) {
+            // console.log(item.name)
             this.push({ label: item.name, value: item.name });
         }, d);
     }

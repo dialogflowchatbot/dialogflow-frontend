@@ -39,11 +39,15 @@ function validate() {
 function hideForm() {
     nodeSetFormVisible.value = false;
 }
+const nodeAnswer = ref()
 function saveForm() {
     const node = getNode();
     validate();
     node.setData(nodeData, { silent: false });
     hideForm();
+    const heightOffset = nodeName.value.offsetHeight + nodeAnswer.value.offsetHeight;
+    console.log(heightOffset)
+    node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom' })
 }
 
 const formLabelWidth = '90px'
@@ -78,7 +82,7 @@ const formLabelWidth = '90px'
                 </el-tooltip>
             </span>
         </div>
-        <div>{{ nodeData.endingText }}</div>
+        <div ref="nodeAnswer" style="white-space: pre-wrap;font-size:12px;">{{ nodeData.endingText }}</div>
         <!-- <teleport to="body"> -->
         <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
             :append-to-body="true" :destroy-on-close="true">

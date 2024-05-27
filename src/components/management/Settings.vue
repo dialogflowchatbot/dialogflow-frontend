@@ -58,6 +58,10 @@ onMounted(async () => {
 })
 
 async function checkHfModelFiles() {
+    if (settings.embeddingProvider.provider.id != 'HuggingFace') {
+        showHfIncorrectModelTip.value = false;
+        return;
+    }
     const r = await httpReq("GET", 'management/settings/model/check', null, null, null);
     console.log(r);
     if (r && r.status != 200) {
@@ -85,9 +89,7 @@ async function save() {
     console.log(r);
     if (r.status == 200) {
         ElMessage({ type: 'success', message: t('lang.common.saved'), });
-        if (settings.embeddingProvider.provider.id == 'HuggingFace') {
-            await checkHfModelFiles();
-        }
+        await checkHfModelFiles();
     } else {
         const m = t(r.err.message);
         ElMessage.error(m ? m : r.err.message);

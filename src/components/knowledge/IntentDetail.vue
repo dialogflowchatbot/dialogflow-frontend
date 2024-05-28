@@ -49,7 +49,7 @@ async function newKeyword() {
     if (keywordValue.value) {
         formData.id = route.query.id;
         formData.data = keywordValue.value;
-        const t = await httpReq('POST', 'intent/keyword', null, null, formData);
+        const t = await httpReq('POST', 'intent/keyword', { id: formData.id, data: route.query.idx }, null, formData);
         console.log(t.data);
         if (t.status == 200)
             intentData.keywords.push(keywordValue.value)
@@ -105,7 +105,7 @@ async function newRegex() {
     if (regexValue.value) {
         formData.id = route.query.id;
         formData.data = regexValue.value;
-        const t = await httpReq('POST', 'intent/regex', null, null, formData);
+        const t = await httpReq('POST', 'intent/regex', { id: formData.id, data: route.query.idx }, null, formData);
         console.log(t.data);
         if (t.status == 200)
             intentData.regexes.push(regexValue.value)
@@ -162,7 +162,7 @@ async function newPhrase() {
     if (phraseValue.value) {
         formData.id = route.query.id;
         formData.data = phraseValue.value;
-        const t = await httpReq('POST', 'intent/phrase', null, null, formData);
+        const t = await httpReq('POST', 'intent/phrase', { id: formData.id, data: route.query.idx }, null, formData);
         console.log(t.data);
         if (t.status == 200)
             intentData.phrases.push(phraseValue.value)
@@ -248,6 +248,7 @@ const goBack = () => {
         + {{ $t('lang.intent.detail.addSp') }}
     </el-button>
     <div v-show="phraseInputDisabled">
-        This feature was disabled since model files were missing, please goto <router-link to="/settings">settings</router-link> and select one model first.
+        This feature was disabled since model files were missing, please goto <router-link
+            to="/settings">settings</router-link> and select one model first.
     </div>
 </template>

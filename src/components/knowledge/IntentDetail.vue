@@ -26,7 +26,7 @@ onMounted(async () => {
     if (t.status == 200 && t.data) {
         intentData.keywords = t.data.keywords;
         intentData.regexes = t.data.regexes;
-        intentData.phrases = t.data.phrases;
+        intentData.phrases = t.data.phrases.map((cur, idx, arr) => cur.phrase);
     }
     t = await httpReq("GET", 'management/settings/model/check', null, null, null);
     // console.log(t);

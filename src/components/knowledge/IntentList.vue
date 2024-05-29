@@ -48,12 +48,18 @@ async function deleteIntent(idx, row) {
         const formData = { id: intentData.value[idx].id, data: idx.toString() };
         const t = await httpReq('DELETE', 'intent', null, null, formData);
         console.log(t.data);
-        if (t.status == 200)
+        if (t.status == 200) {
             await list();
-        ElMessage({
-            type: 'success',
-            message: t('lang.common.deleted'),
-        })
+            ElMessage({
+                type: 'success',
+                message: t('lang.common.deleted'),
+            })
+        } else {
+            ElMessage({
+                type: 'error',
+                message: t.err.message,
+            })
+        }
     }).catch(() => {
         // ElMessage({
         //     type: 'info',
@@ -103,7 +109,8 @@ async function detectIntent() {
         </el-table-column>
     </el-table>
     <el-divider />
-    <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts" />
+    <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts"
+        @change="detectIntent" />
     <el-button type="primary" @click="detectIntent">Test intent detection</el-button>
     <div>{{ intentDetectResult }}</div>
     <el-dialog v-model="dialogFormVisible" :title="t('lang.intent.form.title')">

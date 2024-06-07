@@ -30,6 +30,9 @@ import EpWarning from '~icons/ep/warning'
 //     HorizontalRule,
 // } from 'element-tiptap-vue3-fixed';
 // import EleTipTap from './EleTipTap.vue'
+// import Editor from '@tinymce/tinymce-vue'
+import { Editor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit'
 
 export default defineComponent({
     name: "DialogNode",
@@ -58,7 +61,7 @@ export default defineComponent({
             nextSteps: [{ label: this.tm('lang.dialogNode.nextSteps')[0], value: 'WaitUserResponse' }, { label: this.tm('lang.dialogNode.nextSteps')[1], value: 'GotoNextNode' }],
             loading: false,
             lastEditRange: null,
-            textEditor: '1',
+            textEditor: '2',
             // extensions: [
             //     Color,
             //     Doc,
@@ -80,6 +83,7 @@ export default defineComponent({
             //     FormatClear,
             //     HorizontalRule,
             // ],
+            editor: null,
         };
     },
     mounted() {
@@ -148,6 +152,15 @@ export default defineComponent({
         nextTick(() => {
             this.setPortPos();
         })
+        this.editor = new Editor({
+            content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
+            extensions: [
+                StarterKit,
+            ],
+        })
+    },
+    beforeUnmount() {
+        this.editor.destroy()
     },
     methods: {
         hideForm() {
@@ -318,7 +331,9 @@ export default defineComponent({
     components: {
         EpPlus,
         EpWarning,
-        //     EleTipTap,
+        // EleTipTap,
+        EditorContent,
+        // 'editor': Editor
     },
 });
 /*
@@ -367,7 +382,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     border: 1px solid #000;
     line-height: 150%;
 } */
-    /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
+/* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
 </style>
 <template>
     <div class="nodeBox">
@@ -389,58 +404,61 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
         <!-- <el-text truncated ref="nodeAnswer">{{ nodeData.dialogText }}</el-text> -->
         <!-- <teleport to="#modal-container"> -->
         <!-- <teleport to="body"> -->
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="72%" :append-to-body="true" :destroy-on-close="true">
-                <el-form :model="nodeData">
-                    <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
-                        <el-input v-model="nodeData.nodeName" autocomplete="off" />
-                    </el-form-item>
-                    <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
-                        <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
+        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="72%"
+            :append-to-body="true" :destroy-on-close="true">
+            <el-form :model="nodeData">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.nodeName" autocomplete="off" />
+                </el-form-item>
+                <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
+                    <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
                             <el-radio label="1">Plain text</el-radio>
                             <el-radio label="2">Rich text</el-radio>
                         </el-radio-group> -->
-                        <el-input v-show="textEditor == '1'" ref="textArea" v-model="nodeData.dialogText" type="textarea"
-                            @blur="getSel" />
-                        <!-- <div v-show="textEditor == '1'" ref="textArea" v-text="nodeData.dialogText" class="divInputBox"
+                    <el-input v-show="textEditor == '1'" ref="textArea" v-model="nodeData.dialogText" type="textarea"
+                        @blur="getSel" />
+                    <!-- <div v-show="textEditor == '1'" ref="textArea" v-text="nodeData.dialogText" class="divInputBox"
                             contenteditable="true" @blur="getSel"></div> -->
-                        <!-- <EleTipTap v-show="textEditor == '2'" :editorText="nodeData.dialogText" @updatedEditorText="editorCallback" /> -->
-                        <!-- Current using follow one -->
-                        <!-- <el-tiptap ref="editor" v-show="textEditor == '2'" v-model:content="nodeData.dialogText"
+                    <!-- <EleTipTap v-show="textEditor == '2'" :editorText="nodeData.dialogText" @updatedEditorText="editorCallback" /> -->
+                    <!-- Current using follow one -->
+                    <!-- <el-tiptap ref="editor" v-show="textEditor == '2'" v-model:content="nodeData.dialogText"
                             :extensions="extensions" /> -->
-                    </el-form-item>
-                    <el-form-item label="" :label-width="formLabelWidth">
-                        <el-button link @click="showVarsForm">
-                            <el-icon>
-                                <EpPlus />
-                            </el-icon>
-                            {{ t('lang.dialogNode.form.addVar') }}
-                        </el-button>
-                    </el-form-item>
-                    <el-form-item :label="t('lang.dialogNode.form.nextStep')" :label-width="formLabelWidth">
-                        <el-select v-model="nodeData.nextStep" :placeholder="t('lang.dialogNode.form.choose')">
-                            <el-option v-for="item in nextSteps" :key="item.label" :label="item.label"
-                                :value="item.value" />
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <div class="demo-drawer__footer">
-                    <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
-                    <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
-                </div>
-            </el-drawer>
-            <el-dialog v-model="varDialogVisible" :title="t('lang.dialogNode.var.title')" width="30%" :append-to-body="true" :destroy-on-close="true">
-                <el-select v-model="selectedVar" class="m-2" :placeholder="t('lang.dialogNode.var.choose')" size="large">
-                    <el-option v-for="item in vars" :key="item.varName" :label="item.varName" :value="item.varName" />
-                </el-select>
-                <template #footer>
-                    <span class="dialog-footer">
-                        <el-button type="primary" @click="insertVar">
-                            {{ t('lang.common.insert') }}
-                        </el-button>
-                        <el-button @click="varDialogVisible = false">{{ t('lang.common.cancel') }}</el-button>
-                    </span>
-                </template>
-            </el-dialog>
+                    <editor-content :editor="editor" />
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button link @click="showVarsForm">
+                        <el-icon>
+                            <EpPlus />
+                        </el-icon>
+                        {{ t('lang.dialogNode.form.addVar') }}
+                    </el-button>
+                </el-form-item>
+                <el-form-item :label="t('lang.dialogNode.form.nextStep')" :label-width="formLabelWidth">
+                    <el-select v-model="nodeData.nextStep" :placeholder="t('lang.dialogNode.form.choose')">
+                        <el-option v-for="item in nextSteps" :key="item.label" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div class="demo-drawer__footer">
+                <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
+                <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
+            </div>
+        </el-drawer>
+        <el-dialog v-model="varDialogVisible" :title="t('lang.dialogNode.var.title')" width="30%" :append-to-body="true"
+            :destroy-on-close="true">
+            <el-select v-model="selectedVar" class="m-2" :placeholder="t('lang.dialogNode.var.choose')" size="large">
+                <el-option v-for="item in vars" :key="item.varName" :label="item.varName" :value="item.varName" />
+            </el-select>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="insertVar">
+                        {{ t('lang.common.insert') }}
+                    </el-button>
+                    <el-button @click="varDialogVisible = false">{{ t('lang.common.cancel') }}</el-button>
+                </span>
+            </template>
+        </el-dialog>
         <!-- </teleport> -->
     </div>
 </template>

@@ -1,11 +1,13 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { btoa, httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 // import { ElMessage, ElMessageBox } from 'element-plus';
 const { t, tm, rt } = useI18n();
+const route = useRoute();
 const router = useRouter();
+const robotId = route.params.robotId;
 const mainFlowData = reactive({
     _idx: 0,
     id: '',
@@ -18,7 +20,7 @@ const formLabelWidth = '130px';
 const tableData = ref([])
 
 onMounted(async () => {
-    const t = await httpReq('GET', 'mainflow', null, null, null);
+    const t = await httpReq('GET', 'mainflow', { robotId:robotId}, null, null);
     // console.log(t);
     showMainFlows(t);
 });
@@ -30,12 +32,12 @@ const showMainFlows = (t) => {
 }
 
 const goBack = () => {
-    router.push('/guide')
+    router.push({name:'robotDetail', params:{robotId:robotId}});
 }
 
 const toSubflow = (idx, d) => {
     // console.log(d.name);
-    router.push({ name: 'subflow', params: { id: d.id, name: btoa(d.name) } })
+    router.push({ name: 'subflow', params: { robotId: robotId, id: d.id, name: btoa(d.name) } })
 }
 
 const newMainFlow = () => {

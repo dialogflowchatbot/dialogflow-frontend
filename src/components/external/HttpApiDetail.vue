@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n'
 const { t, tm, rt } = useI18n();
 const route = useRoute();
 const router = useRouter();
+const robotId = route.params.robotId;
 const httpApiData = reactive({
   id: '',
   name: '',
@@ -45,13 +46,13 @@ const requestBodyRef = ref()
 const apiId = route.params.id;
 onMounted(async () => {
   if (apiId && apiId != 'new') {
-    const t = await httpReq('GET', 'external/http/' + apiId, null, null, null);
+    const t = await httpReq('GET', 'external/http/' + apiId, { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200) {
       copyProperties(t.data, httpApiData);
     }
   }
-  let t = await httpReq('GET', 'variable', null, null, null);
+  let t = await httpReq('GET', 'variable', { robotId: robotId }, null, null);
   if (t && t.status == 200 && t.data) {
     for (var x in t.data) {
       if (t.data.hasOwnProperty(x)) {
@@ -107,7 +108,7 @@ const editParam = (idx) => {
 }
 const save = async () => {
   httpApiData.protocol = httpApiData.protocol.replace('://', '').toUpperCase();
-  const t = await httpReq('POST', 'external/http/' + apiId, null, null, httpApiData);
+  const t = await httpReq('POST', 'external/http/' + apiId, { robotId: robotId }, null, httpApiData);
   // console.log(t);
   if (t && t.status == 200) {
     ElMessage({
@@ -135,7 +136,7 @@ const insertVar = () => {
   varDialogVisible.value = false
 }
 const goBack = () => {
-  router.push('/external/httpApis')
+  router.push({ name: 'externalHttpApis', params: { robotId: robotId } });
 }
 const handleClick = (tab, event) => {
   // dynamicTitle.value = 'Add ' + tab.paneLabel + ' parameter';
@@ -257,11 +258,14 @@ const changeTab = (v) => {
                 </template>
               </el-table-column>
             </el-table>
-            <el-button type="warning" v-if="httpApiData.postContentType == 'UrlEncoded'" @click="newParam">+Add form data</el-button>
+            <el-button type="warning" v-if="httpApiData.postContentType == 'UrlEncoded'" @click="newParam">+Add form
+              data</el-button>
             <!-- <div style="margin: 20px 0" /> -->
-            <el-input ref="requestBodyRef" v-if="httpApiData.postContentType == 'JSON'" v-model="httpApiData.requestBody"
-              maxlength="10240" placeholder="JSON" show-word-limit type="textarea" />
-            <el-button type="warning" v-if="httpApiData.postContentType == 'JSON'" @click="varDialogVisible = true">+Insert a
+            <el-input ref="requestBodyRef" v-if="httpApiData.postContentType == 'JSON'"
+              v-model="httpApiData.requestBody" maxlength="10240" placeholder="JSON" show-word-limit type="textarea" />
+            <el-button type="warning" v-if="httpApiData.postContentType == 'JSON'"
+              @click="varDialogVisible = true">+Insert
+              a
               variable</el-button>
           </el-tab-pane>
         </el-tabs>
@@ -271,7 +275,8 @@ const changeTab = (v) => {
       </el-form-item>
       <el-form-item label="Sync/Async" :label-width="formLabelWidth">
         <!-- <el-switch v-model="httpApiData.asyncReq" class="mb-2" active-text="Asynchronous" inactive-text="Synchronous" /> -->
-        <input type="checkbox" id="_asyncReq_" v-model="httpApiData.asyncReq" :checked="httpApiData.asyncReq" /><label for="_asyncReq_">Asynchronous</label>
+        <input type="checkbox" id="_asyncReq_" v-model="httpApiData.asyncReq" :checked="httpApiData.asyncReq" /><label
+          for="_asyncReq_">Asynchronous</label>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="save">Save</el-button>
@@ -296,7 +301,7 @@ const changeTab = (v) => {
               <el-option label="From a variable" value="Var" />
             </el-select>
             <el-input v-if="param.valueSource == 'Val'" v-model="param.value" autocomplete="off" style="width:400px" />
-            <el-select v-if="param.valueSource == 'Var'" v-model="selectedVar" placeholder="Select a varaible">
+            <el-select v-if="param.valueSource == 'Var'" v-model="selectedVar" placeholder="Select a varaible" style="width:400px">
               <el-option v-for="item in vars" :key="item.varName" :label="item.varName" :value="item.varName" />
             </el-select>
           </el-space>

@@ -24,6 +24,7 @@ const { t, tm, rt } = useI18n();
 
 const route = useRoute();
 const router = useRouter();
+const robotId = route.params.robotId;
 // console.log(router.currentRoute.from)
 const TeleportContainer = getTeleport();
 
@@ -42,7 +43,7 @@ function updateSubFlowNames() {
 }
 
 // provide('getSubFlowNames', {readonly(subflowNames), updateSubFlowNames})
-provide('subFlowNamesFn', {subflowNames, updateSubFlowNames})
+provide('subFlowNamesFn', { subflowNames, updateSubFlowNames })
 
 register({
     shape: "CollectNode",
@@ -355,7 +356,7 @@ onMounted(async () => {
         edge.setTools(['button-remove']);
     });
 
-    const t = await httpReq('GET', 'subflow', { mainFlowId: mainFlowId, data: '' }, null, null);
+    const t = await httpReq('GET', 'subflow', { robotId: robotId, mainFlowId: mainFlowId, data: '' }, null, null);
     if (isDemo) {
         const d = { status: 200, data: t };
         cacheSubFlows(d);
@@ -409,7 +410,7 @@ const dialogFormVisible = ref(false);
 const flowName = ref('');
 async function newSubFlow() {
     await saveSubFlow();
-    const t = await httpReq('POST', 'subflow/new', { mainFlowId: mainFlowId, data: flowName.value }, null, null);
+    const t = await httpReq('POST', 'subflow/new', { robotId: robotId, mainFlowId: mainFlowId, data: flowName.value }, null, null);
     if (t.status == 200) {
         const idx = subFlows.value.length;
         cacheSubFlows(t);
@@ -433,7 +434,7 @@ function removeSubFlow(index) {
                 type: 'warning',
             }
         ).then(async () => {
-            const r = await httpReq('DELETE', 'subflow', { mainFlowId: mainFlowId, data: selectedSubFlowIdx }, null, null);
+            const r = await httpReq('DELETE', 'subflow', { robotId: robotId, mainFlowId: mainFlowId, data: selectedSubFlowIdx }, null, null);
             if (r.status == 200) {
                 selectedSubFlowIdx = -1;
                 subFlows.value.splice(index, 1);
@@ -523,7 +524,7 @@ async function saveSubFlow() {
         // nodes: JSON.stringify(nodes),
         nodesStat: cnts,
     };
-    const r = await httpReq('POST', 'subflow', { mainFlowId: mainFlowId, data: selectedSubFlowIdx }, null, data);
+    const r = await httpReq('POST', 'subflow', { robotId: robotId, mainFlowId: mainFlowId, data: selectedSubFlowIdx }, null, data);
     // console.log(r);
     cacheSubFlows(r);
     ElNotification({
@@ -542,9 +543,9 @@ function subFlowId(idx) {
 
 function goBack() {
     if (isDemo)
-        router.push('/guide');
+        router.push({ name: 'robotDetail', params: { robotId: robotId } });
     else
-        router.push('/mainflows');
+        router.push({ name: 'mainflows', params: { robotId: robotId } });
 }
 
 async function release() {
@@ -553,7 +554,7 @@ async function release() {
     if (!isDemo) {
         await saveSubFlow();
     }
-    const r = await httpReq('GET', 'mainflow/release', { mainFlowId: mainFlowId, data: '' }, null, null);
+    const r = await httpReq('GET', 'mainflow/release', { robotId: robotId, mainFlowId: mainFlowId, data: '' }, null, null);
     // console.log(r);
     if (r.status == 200) {
         ElNotification({
@@ -603,6 +604,7 @@ async function dryrun() {
     if (!sessionId)
         sessionId = newSessionId();
     const req = {
+        robotId:robotId,
         mainFlowId: mainFlowId,
         sessionId: sessionId,
         userInputResult: chatRecords.value.length == 0 || userAsk.value ? 'Successful' : 'Timeout',

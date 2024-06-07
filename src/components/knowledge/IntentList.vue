@@ -1,39 +1,41 @@
 <script setup>
 import { nextTick, onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 const { t, tm, rt } = useI18n();
+const route=useRoute()
 const router = useRouter();
 
 const intentData = ref([]);
 const formLabelWidth = '70px';
 const dialogFormVisible = ref(false);
 const intentName = ref('');
+const robotId = route.params.robotId;
 
 onMounted(async () => {
     await list();
 });
 
 const goBack = () => {
-    router.push('/guide')
+    router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
 async function list() {
-    const t = await httpReq('GET', 'intent', null, null, null);
+    const t = await httpReq('GET', 'intent', {robotId:robotId}, null, null);
     if (t.status == 200)
         intentData.value = t.data;
 }
 
 async function newIntent() {
-    const formData = { id: '', data: intentName.value };
+    const formData = { robotId: robotId,id: '', data: intentName.value };
     const t = await httpReq('POST', 'intent', null, null, formData);
     // console.log(t.data);
     if (t.status == 200)
         await list();
 }
 function editIntent(idx, row) {
-    router.push({ path: '/intent/detail', query: { id: intentData.value[idx].id, idx: idx, name: row.name } });
+    router.push({ path: '/intent/detail', query: { robotId: robotId,id: intentData.value[idx].id, idx: idx, name: row.name } });
 }
 async function deleteIntent(idx, row) {
     ElMessageBox.confirm(
@@ -45,7 +47,7 @@ async function deleteIntent(idx, row) {
             type: 'warning',
         }
     ).then(async () => {
-        const formData = { id: intentData.value[idx].id, data: idx.toString() };
+        const formData = { robotId: robotId,id: intentData.value[idx].id, data: idx.toString() };
         const t = await httpReq('DELETE', 'intent', null, null, formData);
         console.log(t.data);
         if (t.status == 200) {
@@ -71,7 +73,7 @@ async function deleteIntent(idx, row) {
 const testIntentDetectionText = ref('')
 const intentDetectResult = ref('')
 async function detectIntent() {
-    const formData = { id: '', data: testIntentDetectionText.value };
+    const formData = { robotId: robotId,id: '', data: testIntentDetectionText.value };
     const t = await httpReq('POST', 'intent/detect', null, null, formData);
     console.log(t.data);
     if (t.status == 200) {

@@ -1,15 +1,17 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 // import { ElMessage, ElMessageBox } from 'element-plus'
 const { t, tm, rt } = useI18n();
 import { btoa, httpReq } from '../../assets/tools.js'
+const route=useRoute();
 const router = useRouter();
+const robotId=route.params.robotId
 
 const tableData = ref([])
 onMounted(async () => {
-    const t = await httpReq('GET', 'external/http', null, null, null);
+    const t = await httpReq('GET', 'external/http', {robotId:robotId}, null, null);
     // console.log(t);
     if (t && t.status == 200) {
         tableData.value = t.data == null ? [] : t.data;
@@ -17,7 +19,7 @@ onMounted(async () => {
 });
 
 const goBack = () => {
-    router.push('/guide')
+    router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 const newApi = () => {
     router.push({ name: 'externalHttpApiDetail', params: { id: 'new' } })
@@ -36,7 +38,7 @@ const delApi = (idx, row) => {
         }
     )
         .then(async () => {
-            const t = await httpReq('DELETE', 'external/http/' + row.id, null, null, null);
+            const t = await httpReq('DELETE', 'external/http/' + row.id, { robotId: robotId }, null, null);
             // console.log(t);
             if (t && t.status == 200) {
                 ElMessage({
@@ -71,7 +73,7 @@ const delApi = (idx, row) => {
     <div style="padding:10px;border: 1px solid #E6A23C; background-color: #fdf6ec;margin:10px">
         Now you can not only send data to the outside, but also get data from the outside and save it in variables
         by setting value source to a HTTP API.
-        <router-link to="/variables">Add new variable</router-link>
+        <router-link :to="{ name: 'variables', params: { robotId: robotId } }">Add new variable</router-link>
     </div>
     <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="name" label="HTTP name" width="450" />

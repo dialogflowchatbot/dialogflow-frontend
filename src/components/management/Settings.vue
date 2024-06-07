@@ -1,14 +1,16 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { copyProperties, httpReq } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
+const route = useRoute()
 const router = useRouter();
+const robotId = route.params.robotId
 
 const goBack = () => {
-    router.push('/guide')
+    router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
@@ -31,6 +33,8 @@ const settings = reactive({
         apiUrlDisabled: false,
         showApiKeyInput: true,
         apiKey: '',
+        connectTimeoutMillis: 1500,
+        readTimeoutMillis: 3000,
     },
 });
 const formLabelWidth = '130px'
@@ -45,7 +49,7 @@ const downloadingUrl = ref('')
 const downloadingProgress = ref('')
 
 onMounted(async () => {
-    const t = await httpReq("GET", 'management/settings', null, null, null)
+    const t = await httpReq("GET", 'management/settings', { robotId: robotId }, null, null)
     console.log(t);
     if (t.status == 200) {
         copyProperties(t.data, settings);
@@ -62,7 +66,7 @@ async function checkHfModelFiles() {
         showHfIncorrectModelTip.value = false;
         return;
     }
-    const r = await httpReq("GET", 'management/settings/model/check', null, null, null);
+    const r = await httpReq("GET", 'management/settings/model/check', { robotId: robotId }, null, null);
     console.log(r);
     if (r && r.status != 200) {
         for (let i = 0; i < modelOptions.length; i++) {
@@ -85,7 +89,7 @@ async function checkHfModelFiles() {
 async function save() {
     if (!settings.emailVerificationRegex)
         settings.emailVerificationRegex = defaultEmailVerificationRegex;
-    let r = await httpReq("POST", 'management/settings', null, null, settings)
+    let r = await httpReq("POST", 'management/settings', { robotId: robotId }, null, settings)
     console.log(r);
     if (r.status == 200) {
         ElMessage({ type: 'success', message: t('lang.common.saved'), });
@@ -99,7 +103,7 @@ async function save() {
 let timeoutID = null;
 
 async function downloadModels() {
-    httpReq("GET", 'management/settings/model/download', null, null, null).then((r) => {
+    httpReq("GET", 'management/settings/model/download', { robotId: robotId }, null, null).then((r) => {
         console.log(r);
         if (r.status != 200) {
             ElMessage.error('Download failed: ' + r.err.message);
@@ -290,6 +294,15 @@ const changeEmbeddingProvider = (n) => {
                         <el-option v-for="item in modelOptions" :id="item.value" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
+                </el-form-item>
+                <el-form-item label="Connect timeout" v-show="settings.embeddingProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.embeddingProvider.connectTimeoutMillis" :min="100"
+                        :max="50000" />
+                    millis
+                </el-form-item>
+                <el-form-item label="Read timeout" v-show="settings.embeddingProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.embeddingProvider.readTimeoutMillis" :min="1000" :max="65530" />
+                    millis
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text

@@ -1,6 +1,6 @@
 {
   "name": "dialogflow",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,12 +14,16 @@
       "element-tiptap-vue3-fixed": "^1.2.3",
       "vue-scrollto": "^2.20.0",
       "vite-plugin-chunk-split": "^0.5.0",
+      "@tinymce/tinymce-vue": "^6.0.0",
       "vite-plugin-imagemin": "^0.6.1"
     }
   },
   "dependencies": {
     "@antv/x6": "^2.18.1",
     "@antv/x6-vue-shape": "^2.1.2",
+    "@tiptap/pm": "^2.4.0",
+    "@tiptap/starter-kit": "^2.4.0",
+    "@tiptap/vue-3": "^2.4.0",
     "element-plus": "^2.7.3",
     "vue": "^3.4.27",
     "vue-i18n": "^9.13.1",

@@ -1,11 +1,13 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 // import { ElMessage, ElMessageBox } from 'element-plus'
 import { copyProperties, httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 const { t, tm, rt } = useI18n();
+const route = useRoute();
 const router = useRouter();
+const robotId = route.params.robotId;
 const varData = reactive({
     varName: '',
     varType: '',
@@ -48,13 +50,13 @@ const tableData = ref([])
 const httpApiList = ref([])
 
 async function list() {
-    const t = await httpReq('GET', 'variable', null, null, null);
+    const t = await httpReq('GET', 'variable', {robotId:robotId}, null, null);
     console.log(t);
     showVars(t);
 }
 
 onMounted(async () => {
-    const t = await httpReq('GET', 'external/http', null, null, null);
+    const t = await httpReq('GET', 'external/http', {robotId:robotId}, null, null);
     // console.log(t);
     if (t && t.status == 200) {
         httpApiList.value = t.data == null ? [] : t.data;
@@ -73,7 +75,7 @@ const showVars = (t) => {
 }
 
 const goBack = () => {
-    router.push('/guide')
+    router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
 const newVar = () => {
@@ -115,7 +117,7 @@ const deleteVar = async (idx, d) => {
             // varData.varName = idx.toString();
             // varData.varType = d.varType
             // varData.varValueSource = d.varValueSource
-            const t = await httpReq('DELETE', 'variable', null, null, varData);
+            const t = await httpReq('DELETE', 'variable', {robotId: robotId}, null, varData);
             console.log(t);
             if (t.status == 200) {
                 await list();
@@ -143,7 +145,7 @@ function hideForm() {
 }
 
 async function saveForm() {
-    const t = await httpReq('POST', 'variable', null, null, varData);
+    const t = await httpReq('POST', 'variable', {robotId: robotId}, null, varData);
     console.log(t);
     await list();
     hideForm();
@@ -189,18 +191,21 @@ async function saveForm() {
             </el-form-item>
             <el-form-item :label="$t('lang.var.form.source')" :label-width="formLabelWidth">
                 <el-select v-model="varData.varValueSource" :placeholder="$t('lang.var.form.choose2')">
-                    <el-option v-for="item in varValueSources" :key="item.label" :label="item.label" :value="item.value" />
+                    <el-option v-for="item in varValueSources" :key="item.label" :label="item.label"
+                        :value="item.value" />
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="varData.varValueSource == 'Constant'" label="Constant value" :label-width="formLabelWidth">
+            <el-form-item v-if="varData.varValueSource == 'Constant'" label="Constant value"
+                :label-width="formLabelWidth">
                 <el-input v-model="varData.varConstantValue" autocomplete="on" />
             </el-form-item>
-            <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="HTTP API" :label-width="formLabelWidth">
+            <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="HTTP API"
+                :label-width="formLabelWidth">
                 <el-select v-model="varData.varAssociateData" placeholder="Choose a HTTP API">
                     <el-option v-for="item in httpApiList" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
                 <br />
-                <router-link to="/external/httpApi/new">Add new HTTP API</router-link>
+                <router-link :to="{ name: 'externalHttpApiDetail', params: { robotId: robotId, id:'new' } }">Add new HTTP API</router-link>
             </el-form-item>
             <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="Value expression type"
                 :label-width="formLabelWidth">
@@ -214,11 +219,14 @@ async function saveForm() {
                 <el-input v-model="varData.obtainValueExpression" autocomplete="on"
                     :placeholder="varData.obtainValueExpressionType == 'JsonPointer' ? '/data/book/name' : 'CSS selector syntax like: h1.foo div#bar'" />
             </el-form-item>
-            <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="Cache value" :label-width="formLabelWidth">
-                <input type="checkbox" id="_cacheEnabled_" v-model="varData.cacheEnabled" :checked="varData.cacheEnabled" /><label for="_cacheEnabled_">Enable</label>
+            <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="Cache value"
+                :label-width="formLabelWidth">
+                <input type="checkbox" id="_cacheEnabled_" v-model="varData.cacheEnabled"
+                    :checked="varData.cacheEnabled" /><label for="_cacheEnabled_">Enable</label>
             </el-form-item>
             <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="" :label-width="formLabelWidth">
-                <span v-if="varData.cacheEnabled">After requesting once, the variable value will be stored in the cache and
+                <span v-if="varData.cacheEnabled">After requesting once, the variable value will be stored in the cache
+                    and
                     subsequently read from the cache.</span>
                 <span v-if="!varData.cacheEnabled">HTTP API will be requested every time</span>
             </el-form-item>

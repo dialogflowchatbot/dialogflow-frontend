@@ -1,6 +1,6 @@
 <script>
 // import bootstrap from 'bootstrap/dist/js/bootstrap.js';
-import { defineComponent, watch, nextTick } from "vue";
+import { defineComponent, inject, watch, nextTick } from "vue";
 // import { ElMessageBox } from 'element-plus'
 import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
@@ -31,8 +31,11 @@ import EpWarning from '~icons/ep/warning'
 // } from 'element-tiptap-vue3-fixed';
 // import EleTipTap from './EleTipTap.vue'
 // import Editor from '@tinymce/tinymce-vue'
-import { Editor, EditorContent } from '@tiptap/vue-3';
+import { BubbleMenu, Editor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit'
+import Underline from '@tiptap/extension-underline'
+import { Color } from '@tiptap/extension-color'
+import TextStyle from '@tiptap/extension-text-style'
 
 export default defineComponent({
     name: "DialogNode",
@@ -61,7 +64,8 @@ export default defineComponent({
             nextSteps: [{ label: this.tm('lang.dialogNode.nextSteps')[0], value: 'WaitUserResponse' }, { label: this.tm('lang.dialogNode.nextSteps')[1], value: 'GotoNextNode' }],
             loading: false,
             lastEditRange: null,
-            textEditor: '2',
+            // textEditor: '2',
+            robotType: '',
             // extensions: [
             //     Color,
             //     Doc,
@@ -152,15 +156,37 @@ export default defineComponent({
         nextTick(() => {
             this.setPortPos();
         })
-        this.editor = new Editor({
-            content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
-            extensions: [
-                StarterKit,
-            ],
-        })
+        // this.nodeData.dialogText = '12345';
+        const { robotId } = inject('robotId');
+        // console.log('robotId='+robotId);
+        this.robotType = window.localStorage.getItem(robotId + 'type');
+        console.log('robotType='+this.robotType);
+        // console.log(this.nodeData.dialogText)
+        if (this.robotType == 'TextBot') {
+            this.editor = new Editor({
+                extensions: [
+                    Color,
+                    StarterKit,
+                    Underline,
+                    TextStyle,
+                ],
+                // content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
+                content: this.nodeData.dialogText,
+                onUpdate: () => {
+                    // HTML
+                    this.$emit('update:modelValue', this.editor.getHTML())
+                    this.nodeData.dialogText = this.editor.getHTML()
+
+                    // JSON
+                    // this.$emit('update:modelValue', this.editor.getJSON())
+                },
+            });
+            this.$emit('update:modelValue', this.nodeData.dialogText)
+        }
     },
     beforeUnmount() {
-        this.editor.destroy()
+        if (this.editor)
+            this.editor.destroy()
     },
     methods: {
         hideForm() {
@@ -333,7 +359,31 @@ export default defineComponent({
         EpWarning,
         // EleTipTap,
         EditorContent,
+        BubbleMenu,
         // 'editor': Editor
+    },
+    props: {
+        modelValue: {
+            type: String,
+            default: '',
+        },
+    },
+
+    emits: ['update:modelValue'],
+    watch: {
+        modelValue(value) {
+            // HTML
+            const isSame = this.editor.getHTML() === value
+
+            // JSON
+            // const isSame = JSON.stringify(this.editor.getJSON()) === JSON.stringify(value)
+
+            if (isSame) {
+                return
+            }
+
+            this.editor.commands.setContent(value, false)
+        },
     },
 });
 /*
@@ -383,6 +433,23 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     line-height: 150%;
 } */
 /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
+#bubbleMenu button, .menubar button {
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right:none;
+    /* color: black;
+    background-color: white; */
+}
+#bubbleMenu button:last-child, .menubar button:last-child {
+    border: 1px solid black;
+    /* color: black;
+    background-color: white; */
+}
+.is-active {
+    color: white;
+    background-color: black;
+}
 </style>
 <template>
     <div class="nodeBox">
@@ -415,15 +482,102 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                             <el-radio label="1">Plain text</el-radio>
                             <el-radio label="2">Rich text</el-radio>
                         </el-radio-group> -->
-                    <el-input v-show="textEditor == '1'" ref="textArea" v-model="nodeData.dialogText" type="textarea"
-                        @blur="getSel" />
+                    <el-input v-if="editor == null || robotType != 'TextBot'" ref="textArea"
+                        v-model="nodeData.dialogText" type="textarea" @blur="getSel" />
                     <!-- <div v-show="textEditor == '1'" ref="textArea" v-text="nodeData.dialogText" class="divInputBox"
                             contenteditable="true" @blur="getSel"></div> -->
                     <!-- <EleTipTap v-show="textEditor == '2'" :editorText="nodeData.dialogText" @updatedEditorText="editorCallback" /> -->
                     <!-- Current using follow one -->
                     <!-- <el-tiptap ref="editor" v-show="textEditor == '2'" v-model:content="nodeData.dialogText"
                             :extensions="extensions" /> -->
-                    <editor-content :editor="editor" />
+                    <bubble-menu id="bubbleMenu" :editor="editor" :tippy-options="{ duration: 100 }"
+                        v-if="editor && robotType == 'TextBot'">
+                        <button type="button" class='inactive' @click="editor.chain().focus().toggleBold().run()"
+                            :class="{ 'is-active': editor.isActive('bold') }">
+                            bold
+                        </button>
+                        <button type="button" class='inactive' @click="editor.chain().focus().toggleItalic().run()"
+                            :class="{ 'is-active': editor.isActive('italic') }">
+                            italic
+                        </button>
+                        <button type="button" class='inactive' @click="editor.chain().focus().toggleStrike().run()"
+                            :class="{ 'is-active': editor.isActive('strike') }">
+                            strike
+                        </button>
+                    </bubble-menu>
+                    <div class="menubar" v-if="editor && robotType == 'TextBot'">
+                        <button type="button" :class="{ 'is-active': editor.isActive('bold') }"
+                            @click="editor.chain().focus().toggleBold().run()">
+                            B
+                        </button>
+                        <button type="button" :class="{ 'is-active': editor.isActive('italic') }"
+                            @click="editor.chain().focus().toggleItalic().run()">
+                            I
+                        </button>
+                        <button type="button" :class="{ 'is-active': editor.isActive('strike') }"
+                            @click="editor.chain().focus().toggleStrike().run()">
+                            S
+                        </button>
+                        <button type="button" :class="{ 'is-active': editor.isActive('underline') }"
+                            @click="editor.chain().focus().toggleUnderline().run()">
+                            Underline
+                        </button>
+                        <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
+                            :value="editor.getAttributes('textStyle').color">
+                        <button type="button" :class="{ 'is-active': editor.isActive('code') }"
+                            @click="editor.chain().focus().toggleCode().run()">
+                            Code
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
+                            @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">
+                            H1
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
+                            @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">
+                            H2
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
+                            @click="editor.chain().focus().toggleHeading({ level: 3 }).run()">
+                            H3
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('bulletList') }"
+                            @click="editor.chain().focus().toggleBulletList().run()">
+                            Ul
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('orderedList') }"
+                            @click="editor.chain().focus().toggleOrderedList().run()">
+                            Ol
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('blockquote') }"
+                            @click="editor.chain().focus().toggleBlockquote().run()">
+                            Quote
+                        </button>
+
+                        <button type="button" :class="{ 'is-active': editor.isActive('codeBlock') }"
+                            @click="editor.chain().focus().toggleCodeBlock().run()">
+                            CodeBlock
+                        </button>
+
+                        <button type="button" @click="editor.chain().focus().setHorizontalRule().run()">
+                            HR
+                        </button>
+
+                        <button type="button" @click="editor.chain().focus().undo().run()">
+                            Undo
+                        </button>
+
+                        <button type="button" @click="editor.chain().focus().redo().run()">
+                            Redo
+                        </button>
+                    </div>
+                    <editor-content :editor="editor" style="width:100%; border: #e5e9f2 1px solid;"
+                        v-if="editor && robotType == 'TextBot'" v-model="nodeData.dialogText" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button link @click="showVarsForm">

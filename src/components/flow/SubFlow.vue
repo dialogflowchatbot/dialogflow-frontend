@@ -44,6 +44,7 @@ function updateSubFlowNames() {
 
 // provide('getSubFlowNames', {readonly(subflowNames), updateSubFlowNames})
 provide('subFlowNamesFn', { subflowNames, updateSubFlowNames })
+provide('robotId', { robotId })
 
 register({
     shape: "CollectNode",

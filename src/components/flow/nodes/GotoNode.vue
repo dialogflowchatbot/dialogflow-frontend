@@ -12,7 +12,7 @@ const { t, tm, rt } = useI18n();
 
 // const getGraph = inject('getGraph');
 const getNode = inject('getNode');
-const {subflowNames, updateSubFlowNames} = inject('subFlowNamesFn');
+const { subflowNames, updateSubFlowNames } = inject('subFlowNamesFn');
 const nodeSetFormVisible = ref(false);
 const mainFlows = ref([])
 const subFlowNames = ref([])
@@ -192,45 +192,46 @@ const formLabelWidth = '110px'
         </div>
         <div>{{ nodeData.brief }}</div>
         <!-- <teleport to="body"> -->
-            <el-drawer v-if="nodeSetFormVisible" v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
-                <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 700px">
-                    <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
-                        <el-input v-model="nodeData.nodeName" />
-                    </el-form-item>
-                    <el-form-item :label="t('lang.gotoNode.gotoType')" :label-width="formLabelWidth">
-                        <el-select v-model="nodeData.gotoType" :placeholder="t('lang.gotoNode.gotoTypePH')"
-                            @change="selectGotoType">
-                            <el-option v-for="item in gotoTypes" :key="item.label" :label="item.label" :value="item.value"
-                                :disabled="item.disabled" />
+        <el-drawer v-if="nodeSetFormVisible" v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl"
+            size="70%" :append-to-body="true" :destroy-on-close="true">
+            <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 700px">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
+                <el-form-item :label="t('lang.gotoNode.gotoType')" :label-width="formLabelWidth">
+                    <el-select v-model="nodeData.gotoType" :placeholder="t('lang.gotoNode.gotoTypePH')"
+                        @change="selectGotoType">
+                        <el-option v-for="item in gotoTypes" :key="item.label" :label="item.label" :value="item.value"
+                            :disabled="item.disabled" />
+                    </el-select>
+                </el-form-item>
+                <div v-show="nodeData.gotoType === 'GotoMainFlow'">
+                    <el-form-item :label="t('lang.gotoNode.gotoMainFlow')" :label-width="formLabelWidth">
+                        <el-select v-model="nodeData.gotoMainFlowId" :placeholder="t('lang.gotoNode.gotoMainFlowPH')"
+                            @change="selectedMainFlow">
+                            <el-option v-for="item in mainFlows" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </el-form-item>
-                    <div v-show="nodeData.gotoType === 'GotoMainFlow'">
-                        <el-form-item :label="t('lang.gotoNode.gotoMainFlow')" :label-width="formLabelWidth">
-                            <el-select v-model="nodeData.gotoMainFlowId" :placeholder="t('lang.gotoNode.gotoMainFlowPH')"
-                                @change="selectedMainFlow">
-                                <el-option v-for="item in mainFlows" :key="item.id" :label="item.name" :value="item.id" />
-                            </el-select>
-                        </el-form-item>
-                    </div>
-                    <div v-show="showSubFlowOptions">
-                        <el-form-item :label="t('lang.gotoNode.gotoSubFlow')" :label-width="formLabelWidth">
-                            <el-select v-model="nodeData.gotoSubFlowId" :placeholder="t('lang.gotoNode.gotoSubFlowPH')">
-                                <el-option v-for="item in subFlowNames" :key="item.id" :label="item.name"
-                                    :value="item.id" />
-                            </el-select>
-                        </el-form-item>
-                    </div>
-                    <div v-show="nodeData.gotoType === 'GotoExternalLink'">
-                        <el-form-item :label="t('lang.gotoNode.externalLink')" :label-width="formLabelWidth">
-                            <el-input v-model="nodeData.externalLink" />
-                        </el-form-item>
-                    </div>
-                </el-form>
-                <div>
-                    <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
-                    <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
                 </div>
-            </el-drawer>
+                <div v-show="showSubFlowOptions">
+                    <el-form-item :label="t('lang.gotoNode.gotoSubFlow')" :label-width="formLabelWidth">
+                        <el-select v-model="nodeData.gotoSubFlowId" :placeholder="t('lang.gotoNode.gotoSubFlowPH')">
+                            <el-option v-for="item in subFlowNames" :key="item.id" :label="item.name"
+                                :value="item.id" />
+                        </el-select>
+                    </el-form-item>
+                </div>
+                <div v-show="nodeData.gotoType === 'GotoExternalLink'">
+                    <el-form-item :label="t('lang.gotoNode.externalLink')" :label-width="formLabelWidth">
+                        <el-input v-model="nodeData.externalLink" />
+                    </el-form-item>
+                </div>
+            </el-form>
+            <div>
+                <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
+                <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
+            </div>
+        </el-drawer>
         <!-- </teleport> -->
     </div>
 </template>

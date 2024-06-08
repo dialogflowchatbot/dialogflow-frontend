@@ -12,7 +12,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { visualizer } from "rollup-plugin-visualizer";
-import viteImagemin from 'vite-plugin-imagemin'
+// import viteImagemin from 'vite-plugin-imagemin'
 // import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
 
 const pathSrc = path.resolve(__dirname, 'src')
@@ -64,33 +64,33 @@ export default ({ command, mode }) => {
       Icons({
         autoInstall: true,
       }),
-      viteImagemin({
-        gifsicle: {
-          optimizationLevel: 7,
-          interlaced: false,
-        },
-        optipng: {
-          optimizationLevel: 7,
-        },
-        mozjpeg: {
-          quality: 70,
-        },
-        pngquant: {
-          quality: [0.8, 0.9],
-          speed: 4,
-        },
-        svgo: {
-          plugins: [
-            {
-              name: 'removeViewBox',
-            },
-            {
-              name: 'removeEmptyAttrs',
-              active: false,
-            },
-          ],
-        },
-      }),
+      // viteImagemin({
+      //   gifsicle: {
+      //     optimizationLevel: 7,
+      //     interlaced: false,
+      //   },
+      //   optipng: {
+      //     optimizationLevel: 7,
+      //   },
+      //   mozjpeg: {
+      //     quality: 70,
+      //   },
+      //   pngquant: {
+      //     quality: [0.8, 0.9],
+      //     speed: 4,
+      //   },
+      //   svgo: {
+      //     plugins: [
+      //       {
+      //         name: 'removeViewBox',
+      //       },
+      //       {
+      //         name: 'removeEmptyAttrs',
+      //         active: false,
+      //       },
+      //     ],
+      //   },
+      // }),
       // chunkSplitPlugin({
       //   customSplitting: {
       //     'canvas': [/\/node_modules\/@antv\//]

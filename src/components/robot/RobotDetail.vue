@@ -29,6 +29,7 @@ onMounted(async () => {
   const t = await httpReq('GET', 'robot/detail', { robotId: robotId }, null, null);
   if (t.status == 200 && t.data != null) {
     robotName.value = t.data.robotName;
+    window.localStorage.setItem(t.data.robotId + 'type', t.data.robotType);
   } else {
     ElMessage.error('Can NOT find robot information by robotId.');
   }

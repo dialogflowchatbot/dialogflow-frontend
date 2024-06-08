@@ -38,7 +38,7 @@ const checkUpdate = async () => {
   updateLoading.value = false
 }
 const toSettings = () => {
-  router.push('/global-settings')
+  router.push('/settings')
 }
 
 const robots = reactive([])

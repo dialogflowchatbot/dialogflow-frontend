@@ -34,7 +34,7 @@ export default {
             steps: ['First step: publish flows', 'Second step: testing'],
             save: 'Save current sub-flow',
             pub: 'Publish all sub-flows',
-            test: 'Test dialog flow',
+            test: 'Testing dialog flow',
             addSubFlow: 'Add sub-flow',
             form: {
                 name: 'Sub-flow name',

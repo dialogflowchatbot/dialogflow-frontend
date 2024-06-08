@@ -15,9 +15,6 @@ const goBack = () => {
 
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const settings = reactive({
-    ip: '127.0.0.1',
-    port: '12715',
-    selectRandomPortWhenConflict: false,
     maxSessionDurationMin: '30',
     smtpHost: '',
     smtpUsername: '',
@@ -240,20 +237,6 @@ const changeEmbeddingProvider = (n) => {
     <el-row>
         <el-col :span="12" :offset="1">
             <el-form :model="settings">
-                <el-form-item label="IP addr (v4 or v6)" :label-width="formLabelWidth">
-                    <el-input v-model="settings.ip" placeholder="" />
-                </el-form-item>
-                <el-form-item label="" :label-width="formLabelWidth">
-                    {{ $t('lang.settings.ipNote') }}
-                </el-form-item>
-                <el-form-item :label="$t('lang.settings.prompt2')" :label-width="formLabelWidth">
-                    <el-input-number v-model="settings.port" :min="1024" :max="65530" @change="handleChange" />
-                </el-form-item>
-                <el-form-item label="" :label-width="formLabelWidth">
-                    <input type="checkbox" id="_randomPortWhenConflict_" v-model="settings.selectRandomPortWhenConflict"
-                        :checked="settings.selectRandomPortWhenConflict" />
-                    <label for="_randomPortWhenConflict_">{{ $t('lang.settings.prompt2_2') }}</label>
-                </el-form-item>
                 <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">
                     <el-input-number v-model="settings.maxSessionDurationMin" :min="1" :max="1440"
                         @change="handleChange" />

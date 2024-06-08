@@ -15,7 +15,6 @@ const settings = reactive({
     ip: '127.0.0.1',
     port: '12715',
     selectRandomPortWhenConflict: false,
-    maxSessionDurationMin: '30',
 });
 const formLabelWidth = '130px'
 
@@ -65,11 +64,6 @@ async function save() {
                     <input type="checkbox" id="_randomPortWhenConflict_" v-model="settings.selectRandomPortWhenConflict"
                         :checked="settings.selectRandomPortWhenConflict" />
                     <label for="_randomPortWhenConflict_">{{ $t('lang.settings.prompt2_2') }}</label>
-                </el-form-item>
-                <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">
-                    <el-input-number v-model="settings.maxSessionDurationMin" :min="1" :max="1440"
-                        @change="handleChange" />
-                    {{ $t('lang.settings.prompt4') }}
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     {{ $t('lang.settings.note') }}

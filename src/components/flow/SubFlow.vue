@@ -605,7 +605,7 @@ async function dryrun() {
     if (!sessionId)
         sessionId = newSessionId();
     const req = {
-        robotId:robotId,
+        robotId: robotId,
         mainFlowId: mainFlowId,
         sessionId: sessionId,
         userInputResult: chatRecords.value.length == 0 || userAsk.value ? 'Successful' : 'Timeout',
@@ -636,6 +636,7 @@ async function dryrun() {
             type: 'error',
         });
     }
+    dryrunInput.value.focus();
 }
 async function dryrunClear() {
     chatRecords.value.splice(0, chatRecords.value.length);
@@ -647,6 +648,12 @@ async function dryrunClear() {
 
 // const isEnLanguage = navigator.language ? navigator.language.split('-')[0] == 'en' : false
 // const nodesBtnWidth = isEnLanguage ? ref('100px') : ref('50px')
+
+const dryrunInput = ref()
+const popupRundryWindow = async () => {
+    testingFormVisible.value = true;
+    await dryrun();
+}
 </script>
 <style scoped>
 .el-container,
@@ -810,8 +817,7 @@ async function dryrunClear() {
                                     <EpDArrowRight />
                                 </el-icon>
                             </el-text>
-                            <el-button color="#626aef" class="ml-2" @click="dryrun(); testingFormVisible = true"
-                                size="large">
+                            <el-button color="#626aef" class="ml-2" @click="popupRundryWindow" size="large">
                                 <el-icon :size="20">
                                     <EpPromotion />
                                 </el-icon>
@@ -885,8 +891,8 @@ async function dryrunClear() {
             </template>
             <template #footer>
                 <div style="flex: auto">
-                    <el-input :disabled="dryrunDisabled" v-model="userAsk" placeholder="" style="width: 200px"
-                        @keypress="(e) => { if (e.keyCode == 13) dryrun(); }" />
+                    <el-input ref="dryrunInput" :disabled="dryrunDisabled" v-model="userAsk" placeholder=""
+                        style="width: 200px" @keypress="(e) => { if (e.keyCode == 13) dryrun(); }" />
                     <el-button-group>
                         <el-button type="primary" :disabled="dryrunDisabled" @click="dryrun">{{ $t('lang.flow.send')
                             }}</el-button>

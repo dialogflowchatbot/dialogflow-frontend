@@ -15,25 +15,34 @@ import BiBoxArrowUpRight from '~icons/bi/box-arrow-up-right'
 useI18n();
 const route = useRoute();
 const router = useRouter();
-const checkUpdateResult = ref(0)
 const fromPage = 'guide';
 const robotId = route.params.robotId;
-const robotName = ref('');
+const robotData = reactive({
+  robotId: '',
+  robotName: '',
+  robotType: '',
+})
+const dialogFormVisible = ref(false)
 const goBack = () => {
   router.push('/')
-}
-const toSettings = () => {
-  router.push('/settings')
 }
 onMounted(async () => {
   const t = await httpReq('GET', 'robot/detail', { robotId: robotId }, null, null);
   if (t.status == 200 && t.data != null) {
-    robotName.value = t.data.robotName;
+    copyProperties(t.data, robotData)
     window.localStorage.setItem(t.data.robotId + 'type', t.data.robotType);
   } else {
     ElMessage.error('Can NOT find robot information by robotId.');
   }
 })
+async function updateRobot() {
+  const t = await httpReq('POST', 'robot', null, null, robotData);
+  // console.log(t.data);
+  if (t.status == 200)
+    ElMessage.success('Changed successfully.');
+  else
+    ElMessage.error(t.err.message);
+}
 </script>
 <style scoped>
 .header-row {
@@ -71,33 +80,13 @@ onMounted(async () => {
     </template>
   </el-page-header>
   <el-row class="header-row">
-    <el-col :span="8">
-      <span class="header"> {{ robotName }} </span>
+    <el-col :span="24">
+      <span class="header"> {{ robotData.robotName }} </span>
+      <el-button type="primary" text @click="dialogFormVisible = true;">
+        Change robot name
+      </el-button>
     </el-col>
   </el-row>
-  <el-popover ref="popover" placement="right" title="Changelog" :width="300" trigger="hover">
-    <template #reference>
-      <el-button v-show="checkUpdateResult == 1" class="m-2" type="warning" text>Found new verion: {{
-        newVersion
-      }}</el-button>
-    </template>
-    <template #default>
-      <ol style="margin:0;padding:0">
-        <li v-for="(item, index) in changelog" :id="index" :key="index">
-          {{ item }}
-        </li>
-      </ol>
-      <a href="https://github.com/dialogflowchatbot/dialogflow/releases">Go to download</a>
-    </template>
-  </el-popover>
-  <el-alert v-show="checkUpdateResult == 2" title="You're using the latest verion." type="success"
-    @close="checkUpdateResult = 0" />
-  <el-alert v-show="checkUpdateResult == 3" title="Failed to query update information, please try again later."
-    type="danger" @close="checkUpdateResult = 0" />
-  <!-- <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
-  <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
-    again
-    later.</el-button> -->
   <p style="margin-left:50px">
   <div class="title">
     <el-icon :size="30">
@@ -206,4 +195,19 @@ onMounted(async () => {
   <div class="description">{{ $t('lang.guide.desc5') }}</div>
   </p>
   </p>
+  <el-dialog v-model="dialogFormVisible" title="Change robot name">
+    <el-form :model="form">
+      <el-form-item label="Name" :label-width="formLabelWidth">
+        <el-input v-model="robotData.robotName" autocomplete="off" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="dialogFormVisible = false; updateRobot();">
+          {{ $t('lang.common.add') }}
+        </el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>

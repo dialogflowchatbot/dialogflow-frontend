@@ -43,6 +43,31 @@ async function updateRobot() {
   else
     ElMessage.error(t.err.message);
 }
+async function deleteRobot() {
+  ElMessageBox.confirm(
+    'Do you confirm that delete this robot and its all data?',
+    'Warning',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    }
+  )
+    .then(async () => {
+      const t = await httpReq('DELETE', 'robot', { robotId: robotId }, null, null);
+      // console.log(t.data);
+      if (t.status == 200)
+        goBack();
+      else
+        ElMessage.error(t.err.message);
+    })
+    .catch(() => {
+      // ElMessage({
+      //     type: 'info',
+      //     message: 'Delete canceled',
+      // })
+    })
+}
 </script>
 <style scoped>
 .header-row {
@@ -80,10 +105,15 @@ async function updateRobot() {
     </template>
   </el-page-header>
   <el-row class="header-row">
-    <el-col :span="24">
+    <el-col :span="18">
       <span class="header"> {{ robotData.robotName }} </span>
       <el-button type="primary" text @click="dialogFormVisible = true;">
         Change robot name
+      </el-button>
+    </el-col>
+    <el-col :span="3">
+      <el-button type="danger" @click="deleteRobot">
+        Delete this robot
       </el-button>
     </el-col>
   </el-row>

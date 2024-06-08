@@ -74,41 +74,6 @@ function showRobotForm() {
 function robotDetail(id, name) {
   router.push({ name: 'robotDetail', params: { robotId: id, name: btoa(name) } })
 }
-function editRobot(idx, row) {
-  router.push({ path: '/robot/detail', query: { id: robotData.value[idx].id, idx: idx, name: row.name } });
-}
-async function deleteRobot(idx, row) {
-  ElMessageBox.confirm(
-    'Do you confirm that delete this robot and its all data?',
-    'Warning',
-    {
-      confirmButtonText: t('lang.common.del'),
-      cancelButtonText: t('lang.common.cancel'),
-      type: 'warning',
-    }
-  ).then(async () => {
-    const formData = { id: robotData.value[idx].id, data: idx.toString() };
-    const t = await httpReq('DELETE', 'robot', null, null, formData);
-    console.log(t.data);
-    if (t.status == 200) {
-      await list();
-      ElMessage({
-        type: 'success',
-        message: t('lang.common.deleted'),
-      })
-    } else {
-      ElMessage({
-        type: 'error',
-        message: t.err.message,
-      })
-    }
-  }).catch(() => {
-    // ElMessage({
-    //     type: 'info',
-    //     message: 'Delete canceled',
-    // })
-  })
-}
 const getBotAvatar = (type) => {
   if (type == 'OutboundBot')
     return OutboundBotAvatar
@@ -312,7 +277,7 @@ const getBotType = (type) => {
       <el-form-item label="Name" :label-width="formLabelWidth">
         <el-input v-model="robotData.robotName" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="Purpose" :label-width="formLabelWidth">
+      <el-form-item label="Type" :label-width="formLabelWidth">
         <el-select v-model="robotData.robotType" placeholder="">
           <el-option label="Text bot" value="TextBot" />
           <el-option label="Inbound bot" value="InboundBot" />

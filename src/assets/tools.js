@@ -138,3 +138,11 @@ export function isOnGithub() {
     const u = window.location.href;
     return u.indexOf('dialogflowchatbot.github.io') > -1;
 }
+
+export function persistRobotType(robotId, robotType) {
+    window.localStorage.setItem(t.data.robotId + 'type', t.data.robotType);
+}
+
+export function getRobotType(robotId) {
+    return window.localStorage.getItem(robotId + 'type');
+}

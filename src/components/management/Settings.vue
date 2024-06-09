@@ -1,13 +1,15 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { copyProperties, httpReq } from '../../assets/tools.js'
+import { copyProperties, httpReq, getRobotType } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
 const { t, tm } = useI18n();
 const route = useRoute()
 const router = useRouter();
 const robotId = route.params.robotId
+// const robotType = getRobotType(robotId)
+const maxSessionIdleMin = ref(30)
 
 const goBack = () => {
     router.push({ name: 'robotDetail', params: { robotId: robotId } });
@@ -15,7 +17,7 @@ const goBack = () => {
 
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const settings = reactive({
-    maxSessionDurationMin: '30',
+    maxSessionIdleSec: 1800,
     smtpHost: '',
     smtpUsername: '',
     smtpPassword: '',
@@ -50,6 +52,7 @@ onMounted(async () => {
     console.log(t);
     if (t.status == 200) {
         copyProperties(t.data, settings);
+        maxSessionIdleMin.value = settings.maxSessionIdleSec / 60;
         // const d = t.data;
         // settings.port = d.port;
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
@@ -86,6 +89,7 @@ async function checkHfModelFiles() {
 async function save() {
     if (!settings.emailVerificationRegex)
         settings.emailVerificationRegex = defaultEmailVerificationRegex;
+    settings.maxSessionIdleSec = (maxSessionIdleMin.value * 60)
     let r = await httpReq("POST", 'management/settings', { robotId: robotId }, null, settings)
     console.log(r);
     if (r.status == 200) {
@@ -238,12 +242,9 @@ const changeEmbeddingProvider = (n) => {
         <el-col :span="12" :offset="1">
             <el-form :model="settings">
                 <el-form-item :label="$t('lang.settings.prompt3')" :label-width="formLabelWidth">
-                    <el-input-number v-model="settings.maxSessionDurationMin" :min="1" :max="1440"
+                    <el-input-number v-model="maxSessionIdleMin" :min="2" :max="1440"
                         @change="handleChange" />
                     {{ $t('lang.settings.prompt4') }}
-                </el-form-item>
-                <el-form-item :label-width="formLabelWidth">
-                    {{ $t('lang.settings.note') }}
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

@@ -2,7 +2,7 @@
 // import bootstrap from 'bootstrap/dist/js/bootstrap.js';
 import { defineComponent, inject, watch, nextTick } from "vue";
 // import { ElMessageBox } from 'element-plus'
-import { copyProperties, getDefaultBranch, httpReq } from '../../../assets/tools.js'
+import { copyProperties, getDefaultBranch, getRobotType, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 import EpPlus from '~icons/ep/plus'
 import EpWarning from '~icons/ep/warning'
@@ -159,7 +159,7 @@ export default defineComponent({
         // this.nodeData.dialogText = '12345';
         const { robotId } = inject('robotId');
         // console.log('robotId='+robotId);
-        this.robotType = window.localStorage.getItem(robotId + 'type');
+        this.robotType = getRobotType(robotId);
         console.log('robotType='+this.robotType);
         // console.log(this.nodeData.dialogText)
         if (this.robotType == 'TextBot') {

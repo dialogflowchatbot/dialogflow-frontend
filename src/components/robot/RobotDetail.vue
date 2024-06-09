@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router';
-import { copyProperties, httpReq } from '../../assets/tools.js'
+import { copyProperties, httpReq, persistRobotType } from '../../assets/tools.js'
 import Demos from "../Demos.vue"
 import EpArrowRightBold from '~icons/ep/arrow-right-bold'
 import BiChatSquareDots from '~icons/bi/chat-square-dots'
@@ -17,6 +17,7 @@ const route = useRoute();
 const router = useRouter();
 const fromPage = 'guide';
 const robotId = route.params.robotId;
+let robotNameForRestore = '';
 const robotData = reactive({
   robotId: '',
   robotName: '',
@@ -30,7 +31,8 @@ onMounted(async () => {
   const t = await httpReq('GET', 'robot/detail', { robotId: robotId }, null, null);
   if (t.status == 200 && t.data != null) {
     copyProperties(t.data, robotData)
-    window.localStorage.setItem(t.data.robotId + 'type', t.data.robotType);
+    robotNameForRestore = robotData.robotName;
+    persistRobotType(t.data.robotId, t.data.robotType);
   } else {
     ElMessage.error('Can NOT find robot information by robotId.');
   }
@@ -202,7 +204,7 @@ async function deleteRobot() {
       <EpArrowRightBold />
     </el-icon>
     <router-link :to="{ name: 'settings', params: { robotId: robotId } }">{{ $t('lang.guide.nav4') }}</router-link>
-  <div class="description">{{ $t('lang.guide.desc4') }}</div>
+  <div class="description">Change maximum session idle time, Embedding provider and Email STMP information.</div>
   </p>
 
   <div class="title">
@@ -234,9 +236,10 @@ async function deleteRobot() {
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="dialogFormVisible = false; updateRobot();">
-          {{ $t('lang.common.add') }}
+          {{ $t('lang.common.save') }}
         </el-button>
-        <el-button @click="dialogFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
+        <el-button @click="robotData.robotName = robotNameForRestore; dialogFormVisible = false">{{
+          $t('lang.common.cancel') }}</el-button>
       </span>
     </template>
   </el-dialog>

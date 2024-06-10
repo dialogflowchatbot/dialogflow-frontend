@@ -50,13 +50,13 @@ const tableData = ref([])
 const httpApiList = ref([])
 
 async function list() {
-    const t = await httpReq('GET', 'variable', {robotId:robotId}, null, null);
+    const t = await httpReq('GET', 'variable', { robotId: robotId }, null, null);
     console.log(t);
     showVars(t);
 }
 
 onMounted(async () => {
-    const t = await httpReq('GET', 'external/http', {robotId:robotId}, null, null);
+    const t = await httpReq('GET', 'external/http', { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200) {
         httpApiList.value = t.data == null ? [] : t.data;
@@ -117,7 +117,7 @@ const deleteVar = async (idx, d) => {
             // varData.varName = idx.toString();
             // varData.varType = d.varType
             // varData.varValueSource = d.varValueSource
-            const t = await httpReq('DELETE', 'variable', {robotId: robotId}, null, varData);
+            const t = await httpReq('DELETE', 'variable', { robotId: robotId }, null, varData);
             console.log(t);
             if (t.status == 200) {
                 await list();
@@ -145,7 +145,7 @@ function hideForm() {
 }
 
 async function saveForm() {
-    const t = await httpReq('POST', 'variable', {robotId: robotId}, null, varData);
+    const t = await httpReq('POST', 'variable', { robotId: robotId }, null, varData);
     console.log(t);
     await list();
     hideForm();
@@ -205,7 +205,9 @@ async function saveForm() {
                     <el-option v-for="item in httpApiList" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
                 <br />
-                <router-link :to="{ name: 'externalHttpApiDetail', params: { robotId: robotId, id:'new' } }">Add new HTTP API</router-link>
+                <router-link :to="{ name: 'externalHttpApiDetail', params: { robotId: robotId, id: 'new' } }">Add new
+                    HTTP
+                    API</router-link>
             </el-form-item>
             <el-form-item v-if="varData.varValueSource == 'ExternalHttp'" label="Value expression type"
                 :label-width="formLabelWidth">

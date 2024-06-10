@@ -18,6 +18,7 @@ const nodeData = reactive({
 });
 const nodeName = ref();
 const getNode = inject('getNode');
+const { robotId } = inject('robotId');
 const node = getNode();
 node.on("change:data", ({ current }) => {
     nodeSetFormVisible.value = true;
@@ -66,7 +67,7 @@ onMounted(async () => {
         nodeData.newNode = false;
         // console.log(nodeData);
     }
-    const t = await httpReq('GET', 'variable', null, null, null);
+    const t = await httpReq('GET', 'variable', { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
         variables.splice(0, variables.length);

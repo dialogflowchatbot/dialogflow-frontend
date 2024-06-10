@@ -9,6 +9,7 @@ import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 const lastTimeBranchIdMap = new Map();
 const getNode = inject('getNode');
+const { robotId } = inject('robotId');
 const nodeSetFormVisible = ref(false);
 const branchSetFormVisible = ref(false);
 const formLabelWidth = '85px';
@@ -43,6 +44,7 @@ const defaultConditionGroup = [[]];
 const types18 = tm('lang.conditionNode.types')
 const conditionTypes = [
     { label: types18[0], value: 'UserIntent' },
+    { label: 'Zero-Shot Classification', value: 'TextZeroShotClassification' },
     { label: types18[1], value: 'UserInput' },
     { label: types18[2], value: 'FlowVariable' },
 ];
@@ -69,7 +71,8 @@ const compareOptionsSet = {
         { label: 'Greater than or equal to', value: 'NGTE', inputType: 1, showCS: false, belongsTo: 'Num' },
         { label: 'Less than', value: 'NLT', inputType: 1, showCS: false, belongsTo: 'Num' },
         { label: 'Less than or equal to', value: 'NLTE', inputType: 1, showCS: false, belongsTo: 'Num' },
-    ]
+    ],
+    "TextZeroShotClassification": []
 };
 const targetOptionsSet = {
     "UserIntent": [],
@@ -111,7 +114,7 @@ onMounted(async () => {
             this.push({ label: item.name, value: item.name });
         }, d);
     }
-    t = await httpReq('GET', 'variable', null, null, null);
+    t = await httpReq('GET', 'variable', { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
         const d = refOptionsSet.FlowVariable;

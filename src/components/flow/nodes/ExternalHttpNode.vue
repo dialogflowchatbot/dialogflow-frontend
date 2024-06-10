@@ -7,6 +7,7 @@ import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
 const nodeSetFormVisible = ref(false);
 const getNode = inject('getNode');
+const { robotId } = inject('robotId');
 const node = getNode();
 const formLabelWidth = '100px'
 const apis = reactive([])
@@ -21,11 +22,11 @@ const nodeData = reactive({
     newNode: true,
     branches: []
 })
-const validate = ()=>{
+const validate = () => {
     const d = nodeData;
     const m = d.invalidMessages;
     m.splice(0, m.length);
-    if (nodeData.httpApiName == '' || nodeData.httpApiId=='')
+    if (nodeData.httpApiName == '' || nodeData.httpApiId == '')
         m.push('Please choose a HTTP interface');
     if (getNode().getPortAt(0).id == '')
         m.push('Please connect "Next" to another node');
@@ -57,7 +58,7 @@ node.on("change:data", ({ current }) => {
 });
 onMounted(async () => {
     // console.log('httpNode')
-    const t = await httpReq('GET', 'external/http', null, null, null);
+    const t = await httpReq('GET', 'external/http', { robotId: robotId }, null, null);
     // console.log(t);
     if (t.status == 200) {
         for (var x in t.data) {
@@ -117,33 +118,34 @@ onMounted(async () => {
         </div>
         <div>Call Http: {{ nodeData.httpApiName }}</div>
         <!-- <teleport to="body"> -->
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
-                <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 850px">
-                    <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
-                        <el-input v-model="nodeData.nodeName" />
-                    </el-form-item>
-                    <el-form-item label="HTTP APIs" :label-width="formLabelWidth">
-                        <el-select ref="apisRef" v-model="nodeData.httpApiId" placeholder="Choose an http interface"
-                            @change="(v) => showOptions(v)">
-                            <el-option v-for="item in apis" :key="item.id" :label="item.name" :value="item.id" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="" :label-width="formLabelWidth">
-                        <el-text size="large">
-                            <div><strong>Please note</strong> that this is just calling the interface, but the returned data
-                                will be
-                                ignored.</div>
-                            <div>If you need to obtain data, please create a variable and select a certain interface as
-                                the source of the data.</div>
-                            <div>Checkout tutorial.</div>
-                        </el-text>
-                    </el-form-item>
-                </el-form>
-                <div class="demo-drawer__footer">
-                    <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
-                    <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
-                </div>
-            </el-drawer>
+        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
+            :append-to-body="true" :destroy-on-close="true">
+            <el-form :label-position="labelPosition" label-width="70px" :model="nodeData" style="max-width: 850px">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
+                <el-form-item label="HTTP APIs" :label-width="formLabelWidth">
+                    <el-select ref="apisRef" v-model="nodeData.httpApiId" placeholder="Choose an http interface"
+                        @change="(v) => showOptions(v)">
+                        <el-option v-for="item in apis" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-text size="large">
+                        <div><strong>Please note</strong> that this is just calling the interface, but the returned data
+                            will be
+                            ignored.</div>
+                        <div>If you need to obtain data, please create a variable and select a certain interface as
+                            the source of the data.</div>
+                        <div>Checkout tutorial.</div>
+                    </el-text>
+                </el-form-item>
+            </el-form>
+            <div class="demo-drawer__footer">
+                <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
+                <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
+            </div>
+        </el-drawer>
         <!-- </teleport> -->
     </div>
 </template>

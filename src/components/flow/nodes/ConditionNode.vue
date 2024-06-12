@@ -44,7 +44,7 @@ const defaultConditionGroup = [[]];
 const types18 = tm('lang.conditionNode.types')
 const conditionTypes = [
     { label: types18[0], value: 'UserIntent' },
-    { label: 'Zero-Shot Classification', value: 'TextZeroShotClassification' },
+    { label: 'Zero-Shot Classification', value: 'ZeroShotTextClassification' },
     { label: types18[1], value: 'UserInput' },
     { label: types18[2], value: 'FlowVariable' },
 ];
@@ -72,7 +72,7 @@ const compareOptionsSet = {
         { label: 'Less than', value: 'NLT', inputType: 1, showCS: false, belongsTo: 'Num' },
         { label: 'Less than or equal to', value: 'NLTE', inputType: 1, showCS: false, belongsTo: 'Num' },
     ],
-    "TextZeroShotClassification": []
+    "ZeroShotTextClassification": []
 };
 const targetOptionsSet = {
     "UserIntent": [],

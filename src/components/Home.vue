@@ -8,8 +8,8 @@ import EpSetting from '~icons/ep/setting'
 import SolarDocumentTextLinear from '~icons/solar/document-text-linear'
 import BiBoxArrowUpRight from '~icons/bi/box-arrow-up-right'
 import RiRobot2Line from '~icons/ri/robot-2-line'
-import OutboundBotAvatar from '@/assets/outbound-bot.png'
-import InboundBotAvatar from '@/assets/inbound-bot.png'
+import OutboundCallBotAvatar from '@/assets/outbound-bot.png'
+import InboundCallBotAvatar from '@/assets/inbound-bot.png'
 import TextBotAvatar from '@/assets/text-bot.png'
 useI18n();
 const router = useRouter();
@@ -75,10 +75,10 @@ function robotDetail(id, name) {
   router.push({ name: 'robotDetail', params: { robotId: id, name: btoa(name) } })
 }
 const getBotAvatar = (type) => {
-  if (type == 'OutboundBot')
-    return OutboundBotAvatar
-  else if (type == 'InboundBot')
-    return InboundBotAvatar
+  if (type == 'OutboundCallBot')
+    return OutboundCallBotAvatar
+  else if (type == 'InboundCallBot')
+    return InboundCallBotAvatar
   else if (type == 'TextBot')
     return TextBotAvatar
   else

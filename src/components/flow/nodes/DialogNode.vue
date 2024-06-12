@@ -55,6 +55,7 @@ export default defineComponent({
             nodeData: {
                 nodeName: this.t('lang.dialogNode.nodeName'),
                 dialogText: '',
+                textFromLLM:false,
                 branches: [],
                 nextStep: 'WaitUserResponse',
                 valid: false,
@@ -160,7 +161,7 @@ export default defineComponent({
         const { robotId } = inject('robotId');
         // console.log('robotId='+robotId);
         this.robotType = getRobotType(robotId);
-        console.log('robotType='+this.robotType);
+        console.log('robotType=' + this.robotType);
         // console.log(this.nodeData.dialogText)
         if (this.robotType == 'TextBot') {
             this.editor = new Editor({
@@ -433,19 +434,23 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     line-height: 150%;
 } */
 /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
-#bubbleMenu button, .menubar button {
+#bubbleMenu button,
+.menubar button {
     border-left: 1px solid black;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
-    border-right:none;
+    border-right: none;
     /* color: black;
     background-color: white; */
 }
-#bubbleMenu button:last-child, .menubar button:last-child {
+
+#bubbleMenu button:last-child,
+.menubar button:last-child {
     border: 1px solid black;
     /* color: black;
     background-color: white; */
 }
+
 .is-active {
     color: white;
     background-color: black;
@@ -476,6 +481,10 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
             <el-form :model="nodeData">
                 <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                     <el-input v-model="nodeData.nodeName" autocomplete="off" />
+                </el-form-item>
+                <el-form-item label="Text from" :label-width="formLabelWidth">
+                    <el-switch v-model="nodeData.textFromLLM" class="mb-2" active-text="LLM" inactive-text="Fixed text"
+                    style="--el-switch-off-color: #13ce66" />
                 </el-form-item>
                 <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
                     <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
@@ -585,6 +594,9 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                             <EpPlus />
                         </el-icon>
                         {{ t('lang.dialogNode.form.addVar') }}
+                    </el-button>
+                    <el-button type="primary" @click="showVarsForm">
+                        Generate text from LLM
                     </el-button>
                 </el-form-item>
                 <el-form-item :label="t('lang.dialogNode.form.nextStep')" :label-width="formLabelWidth">

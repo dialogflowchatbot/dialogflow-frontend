@@ -140,7 +140,7 @@ export function isOnGithub() {
 }
 
 export function persistRobotType(robotId, robotType) {
-    window.localStorage.setItem(t.data.robotId + 'type', t.data.robotType);
+    window.localStorage.setItem(robotId + 'type', robotType);
 }
 
 export function getRobotType(robotId) {

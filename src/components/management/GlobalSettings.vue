@@ -15,6 +15,10 @@ const settings = reactive({
     ip: '127.0.0.1',
     port: '12715',
     selectRandomPortWhenConflict: false,
+    modelDownload: {
+        connectTimeoutMillis: 1000,
+        readTimeoutMillis: 10000,
+    }
 });
 const formLabelWidth = '130px'
 
@@ -47,7 +51,7 @@ async function save() {
             <span class="text-large font-600 mr-3">{{ $t('lang.settings.title') }}</span>
         </template>
     </el-page-header>
-    <h3>Global settings</h3>
+    <h3>Common settings</h3>
     <el-row>
         <el-col :span="12" :offset="1">
             <el-form :model="settings">
@@ -67,6 +71,29 @@ async function save() {
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     {{ $t('lang.settings.note') }}
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button type="primary" @click="save">
+                        {{ $t('lang.common.save') }}
+                    </el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <h3>Model downloading settings</h3>
+    <el-row>
+        <el-col :span="11" :offset="1">
+            <el-form :model="settings.modelDownload" :label-width="formLabelWidth" style="max-width: 600px">
+                <el-form-item label="Connect timeout">
+                    <el-input-number v-model="settings.modelDownload.connectTimeoutMillis" :min="100" :max="50000"
+                        :step="100" />
+                    millis
+                </el-form-item>
+                <el-form-item label="Read timeout">
+                    <el-input-number v-model="settings.modelDownload.readTimeoutMillis" :min="1000" :max="65530"
+                        :step="100" />
+                    millis
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

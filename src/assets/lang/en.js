@@ -188,7 +188,7 @@ export default {
             title3: 'Variables',
             nav3: 'Variables management',
             desc3: 'Variables are used to store user input, or external data from HTTP, which is used in the answer of the dialog flow, conditional judgment.',
-            title4: 'System settings',
+            title4: 'Robot settings',
             nav4: 'Modify Configurations',
             desc4: 'Modify the listening IP and port.',
             title5: 'Operation manual and integration documentation',

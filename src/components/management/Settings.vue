@@ -35,7 +35,7 @@ const settings = reactive({
         connectTimeoutMillis: 1500,
         readTimeoutMillis: 3000,
     },
-    textGenerateProvider: {
+    textGenerationProvider: {
         provider: {
             id: '',
             model: '',
@@ -44,6 +44,7 @@ const settings = reactive({
         apiUrlDisabled: false,
         showApiKeyInput: true,
         apiKey: '',
+        max_token_len: 5000,
         connectTimeoutMillis: 1500,
         readTimeoutMillis: 3000,
     },
@@ -53,9 +54,9 @@ const loading = ref(false)
 const smtpPassed = ref(false)
 const smtpFailed = ref(false)
 const smtpFailedDetail = ref('')
-const showHfIncorrectGenerateModelTip = ref(false)
-const showHfGenerateModelDownloadProgress = ref(false)
-const textGenerateModelRepository = ref('')
+const showHfIncorrectGenerationModelTip = ref(false)
+const showHfGenerationModelDownloadProgress = ref(false)
+const textGenerationModelRepository = ref('')
 const showHfIncorrectEmbeddingModelTip = ref(false)
 const showHfEmbeddingModelDownloadProgress = ref(false)
 const sentenceEmbeddingModelRepository = ref('')
@@ -71,7 +72,7 @@ onMounted(async () => {
         // const d = t.data;
         // settings.port = d.port;
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
-        changeTextGenerateProvider(settings.textGenerateProvider.provider.id);
+        changeTextGenerationProvider(settings.textGenerationProvider.provider.id);
         changeSentenceEmbeddingProvider(settings.sentenceEmbeddingProvider.provider.id);
     }
     await checkHfModelFiles();
@@ -79,16 +80,16 @@ onMounted(async () => {
 
 async function checkHfModelFiles() {
     const repostories = new Map()
-    if (settings.textGenerateProvider.provider.id == 'HuggingFace') {
-        for (let i = 0; i < textGenerateModelOptions.length; i++) {
-            console.log(textGenerateModelOptions[i].value)
-            if (textGenerateModelOptions[i].value == settings.textGenerateProvider.provider.model) {
-                let l = textGenerateModelOptions[i].label;
+    if (settings.textGenerationProvider.provider.id == 'HuggingFace') {
+        for (let i = 0; i < textGenerationModelOptions.length; i++) {
+            console.log(textGenerationModelOptions[i].value)
+            if (textGenerationModelOptions[i].value == settings.textGenerationProvider.provider.model) {
+                let l = textGenerationModelOptions[i].label;
                 const p = l.lastIndexOf(' ');
                 if (p > -1)
                     l = l.substring(0, p);
-                textGenerateModelRepository.value = l;
-                repostories.set(showHfIncorrectGenerateModelTip, l)
+                textGenerationModelRepository.value = l;
+                repostories.set(showHfIncorrectGenerationModelTip, l)
                 break;
             }
         }
@@ -118,9 +119,9 @@ async function checkHfModelFiles() {
             }
         }
     }
-    // showHfIncorrectGenerateModelTip.value = false;
+    // showHfIncorrectGenerationModelTip.value = false;
     // showHfIncorrectEmbeddingModelTip.value = false;
-    // if (settings.textGenerateProvider.provider.id != 'HuggingFace' && settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace') {
+    // if (settings.textGenerationProvider.provider.id != 'HuggingFace' && settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace') {
     //     return;
     // }
     // const r = await httpReq("POST", 'management/settings/model/check', { robotId: robotId }, null, repostories.keys());
@@ -160,21 +161,32 @@ async function save() {
 
 let timeoutID = null;
 
-async function downloadModels() {
-    httpReq("GET", 'management/settings/model/download', { robotId: robotId }, null, null).then((r) => {
+async function downloadModels(m) {
+    const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
+    console.log(r);
+    if (r != null && r.data != null && r.data.downloading) {
+        ElMessage.error('Downloading process is running, please wait until it finish.');
+        return;
+    }
+    httpReq("GET", 'management/settings/model/download', { robotId: robotId, m: m }, null, null).then((r) => {
         console.log(r);
-        if (r.status != 200) {
+        if (r == null || r.status != 200) {
             ElMessage.error('Download failed: ' + r.err.message);
-            clearTimeout(timeoutID);
+            return;
         }
-        showHfEmbeddingModelDownloadProgress.value = false;
-        showHfIncorrectEmbeddingModelTip.value = true;
+        // showHfEmbeddingModelDownloadProgress.value = false;
+        // showHfIncorrectEmbeddingModelTip.value = true;
+        if (m == 'sentenceEmbedding') {
+            showHfIncorrectEmbeddingModelTip.value = false;
+            showHfEmbeddingModelDownloadProgress.value = true;
+        } else {
+            showHfIncorrectGenerationModelTip.value = false;
+            showHfGenerationModelDownloadProgress.value = true;
+        }
+        timeoutID = setTimeout(async () => {
+            await showDownloadProgress();
+        }, 1000);
     });
-    showHfIncorrectEmbeddingModelTip.value = false;
-    showHfEmbeddingModelDownloadProgress.value = true;
-    timeoutID = setTimeout(async () => {
-        await showDownloadProgress();
-    }, 1000);
 }
 
 async function showDownloadProgress() {
@@ -182,11 +194,14 @@ async function showDownloadProgress() {
     console.log(r);
     if (r != null && r.data != null && r.data.downloading) {
         downloadingUrl.value = r.data.url;
-        downloadingProgress.value = (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2);;
+        downloadingProgress.value = (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2);
         timeoutID = setTimeout(async () => {
             await showDownloadProgress();
         }, 1000);
     } else {
+        clearTimeout(timeoutID);
+        showHfIncorrectGenerationModelTip.value = false;
+        showHfGenerationModelDownloadProgress.value = false;
         showHfIncorrectEmbeddingModelTip.value = false;
         showHfEmbeddingModelDownloadProgress.value = false;
     }
@@ -208,7 +223,7 @@ const smtpTest = async () => {
 }
 
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
-const textGenerateProviders = [
+const textGenerationProviders = [
     {
         id: 'HuggingFace',
         name: 'HuggingFace',
@@ -216,11 +231,13 @@ const textGenerateProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: false,
         models: [
-            { label: 'microsoft/phi-1 (91MB)', value: 'AllMiniLML6V2', dimenssions: 384 },
-            { label: 'microsoft/phi-1.5 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
-            { label: 'microsoft/phi-2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
-            { label: 'microsoft/Phi-3-mini-4k-instruct (135MB)', value: 'BgeSmallEnV1_5' },
-            { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'BgeBaseEnV1_5' },
+            // { label: 'microsoft/phi-1 (91MB)', value: 'AllMiniLML6V2', dimenssions: 384 },
+            // { label: 'microsoft/phi-1_5 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
+            // { label: 'microsoft/phi-2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
+            { label: 'microsoft/Phi-3-mini-4k-instruct (135MB)', value: 'Phi3Mini4kInstruct' },
+            { label: 'microsoft/Phi-3-mini-128k-instruct (135MB)', value: 'Phi3Mini128kInstruct' },
+            { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'Phi3Medium4kInstruct' },
+            { label: 'microsoft/Phi-3-medium-128k-instruct (439MB)', value: 'Phi3Medium128kInstruct' },
         ]
     },
     {
@@ -318,25 +335,25 @@ const sentenceEmbeddingProviders = [
         ],
     },
 ]
-const textGenerateModelOptions = reactive([])
-const textGenerateDynamicReqUrlMap = new Map();
-const choosedTextGenerateProvider = ref('')
-const changeTextGenerateProvider = (n) => {
-    if (choosedTextGenerateProvider.value)
-        textGenerateDynamicReqUrlMap.set(choosedTextGenerateProvider.value, settings.textGenerateProvider.apiUrl);
-    for (let i = 0; i < textGenerateProviders.length; i++) {
-        if (textGenerateProviders[i].id == n) {
-            if (textGenerateProviders[i].apiUrlDisabled)
-                settings.textGenerateProvider.apiUrl = textGenerateProviders[i].apiUrl;
+const textGenerationModelOptions = reactive([])
+const textGenerationDynamicReqUrlMap = new Map();
+const choosedTextGenerationProvider = ref('')
+const changeTextGenerationProvider = (n) => {
+    if (choosedTextGenerationProvider.value)
+        textGenerationDynamicReqUrlMap.set(choosedTextGenerationProvider.value, settings.textGenerationProvider.apiUrl);
+    for (let i = 0; i < textGenerationProviders.length; i++) {
+        if (textGenerationProviders[i].id == n) {
+            if (textGenerationProviders[i].apiUrlDisabled)
+                settings.textGenerationProvider.apiUrl = textGenerationProviders[i].apiUrl;
             else {
-                settings.textGenerateProvider.apiUrl = sentenceEmbeddingDynamicReqUrlMap.get(settings.textGenerateProvider.provider.id);
-                if (!settings.textGenerateProvider.apiUrl)
-                    settings.textGenerateProvider.apiUrl = textGenerateProviders[i].apiUrl;
+                settings.textGenerationProvider.apiUrl = sentenceEmbeddingDynamicReqUrlMap.get(settings.TextGenerationProvider.provider.id);
+                if (!settings.textGenerationProvider.apiUrl)
+                    settings.textGenerationProvider.apiUrl = textGenerationProviders[i].apiUrl;
             }
-            settings.textGenerateProvider.apiUrlDisabled = textGenerateProviders[i].apiUrlDisabled;
-            settings.textGenerateProvider.showApiKeyInput = textGenerateProviders[i].showApiKeyInput;
-            choosedTextGenerateProvider.value = n;
-            textGenerateModelOptions.splice(0, textGenerateModelOptions.length, ...textGenerateProviders[i].models)
+            settings.textGenerationProvider.apiUrlDisabled = textGenerationProviders[i].apiUrlDisabled;
+            settings.textGenerationProvider.showApiKeyInput = textGenerationProviders[i].showApiKeyInput;
+            choosedTextGenerationProvider.value = n;
+            textGenerationModelOptions.splice(0, textGenerationModelOptions.length, ...textGenerationProviders[i].models)
             // console.log(modelOptions.length)
             break;
         }
@@ -393,47 +410,48 @@ const changeSentenceEmbeddingProvider = (n) => {
     <h3>Text generation</h3>
     <el-row>
         <el-col :span="11" :offset="1">
-            <el-form :model="settings.textGenerateProvider" :label-width="formLabelWidth" style="max-width: 600px">
+            <el-form :model="settings.textGenerationProvider" :label-width="formLabelWidth" style="max-width: 600px">
                 <el-form-item label="Provider">
-                    <el-radio-group v-model="settings.textGenerateProvider.provider.id" size="large"
-                        @change="changeTextGenerateProvider">
-                        <el-radio-button v-for="item in textGenerateProviders" :id="item.id" :key="item.id"
+                    <el-radio-group v-model="settings.textGenerationProvider.provider.id" size="large"
+                        @change="changeTextGenerationProvider">
+                        <el-radio-button v-for="item in textGenerationProviders" :id="item.id" :key="item.id"
                             :label="item.id" :value="item.id" />
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="Request address">
-                    <el-input v-model="settings.textGenerateProvider.apiUrl"
-                        :disabled="settings.textGenerateProvider.apiUrlDisabled" />
+                    <el-input v-model="settings.textGenerationProvider.apiUrl"
+                        :disabled="settings.textGenerationProvider.apiUrlDisabled" />
                 </el-form-item>
-                <el-form-item label="OpenAI API key" v-show="settings.textGenerateProvider.showApiKeyInput">
-                    <el-input v-model="settings.textGenerateProvider.apiKey" />
+                <el-form-item label="OpenAI API key" v-show="settings.textGenerationProvider.showApiKeyInput">
+                    <el-input v-model="settings.textGenerationProvider.apiKey" />
                 </el-form-item>
                 <el-form-item label="Model">
-                    <el-select v-model="settings.textGenerateProvider.provider.model" placeholder="Choose a model">
-                        <el-option v-for="item in textGenerateModelOptions" :id="item.value" :key="item.value"
+                    <el-select v-model="settings.textGenerationProvider.provider.model" placeholder="Choose a model">
+                        <el-option v-for="item in textGenerationModelOptions" :id="item.value" :key="item.value"
                             :label="item.label" :value="item.value" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Connect timeout"
-                    v-show="settings.textGenerateProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.textGenerateProvider.connectTimeoutMillis" :min="100"
-                        :max="50000" />
+                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.textGenerationProvider.connectTimeoutMillis" :min="100"
+                        :max="50000" :step="100" />
                     millis
                 </el-form-item>
-                <el-form-item label="Read timeout" v-show="settings.textGenerateProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.textGenerateProvider.readTimeoutMillis" :min="1000"
-                        :max="65530" />
+                <el-form-item label="Read timeout"
+                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.textGenerationProvider.readTimeoutMillis" :min="1000"
+                        :max="65530" :step="100" />
                     millis
                 </el-form-item>
-                <el-form-item label="" v-show="showHfIncorrectGenerateModelTip">
+                <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
-                        @click="downloadModels">
-                        click here to download model files
+                        @click="downloadModels('textGeneration')">
+                        click here to download model files from Huggingface.co
                     </el-button>, or you can download manually and put them in ./data/model/{{
-                        textGenerateModelRepository
+                        textGenerationModelRepository
                     }}
                 </el-form-item>
-                <el-form-item label="" v-show="showHfGenerateModelDownloadProgress">
+                <el-form-item label="" v-show="showHfGenerationModelDownloadProgress">
                     Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
@@ -472,19 +490,19 @@ const changeSentenceEmbeddingProvider = (n) => {
                 <el-form-item label="Connect timeout"
                     v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.sentenceEmbeddingProvider.connectTimeoutMillis" :min="100"
-                        :max="50000" />
+                        :max="50000" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout"
                     v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.sentenceEmbeddingProvider.readTimeoutMillis" :min="1000"
-                        :max="65530" />
+                        :max="65530" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
-                        @click="downloadModels">
-                        click here to download model files
+                        @click="downloadModels('sentenceEmbedding')">
+                        click here to download model files from Huggingface.co
                     </el-button>, or you can download manually and put them in ./data/model/{{
                         sentenceEmbeddingModelRepository }}
                 </el-form-item>

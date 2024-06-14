@@ -13,6 +13,7 @@ import InboundCallBotAvatar from '@/assets/inbound-bot.png'
 import TextBotAvatar from '@/assets/text-bot.png'
 useI18n();
 const router = useRouter();
+const currentVersion = ref('')
 const checkUpdateResult = ref(0)
 const updateLoading = ref(false)
 const newVersion = ref('')
@@ -49,6 +50,8 @@ const robotData = reactive({
 })
 onMounted(async () => {
   await list();
+  const t = await httpReq('GET', 'version.json', null, null, null);
+  currentVersion.value = t
 });
 
 async function list() {
@@ -242,7 +245,7 @@ const getBotType = (type) => {
     <el-icon :size="30">
       <EpSetting />
     </el-icon>
-    {{ $t('lang.guide.title4') }}
+    Global settings
   </div>
   <p>
     <el-icon :size="15">
@@ -272,6 +275,20 @@ const getBotType = (type) => {
   <div class="description">{{ $t('lang.guide.desc5') }}</div>
   </p>
   </p>
+  <p>
+    <div class="text-center">
+        Version: {{ currentVersion }}<br />
+        <a href="https://dialogflowchatbot.github.io/" target="_blank">https://dialogflowchatbot.github.io/</a><br />
+        If you have any questions or suggestions, please
+        create a <a href="https://github.com/dialogflowchatbot/dialogflow/discussions" target="_blank">discussion</a> on Github
+        or
+        email to: dialogflow@yeah.net
+    </div>
+    <div class="text-center">
+        Icons were created by
+        <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
+    </div>
+    </p>
   <el-dialog v-model="setFormVisible" title="Create a new robot" width="60%">
     <el-form :model="robotData">
       <el-form-item label="Name" :label-width="formLabelWidth">
@@ -290,5 +307,4 @@ const getBotType = (type) => {
       <el-button @click="setFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
     </template>
   </el-dialog>
-
 </template>

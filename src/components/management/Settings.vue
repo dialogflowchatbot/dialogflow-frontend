@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { copyProperties, httpReq, getRobotType } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
@@ -77,6 +77,12 @@ onMounted(async () => {
     }
     await checkHfModelFiles();
 })
+onUnmounted(
+    () => {
+        if (timeoutID != null)
+            clearTimeout(timeoutID);
+    }
+);
 
 async function checkHfModelFiles() {
     const repostories = new Map()
@@ -84,7 +90,7 @@ async function checkHfModelFiles() {
         for (let i = 0; i < textGenerationModelOptions.length; i++) {
             console.log(textGenerationModelOptions[i].value)
             if (textGenerationModelOptions[i].value == settings.textGenerationProvider.provider.model) {
-                let l = textGenerationModelOptions[i].label;
+                let l = textGenerationModelOptions[i].value;
                 const p = l.lastIndexOf(' ');
                 if (p > -1)
                     l = l.substring(0, p);
@@ -98,7 +104,7 @@ async function checkHfModelFiles() {
         for (let i = 0; i < sentenceEmbeddingModelOptions.length; i++) {
             console.log(sentenceEmbeddingModelOptions[i].value)
             if (sentenceEmbeddingModelOptions[i].value == settings.sentenceEmbeddingProvider.provider.model) {
-                let l = sentenceEmbeddingModelOptions[i].label;
+                let l = sentenceEmbeddingModelOptions[i].value;
                 const p = l.lastIndexOf(' ');
                 if (p > -1)
                     l = l.substring(0, p);
@@ -115,7 +121,8 @@ async function checkHfModelFiles() {
             for (let [k, v] of repostories.entries()) {
                 if (r.data[v] == false) {
                     k.value = true;
-                }
+                } else
+                    k.value = false;
             }
         }
     }
@@ -165,7 +172,8 @@ async function downloadModels(m) {
     const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
     console.log(r);
     if (r != null && r.data != null && r.data.downloading) {
-        ElMessage.error('Downloading process is running, please wait until it finish.');
+        const m = 'Downloading: ' + r.url + ' (' + (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2) + '), please wait until it finish.';
+        ElMessage.error(m);
         return;
     }
     httpReq("GET", 'management/settings/model/download', { robotId: robotId, m: m }, null, null).then((r) => {
@@ -192,12 +200,20 @@ async function downloadModels(m) {
 async function showDownloadProgress() {
     const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
     console.log(r);
-    if (r != null && r.data != null && r.data.downloading) {
-        downloadingUrl.value = r.data.url;
-        downloadingProgress.value = (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2);
-        timeoutID = setTimeout(async () => {
-            await showDownloadProgress();
-        }, 1000);
+    if (r != null && r.data != null) {
+        if (r.data.err) {
+            ElMessage.error(r.data.err);
+            clearTimeout(timeoutID);
+        showHfGenerationModelDownloadProgress.value = false;
+        showHfEmbeddingModelDownloadProgress.value = false;
+            return
+        } else if (r.data.downloading) {
+            downloadingUrl.value = r.data.url;
+            downloadingProgress.value = (r.data.downloadedLen / r.data.totalLen * 100).toFixed(2);
+            timeoutID = setTimeout(async () => {
+                await showDownloadProgress();
+            }, 1000);
+        }
     } else {
         clearTimeout(timeoutID);
         showHfIncorrectGenerationModelTip.value = false;
@@ -231,14 +247,16 @@ const textGenerationProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: false,
         models: [
-            // { label: 'microsoft/phi-1 (91MB)', value: 'AllMiniLML6V2', dimenssions: 384 },
-            // { label: 'microsoft/phi-1_5 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
-            // { label: 'microsoft/phi-2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
             { label: 'microsoft/Phi-3-mini-4k-instruct (135MB)', value: 'Phi3Mini4kInstruct' },
             { label: 'microsoft/Phi-3-mini-128k-instruct (135MB)', value: 'Phi3Mini128kInstruct' },
+            { label: 'microsoft/Phi-3-small-8k-instruct (439MB)', value: 'Phi3Small8kInstruct' },
+            { label: 'microsoft/Phi-3-small-128k-instruct (439MB)', value: 'Phi3Small128kInstruct' },
             { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'Phi3Medium4kInstruct' },
             { label: 'microsoft/Phi-3-medium-128k-instruct (439MB)', value: 'Phi3Medium128kInstruct' },
-        ]
+            { label: 'Qwen/Qwen2-72B-Instruct (91MB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            // { label: 'microsoft/phi-1_5 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
+            // { label: 'microsoft/phi-2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
+            ]
     },
     {
         id: 'OpenAI',
@@ -407,7 +425,19 @@ const changeSentenceEmbeddingProvider = (n) => {
             </el-form>
         </el-col>
     </el-row>
-    <h3>Text generation</h3>
+    <h3>
+        Text generation
+        <el-tooltip effect="light" placement="right">
+            <template #content>
+                You don’t need to download the large model file unless you want to use the functionalities
+                described below.
+                <br />
+                Currently, its function is merely to provide automatic response capabilities and suggested
+                reply templates for dialogue nodes.
+            </template>
+            <el-button circle>i</el-button>
+        </el-tooltip>
+    </h3>
     <el-row>
         <el-col :span="11" :offset="1">
             <el-form :model="settings.textGenerationProvider" :label-width="formLabelWidth" style="max-width: 600px">
@@ -463,7 +493,21 @@ const changeSentenceEmbeddingProvider = (n) => {
             </el-form>
         </el-col>
     </el-row>
-    <h3>Sentence embedding provider</h3>
+    <h3>
+        Sentence embedding provider
+        <el-tooltip effect="light" placement="right">
+            <template #content>
+                Downloading model files is not necessary.<br />
+                Its function is merely to enhance the accuracy of intent recognition for user inputs, and it will
+                not
+                affect the response functionality of the process.<br />
+                User intent can also be recognized through the configuration of keywords and regular expressions
+                without
+                downloading the model.
+            </template>
+            <el-button circle>i</el-button>
+        </el-tooltip>
+    </h3>
     <el-row>
         <el-col :span="11" :offset="1">
             <el-form :model="settings.sentenceEmbeddingProvider" :label-width="formLabelWidth" style="max-width: 600px">

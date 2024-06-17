@@ -262,7 +262,7 @@ const textGenerationProviders = [
             { label: 'google/gemma-7b-it (1.11GB)', value: 'Gemma7bInstruct', need_auth_header:true },
             { label: 'meta-llama/Meta-Llama-3-8B-Instruct (1.11GB)', value: 'MetaLlama3_8bInstruct', need_auth_header:true },
             { label: 'upstage/SOLAR-10.7B-v1.0 (1.11GB)', value: 'Solar10_7bV1_0' },
-            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (1.11GB)', value: 'TinyLlama1_1B_ChatV1_0' },
+            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (1.11GB)', value: 'TinyLlama1_1bChatV1_0' },
             { label: 'Qwen/Qwen2-72B-Instruct (91MB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
         ]
     },

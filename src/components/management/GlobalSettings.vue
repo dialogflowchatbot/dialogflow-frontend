@@ -15,9 +15,10 @@ const settings = reactive({
     ip: '127.0.0.1',
     port: '12715',
     selectRandomPortWhenConflict: false,
-    modelDownload: {
+    hfModelDownload: {
         connectTimeoutMillis: 1000,
         readTimeoutMillis: 10000,
+        accessToken: '',
     }
 });
 const formLabelWidth = '130px'
@@ -86,19 +87,17 @@ async function save() {
         <el-col :span="11" :offset="1">
             <el-form :model="settings.modelDownload" :label-width="formLabelWidth" style="max-width: 600px">
                 <el-form-item label="Connect timeout">
-                    <el-input-number v-model="settings.HfModelDownload.connectTimeoutMillis" :min="100" :max="50000"
+                    <el-input-number v-model="settings.hfModelDownload.connectTimeoutMillis" :min="100" :max="50000"
                         :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout">
-                    <el-input-number v-model="settings.HfModelDownload.readTimeoutMillis" :min="1000" :max="65530"
+                    <el-input-number v-model="settings.hfModelDownload.readTimeoutMillis" :min="1000" :max="65530"
                         :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Access token">
-                    <el-input-number v-model="settings.HfModelDownload.accessToken" :min="1000" :max="65530"
-                        :step="100" />
-                    millis
+                    <el-input v-model="settings.hfModelDownload.accessToken" placeholder="" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-button type="primary" @click="save">

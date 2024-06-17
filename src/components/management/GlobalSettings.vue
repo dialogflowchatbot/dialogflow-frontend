@@ -81,17 +81,22 @@ async function save() {
             </el-form>
         </el-col>
     </el-row>
-    <h3>Model downloading settings</h3>
+    <h3>HuggingFace model downloading settings</h3>
     <el-row>
         <el-col :span="11" :offset="1">
             <el-form :model="settings.modelDownload" :label-width="formLabelWidth" style="max-width: 600px">
                 <el-form-item label="Connect timeout">
-                    <el-input-number v-model="settings.modelDownload.connectTimeoutMillis" :min="100" :max="50000"
+                    <el-input-number v-model="settings.HfModelDownload.connectTimeoutMillis" :min="100" :max="50000"
                         :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout">
-                    <el-input-number v-model="settings.modelDownload.readTimeoutMillis" :min="1000" :max="65530"
+                    <el-input-number v-model="settings.HfModelDownload.readTimeoutMillis" :min="1000" :max="65530"
+                        :step="100" />
+                    millis
+                </el-form-item>
+                <el-form-item label="Access token">
+                    <el-input-number v-model="settings.HfModelDownload.accessToken" :min="1000" :max="65530"
                         :step="100" />
                     millis
                 </el-form-item>

@@ -115,7 +115,7 @@ async function checkHfModelFiles() {
         }
     }
     if (repostories.size > 0) {
-        const r = await httpReq("POST", 'management/settings/model/check', { robotId: robotId }, null, Array.from(repostories.values()));
+        const r = await httpReq("POST", 'management/settings/model/check', null, null, Array.from(repostories.values()));
         console.log(r);
         if (r && r.data) {
             for (let [k, v] of repostories.entries()) {
@@ -176,7 +176,7 @@ async function downloadModels(m) {
         ElMessage.error(m);
         return;
     }
-    httpReq("GET", 'management/settings/model/download', { robotId: robotId, m: m }, null, null).then((r) => {
+    httpReq("POST", 'management/settings/model/download', { robotId: robotId, m: m }, null, m).then((r) => {
         console.log(r);
         if (r == null || r.status != 200) {
             ElMessage.error('Download failed: ' + r.err.message);
@@ -197,6 +197,14 @@ async function downloadModels(m) {
     });
 }
 
+function downloadComplete() {
+    clearTimeout(timeoutID);
+    showHfIncorrectGenerationModelTip.value = false;
+    showHfGenerationModelDownloadProgress.value = false;
+    showHfIncorrectEmbeddingModelTip.value = false;
+    showHfEmbeddingModelDownloadProgress.value = false;
+}
+
 async function showDownloadProgress() {
     const r = await httpReq("GET", 'management/settings/model/download/progress', null, null, null);
     console.log(r);
@@ -204,8 +212,8 @@ async function showDownloadProgress() {
         if (r.data.err) {
             ElMessage.error(r.data.err);
             clearTimeout(timeoutID);
-        showHfGenerationModelDownloadProgress.value = false;
-        showHfEmbeddingModelDownloadProgress.value = false;
+            showHfGenerationModelDownloadProgress.value = false;
+            showHfEmbeddingModelDownloadProgress.value = false;
             return
         } else if (r.data.downloading) {
             downloadingUrl.value = r.data.url;
@@ -213,13 +221,10 @@ async function showDownloadProgress() {
             timeoutID = setTimeout(async () => {
                 await showDownloadProgress();
             }, 1000);
-        }
+        } else
+            downloadComplete()
     } else {
-        clearTimeout(timeoutID);
-        showHfIncorrectGenerationModelTip.value = false;
-        showHfGenerationModelDownloadProgress.value = false;
-        showHfIncorrectEmbeddingModelTip.value = false;
-        showHfEmbeddingModelDownloadProgress.value = false;
+        downloadComplete();
     }
 }
 
@@ -253,10 +258,13 @@ const textGenerationProviders = [
             { label: 'microsoft/Phi-3-small-128k-instruct (439MB)', value: 'Phi3Small128kInstruct' },
             { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'Phi3Medium4kInstruct' },
             { label: 'microsoft/Phi-3-medium-128k-instruct (439MB)', value: 'Phi3Medium128kInstruct' },
+            { label: 'google/gemma-2b-it (1.11GB)', value: 'Gemma2bInstruct', need_auth_header:true },
+            { label: 'google/gemma-7b-it (1.11GB)', value: 'Gemma7bInstruct', need_auth_header:true },
+            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (1.11GB)', value: 'MetaLlama3_8bInstruct', need_auth_header:true },
+            { label: 'upstage/SOLAR-10.7B-v1.0 (1.11GB)', value: 'Solar10_7bV1_0' },
+            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (1.11GB)', value: 'TinyLlama1_1B_ChatV1_0' },
             { label: 'Qwen/Qwen2-72B-Instruct (91MB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
-            // { label: 'microsoft/phi-1_5 (135MB)', value: 'ParaphraseMLMiniLML12V2' },
-            // { label: 'microsoft/phi-2 (1.11GB)', value: 'ParaphraseMLMpnetBaseV2' },
-            ]
+        ]
     },
     {
         id: 'OpenAI',
@@ -475,7 +483,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
-                        @click="downloadModels('textGeneration')">
+                        @click="downloadModels(settings.textGenerationProvider.provider.model)">
                         click here to download model files from Huggingface.co
                     </el-button>, or you can download manually and put them in ./data/model/{{
                         textGenerationModelRepository
@@ -545,7 +553,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
-                        @click="downloadModels('sentenceEmbedding')">
+                        @click="downloadModels(settings.sentenceEmbeddingProvider.provider.model)">
                         click here to download model files from Huggingface.co
                     </el-button>, or you can download manually and put them in ./data/model/{{
                         sentenceEmbeddingModelRepository }}

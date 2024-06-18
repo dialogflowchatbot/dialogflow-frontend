@@ -23,18 +23,6 @@ const settings = reactive({
     smtpPassword: '',
     smtpTimeoutSec: 60,
     emailVerificationRegex: '',
-    sentenceEmbeddingProvider: {
-        provider: {
-            id: '',
-            model: '',
-        },
-        apiUrl: '',
-        apiUrlDisabled: false,
-        showApiKeyInput: true,
-        apiKey: '',
-        connectTimeoutMillis: 1500,
-        readTimeoutMillis: 3000,
-    },
     textGenerationProvider: {
         provider: {
             id: '',
@@ -45,6 +33,19 @@ const settings = reactive({
         showApiKeyInput: true,
         apiKey: '',
         max_token_len: 5000,
+        connectTimeoutMillis: 1500,
+        readTimeoutMillis: 3000,
+        maxResponseTokenLength: 5000,
+    },
+    sentenceEmbeddingProvider: {
+        provider: {
+            id: '',
+            model: '',
+        },
+        apiUrl: '',
+        apiUrlDisabled: false,
+        showApiKeyInput: true,
+        apiKey: '',
         connectTimeoutMillis: 1500,
         readTimeoutMillis: 3000,
     },
@@ -258,9 +259,9 @@ const textGenerationProviders = [
             { label: 'microsoft/Phi-3-small-128k-instruct (439MB)', value: 'Phi3Small128kInstruct' },
             { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'Phi3Medium4kInstruct' },
             { label: 'microsoft/Phi-3-medium-128k-instruct (439MB)', value: 'Phi3Medium128kInstruct' },
-            { label: 'google/gemma-2b-it (1.11GB)', value: 'Gemma2bInstruct', need_auth_header:true },
-            { label: 'google/gemma-7b-it (1.11GB)', value: 'Gemma7bInstruct', need_auth_header:true },
-            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (1.11GB)', value: 'MetaLlama3_8bInstruct', need_auth_header:true },
+            { label: 'google/gemma-2b-it (1.11GB)', value: 'Gemma2bInstruct', need_auth_header: true },
+            { label: 'google/gemma-7b-it (1.11GB)', value: 'Gemma7bInstruct', need_auth_header: true },
+            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (1.11GB)', value: 'MetaLlama3_8bInstruct', need_auth_header: true },
             { label: 'upstage/SOLAR-10.7B-v1.0 (1.11GB)', value: 'Solar10_7bV1_0' },
             { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (1.11GB)', value: 'TinyLlama1_1bChatV1_0' },
             { label: 'Qwen/Qwen2-72B-Instruct (91MB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
@@ -468,6 +469,12 @@ const changeSentenceEmbeddingProvider = (n) => {
                         <el-option v-for="item in textGenerationModelOptions" :id="item.value" :key="item.value"
                             :label="item.label" :value="item.value" />
                     </el-select>
+                </el-form-item>
+                <el-form-item label="Max response token length"
+                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.textGenerationProvider.maxResponseTokenLength" :min="10"
+                        :max="100000" :step="5" />
+                    millis
                 </el-form-item>
                 <el-form-item label="Connect timeout"
                     v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">

@@ -276,19 +276,20 @@ const getBotType = (type) => {
   </p>
   </p>
   <p>
-    <div class="text-center">
-        Version: {{ currentVersion }}<br />
-        <a href="https://dialogflowchatbot.github.io/" target="_blank">https://dialogflowchatbot.github.io/</a><br />
-        If you have any questions or suggestions, please
-        create a <a href="https://github.com/dialogflowchatbot/dialogflow/discussions" target="_blank">discussion</a> on Github
-        or
-        email to: dialogflow@yeah.net
-    </div>
-    <div class="text-center">
-        Icons were created by
-        <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
-    </div>
-    </p>
+  <div class="text-center">
+    Version: {{ currentVersion }}<br />
+    <a href="https://dialogflowchatbot.github.io/" target="_blank">https://dialogflowchatbot.github.io/</a><br />
+    If you have any questions or suggestions, please
+    create a <a href="https://github.com/dialogflowchatbot/dialogflow/discussions" target="_blank">discussion</a> on
+    Github
+    or
+    email to: dialogflow@yeah.net
+  </div>
+  <div class="text-center">
+    Icons were created by
+    <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
+  </div>
+  </p>
   <el-dialog v-model="setFormVisible" title="Create a new robot" width="60%">
     <el-form :model="robotData">
       <el-form-item label="Name" :label-width="formLabelWidth">

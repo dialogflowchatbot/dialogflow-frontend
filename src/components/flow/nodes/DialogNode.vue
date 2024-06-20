@@ -55,7 +55,7 @@ export default defineComponent({
             nodeData: {
                 nodeName: this.t('lang.dialogNode.nodeName'),
                 dialogText: '',
-                textFromLLM:false,
+                textFromLLM: false,
                 branches: [],
                 nextStep: 'WaitUserResponse',
                 valid: false,
@@ -66,6 +66,7 @@ export default defineComponent({
             loading: false,
             lastEditRange: null,
             // textEditor: '2',
+            robotId: '',
             robotType: '',
             // extensions: [
             //     Color,
@@ -89,6 +90,11 @@ export default defineComponent({
             //     HorizontalRule,
             // ],
             editor: null,
+            genTextVisible: false,
+            genTextReq: {
+                system: '',
+                user: '',
+            }
         };
     },
     mounted() {
@@ -159,8 +165,8 @@ export default defineComponent({
         })
         // this.nodeData.dialogText = '12345';
         const { robotId } = inject('robotId');
-        // console.log('robotId='+robotId);
-        this.robotType = getRobotType(robotId);
+        this.robotId = robotId;
+        this.robotType = getRobotType(this.robotId);
         console.log('robotType=' + this.robotType);
         // console.log(this.nodeData.dialogText)
         if (this.robotType == 'TextBot') {
@@ -354,6 +360,57 @@ export default defineComponent({
         // editorCallback(s) {
         //     console.log('callback=' + s);
         // },
+        async genText() {
+            const prompt = [{ "role": "user", "content": this.genTextReq.user },];
+            if (this.genTextReq.system)
+                prompt.push({ "role": "system", "content": this.genTextReq.system, },);
+            const body = {
+                robot_id: this.robotId,
+                prompt: JSON.stringify(prompt)
+            };
+            // const endPos = this.editor.state.doc.content.size;
+            // this.editor.commands.insertContentAt(endPos, '00000000000000000abc123')
+            // console.log(this.nodeData.dialogText)
+            // console.log(JSON.stringify(body))
+            // const u = window.location.protocol + '//' + window.location.host + '/ai/text/generation';
+            const u = 'http://localhost:12715/ai/text/generation';
+            const response = await fetch(u, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/event-stream'
+                },
+                body: JSON.stringify(body),
+            })
+            const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    console.log('Connection finished.');
+                    break;
+                }
+                console.log('Received', value);
+                this.processGenedText(value)
+            }
+        },
+        processGenedText(t) {
+            const chunks = t.split('\n\n');
+            let s = '';
+            chunks.forEach((chunk, idx, array) => {
+                let dataList = chunk.split('\n');
+                dataList.forEach((data, i, a) => {
+                    if (data.indexOf('data: ') == 0) {
+                        s += data.substring(6);
+                    }
+                })
+            });
+            if (this.editor) {
+                const endPos = this.editor.state.doc.content.size;
+                this.editor.commands.insertContentAt(endPos, s)
+            } else {
+                this.nodeData.dialogText += s;
+            }
+            console.log(this.nodeData.dialogText)
+        },
     },
     components: {
         EpPlus,
@@ -484,7 +541,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 </el-form-item>
                 <el-form-item label="Text from" :label-width="formLabelWidth">
                     <el-switch v-model="nodeData.textFromLLM" class="mb-2" active-text="LLM" inactive-text="Fixed text"
-                    style="--el-switch-off-color: #13ce66" />
+                        style="--el-switch-off-color: #13ce66" />
                 </el-form-item>
                 <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
                     <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
@@ -595,7 +652,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         </el-icon>
                         {{ t('lang.dialogNode.form.addVar') }}
                     </el-button>
-                    <el-button type="primary" @click="showVarsForm">
+                    <el-button type="primary" @click="genTextVisible = true">
                         Generate text from LLM
                     </el-button>
                 </el-form-item>
@@ -622,6 +679,24 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         {{ t('lang.common.insert') }}
                     </el-button>
                     <el-button @click="varDialogVisible = false">{{ t('lang.common.cancel') }}</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog v-model="genTextVisible" title="Prompt" width="70%" :append-to-body="true" :destroy-on-close="true">
+            <el-form :model="genTextReq">
+                <el-form-item label="System" :label-width="formLabelWidth">
+                    <el-input v-model="genTextReq.system" autocomplete="on" />
+                </el-form-item>
+                <el-form-item label="User *" :label-width="formLabelWidth">
+                    <el-input v-model="genTextReq.user" autocomplete="on" :row="5" type="textarea" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button type="primary" @click="genText">
+                        Generate text
+                    </el-button>
+                    <el-button @click="genTextVisible = false">{{ t('lang.common.cancel') }}</el-button>
                 </span>
             </template>
         </el-dialog>

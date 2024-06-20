@@ -470,11 +470,9 @@ const changeSentenceEmbeddingProvider = (n) => {
                             :label="item.label" :value="item.value" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="Max response token length"
-                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                <el-form-item label="Max response token">
                     <el-input-number v-model="settings.textGenerationProvider.maxResponseTokenLength" :min="10"
                         :max="100000" :step="5" />
-                    millis
                 </el-form-item>
                 <el-form-item label="Connect timeout"
                     v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">

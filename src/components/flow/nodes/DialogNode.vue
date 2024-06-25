@@ -94,7 +94,9 @@ export default defineComponent({
             genTextReq: {
                 system: '',
                 user: '',
-            }
+            },
+            textGenerating: false,
+            genTextBtnText: 'Generate text',
         };
     },
     mounted() {
@@ -364,14 +366,21 @@ export default defineComponent({
             const prompt = [{ "role": "user", "content": this.genTextReq.user },];
             if (this.genTextReq.system)
                 prompt.push({ "role": "system", "content": this.genTextReq.system, },);
+            // const prompt = [];
+            // if (this.genTextReq.system)
+            //     prompt.push("<|system|>", this.genTextReq.system);
+            // prompt.push('<|user|>', this.genTextReq.user + '</s>', '<|assistant|>');
             const body = {
                 robot_id: this.robotId,
                 prompt: JSON.stringify(prompt)
+                // prompt: prompt.join('\n')
             };
             // const endPos = this.editor.state.doc.content.size;
             // this.editor.commands.insertContentAt(endPos, '00000000000000000abc123')
             // console.log(this.nodeData.dialogText)
-            // console.log(JSON.stringify(body))
+            console.log(JSON.stringify(body))
+            this.textGenerating = true;
+            this.genTextBtnText = 'Generating';
             // const u = window.location.protocol + '//' + window.location.host + '/ai/text/generation';
             const u = 'http://localhost:12715/ai/text/generation';
             const response = await fetch(u, {
@@ -399,13 +408,18 @@ export default defineComponent({
                 let dataList = chunk.split('\n');
                 dataList.forEach((data, i, a) => {
                     if (data.indexOf('data: ') == 0) {
-                        s += data.substring(6);
+                        let d = data.substring(6).trim();
+                        if (d.length > 0)
+                            s += d;
                     }
                 })
             });
+            if (s.length < 1)
+                return;
+            this.genTextVisible = false
             if (this.editor) {
                 const endPos = this.editor.state.doc.content.size;
-                this.editor.commands.insertContentAt(endPos, s)
+                this.editor.commands.insertContentAt(endPos, '<span>' + s + '</span>')
             } else {
                 this.nodeData.dialogText += s;
             }
@@ -693,8 +707,8 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button type="primary" @click="genText">
-                        Generate text
+                    <el-button type="primary" @click="genText" :loading="textGenerating">
+                        {{ genTextBtnText }}
                     </el-button>
                     <el-button @click="genTextVisible = false">{{ t('lang.common.cancel') }}</el-button>
                 </span>

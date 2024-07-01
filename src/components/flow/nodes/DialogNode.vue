@@ -423,7 +423,7 @@ export default defineComponent({
             } else {
                 this.nodeData.dialogText += s;
             }
-            console.log(this.nodeData.dialogText)
+            // console.log(this.nodeData.dialogText)
         },
     },
     components: {
@@ -602,8 +602,9 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                             @click="editor.chain().focus().toggleUnderline().run()">
                             Underline
                         </button>
-                        <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
-                            :value="editor.getAttributes('textStyle').color">
+                        <!-- <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
+                            :value="editor.getAttributes('textStyle').color"> -->
+                        <el-color-picker v-model="editor.getAttributes('textStyle').color" @change="(v) => editor.chain().focus().setColor(v).run()" />
                         <button type="button" :class="{ 'is-active': editor.isActive('code') }"
                             @click="editor.chain().focus().toggleCode().run()">
                             Code

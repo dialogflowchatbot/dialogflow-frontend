@@ -6,6 +6,8 @@ import { copyProperties, getDefaultBranch, getRobotType, httpReq } from '../../.
 import { useI18n } from 'vue-i18n'
 import EpPlus from '~icons/ep/plus'
 import EpWarning from '~icons/ep/warning'
+import RiBold from '~icons/ri/bold'
+
 // import {
 //     // necessary extensions
 //     Doc,
@@ -89,6 +91,22 @@ export default defineComponent({
             //     FormatClear,
             //     HorizontalRule,
             // ],
+            predefineColors: [
+                '#ff4500',
+                '#ff8c00',
+                '#ffd700',
+                '#90ee90',
+                '#00ced1',
+                '#1e90ff',
+                '#c71585',
+                // 'rgba(255, 69, 0, 0.68)',
+                // 'rgb(255, 120, 0)',
+                // 'hsv(51, 100, 98)',
+                // 'hsva(120, 40, 94, 0.5)',
+                // 'hsl(181, 100%, 37%)',
+                // 'hsla(209, 100%, 56%, 0.73)',
+                '#c7158577',
+            ],
             editor: null,
             genTextVisible: false,
             genTextReq: {
@@ -97,6 +115,7 @@ export default defineComponent({
             },
             textGenerating: false,
             genTextBtnText: 'Generate text',
+            generatedText: '',
         };
     },
     mounted() {
@@ -381,6 +400,7 @@ export default defineComponent({
             console.log(JSON.stringify(body))
             this.textGenerating = true;
             this.genTextBtnText = 'Generating';
+            this.generatedText = '';
             // const u = window.location.protocol + '//' + window.location.host + '/ai/text/generation';
             const u = 'http://localhost:12715/ai/text/generation';
             const response = await fetch(u, {
@@ -393,37 +413,42 @@ export default defineComponent({
             const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
             while (true) {
                 const { value, done } = await reader.read();
-                if (done) {
-                    console.log('Connection finished.');
-                    break;
-                }
                 console.log('Received', value);
                 this.processGenedText(value)
+                if (done) {
+                    console.log('Connection finished.');
+                    this.genTextVisible = false
+                    if (this.editor) {
+                        const endPos = this.editor.state.doc.content.size;
+                        this.editor.commands.insertContentAt(endPos, this.generatedText)
+                    } else {
+                        this.nodeData.dialogText += this.generatedText;
+                    }
+                    break;
+                }
             }
         },
         processGenedText(t) {
+            if (t == null || t == undefined)
+                return;
             const chunks = t.split('\n\n');
             let s = '';
             chunks.forEach((chunk, idx, array) => {
                 let dataList = chunk.split('\n');
                 dataList.forEach((data, i, a) => {
                     if (data.indexOf('data: ') == 0) {
-                        let d = data.substring(6).trim();
+                        let d = data.substring(6);
                         if (d.length > 0)
                             s += d;
                     }
                 })
             });
-            if (s.length < 1)
-                return;
-            this.genTextVisible = false
-            if (this.editor) {
-                const endPos = this.editor.state.doc.content.size;
-                this.editor.commands.insertContentAt(endPos, '<span>' + s + '</span>')
-            } else {
-                this.nodeData.dialogText += s;
-            }
+            if (s.length > 1)
+                this.generatedText += s;
             // console.log(this.nodeData.dialogText)
+        },
+        showColorPicker() {
+            this.$refs.colorPicker.show()
         },
     },
     components: {
@@ -505,27 +530,23 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     line-height: 150%;
 } */
 /* box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.28); */
-#bubbleMenu button,
+/* #bubbleMenu button,
 .menubar button {
     border-left: 1px solid black;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-right: none;
-    /* color: black;
-    background-color: white; */
 }
 
 #bubbleMenu button:last-child,
 .menubar button:last-child {
     border: 1px solid black;
-    /* color: black;
-    background-color: white; */
 }
 
 .is-active {
     color: white;
     background-color: black;
-}
+} */
 </style>
 <template>
     <div class="nodeBox">
@@ -586,6 +607,15 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         </button>
                     </bubble-menu>
                     <div class="menubar" v-if="editor && robotType == 'TextBot'">
+                        <el-button-group class="ml-4">
+                            <el-button type="primary" size="small">
+                                <el-icon>
+                                    <RiBold />
+                                </el-icon>
+                            </el-button>
+                            <el-button type="primary" size="small" :icon="Share" />
+                            <el-button type="primary" size="small" :icon="Delete" />
+                        </el-button-group>
                         <button type="button" :class="{ 'is-active': editor.isActive('bold') }"
                             @click="editor.chain().focus().toggleBold().run()">
                             B
@@ -604,7 +634,12 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         </button>
                         <!-- <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
                             :value="editor.getAttributes('textStyle').color"> -->
-                        <el-color-picker v-model="editor.getAttributes('textStyle').color" @change="(v) => editor.chain().focus().setColor(v).run()" />
+                        <button type="button" @click="showColorPicker">
+                            Color
+                        </button>
+                        <el-color-picker ref="colorPicker" :predefine="predefineColors"
+                            v-model="editor.getAttributes('textStyle').color"
+                            @change="(v) => editor.chain().focus().setColor(v).run()" />
                         <button type="button" :class="{ 'is-active': editor.isActive('code') }"
                             @click="editor.chain().focus().toggleCode().run()">
                             Code
@@ -661,13 +696,13 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         v-if="editor && robotType == 'TextBot'" v-model="nodeData.dialogText" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
-                    <el-button link @click="showVarsForm">
+                    <el-button @click="showVarsForm">
                         <el-icon>
                             <EpPlus />
                         </el-icon>
                         {{ t('lang.dialogNode.form.addVar') }}
                     </el-button>
-                    <el-button type="primary" @click="genTextVisible = true">
+                    <el-button @click="genTextVisible = true">
                         Generate text from LLM
                     </el-button>
                 </el-form-item>
@@ -704,6 +739,12 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 </el-form-item>
                 <el-form-item label="User *" :label-width="formLabelWidth">
                     <el-input v-model="genTextReq.user" autocomplete="on" :row="5" type="textarea" />
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    Following generated text will be inserted when finish.
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    {{ generatedText }}
                 </el-form-item>
             </el-form>
             <template #footer>

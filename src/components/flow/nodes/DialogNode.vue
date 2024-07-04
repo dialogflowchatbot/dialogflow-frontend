@@ -7,6 +7,17 @@ import { useI18n } from 'vue-i18n'
 import EpPlus from '~icons/ep/plus'
 import EpWarning from '~icons/ep/warning'
 import RiBold from '~icons/ri/bold'
+import RiItalic from '~icons/ri/italic'
+import RiStrikethrough from '~icons/ri/strikethrough'
+import RiUnderline from '~icons/ri/underline'
+import RiFontColor from '~icons/ri/font-color'
+import RiHeading from '~icons/ri/heading'
+import RiListUnordered from '~icons/ri/list-unordered'
+import RiListOrdered from '~icons/ri/list-ordered'
+import RiChatQuoteLine from '~icons/ri/chat-quote-line'
+import IcBaselineHorizontalRule from '~icons/ic/baseline-horizontal-rule'
+import IcBaselineUndo from '~icons/ic/baseline-undo'
+import IcBaselineRedo from '~icons/ic/baseline-redo'
 
 // import {
 //     // necessary extensions
@@ -108,6 +119,7 @@ export default defineComponent({
                 '#c7158577',
             ],
             editor: null,
+            activeBtnColor: '#626aef',
             genTextVisible: false,
             genTextReq: {
                 system: '',
@@ -443,7 +455,7 @@ export default defineComponent({
                     }
                 })
             });
-            if (s.length > 1)
+            if (s.length > 0)
                 this.generatedText += s;
             // console.log(this.nodeData.dialogText)
         },
@@ -454,6 +466,18 @@ export default defineComponent({
     components: {
         EpPlus,
         EpWarning,
+        RiBold,
+        RiItalic,
+        RiStrikethrough,
+        RiUnderline,
+        RiFontColor,
+        RiHeading,
+        RiListUnordered,
+        RiListOrdered,
+        RiChatQuoteLine,
+        IcBaselineHorizontalRule,
+        IcBaselineUndo,
+        IcBaselineRedo,
         // EleTipTap,
         EditorContent,
         BubbleMenu,
@@ -577,6 +601,9 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 <el-form-item label="Text from" :label-width="formLabelWidth">
                     <el-switch v-model="nodeData.textFromLLM" class="mb-2" active-text="LLM" inactive-text="Fixed text"
                         style="--el-switch-off-color: #13ce66" />
+                    <el-color-picker ref="colorPicker" :predefine="predefineColors"
+                        v-model="editor.getAttributes('textStyle').color"
+                        @change="(v) => editor.chain().focus().setColor(v).run()" style="visibility: hidden;" />
                 </el-form-item>
                 <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
                     <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
@@ -607,90 +634,63 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                         </button>
                     </bubble-menu>
                     <div class="menubar" v-if="editor && robotType == 'TextBot'">
-                        <el-button-group class="ml-4">
-                            <el-button type="primary" size="small">
-                                <el-icon>
+                        <el-button-group size="normal">
+                            <el-button :color="editor.isActive('bold') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleBold().run()"><el-icon>
                                     <RiBold />
-                                </el-icon>
-                            </el-button>
-                            <el-button type="primary" size="small" :icon="Share" />
-                            <el-button type="primary" size="small" :icon="Delete" />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('italic') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleItalic().run()"><el-icon>
+                                    <RiItalic />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('strike') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleStrike().run()"><el-icon>
+                                    <RiStrikethrough />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('underline') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleUnderline().run()"><el-icon>
+                                    <RiUnderline />
+                                </el-icon></el-button>
+                            <el-button :color="editor.getAttributes('textStyle').color"
+                                @click="showColorPicker"><el-icon>
+                                    <RiFontColor />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('heading', { level: 1 }) ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"><el-icon>
+                                    <RiHeading />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('bulletList') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleBulletList().run()"><el-icon>
+                                    <RiListUnordered />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('orderedList') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleOrderedList().run()"><el-icon>
+                                    <RiListOrdered />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('blockquote') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleBlockquote().run()"><el-icon>
+                                    <RiChatQuoteLine />
+                                </el-icon></el-button>
+                            <el-button @click="editor.chain().focus().setHorizontalRule().run()"><el-icon>
+                                    <IcBaselineHorizontalRule />
+                                </el-icon></el-button>
+                            <el-button @click="editor.chain().focus().undo().run()"><el-icon>
+                                    <IcBaselineUndo />
+                                </el-icon></el-button>
+                            <el-button @click="editor.chain().focus().redo().run()"><el-icon>
+                                    <IcBaselineRedo />
+                                </el-icon></el-button>
                         </el-button-group>
-                        <button type="button" :class="{ 'is-active': editor.isActive('bold') }"
-                            @click="editor.chain().focus().toggleBold().run()">
-                            B
-                        </button>
-                        <button type="button" :class="{ 'is-active': editor.isActive('italic') }"
-                            @click="editor.chain().focus().toggleItalic().run()">
-                            I
-                        </button>
-                        <button type="button" :class="{ 'is-active': editor.isActive('strike') }"
-                            @click="editor.chain().focus().toggleStrike().run()">
-                            S
-                        </button>
-                        <button type="button" :class="{ 'is-active': editor.isActive('underline') }"
-                            @click="editor.chain().focus().toggleUnderline().run()">
-                            Underline
-                        </button>
                         <!-- <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
                             :value="editor.getAttributes('textStyle').color"> -->
-                        <button type="button" @click="showColorPicker">
-                            Color
-                        </button>
-                        <el-color-picker ref="colorPicker" :predefine="predefineColors"
-                            v-model="editor.getAttributes('textStyle').color"
-                            @change="(v) => editor.chain().focus().setColor(v).run()" />
-                        <button type="button" :class="{ 'is-active': editor.isActive('code') }"
+                        <!-- <button type="button" :class="{ 'is-active': editor.isActive('code') }"
                             @click="editor.chain().focus().toggleCode().run()">
                             Code
                         </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-                            @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">
-                            H1
-                        </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-                            @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">
-                            H2
-                        </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
-                            @click="editor.chain().focus().toggleHeading({ level: 3 }).run()">
-                            H3
-                        </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('bulletList') }"
-                            @click="editor.chain().focus().toggleBulletList().run()">
-                            Ul
-                        </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('orderedList') }"
-                            @click="editor.chain().focus().toggleOrderedList().run()">
-                            Ol
-                        </button>
-
-                        <button type="button" :class="{ 'is-active': editor.isActive('blockquote') }"
-                            @click="editor.chain().focus().toggleBlockquote().run()">
-                            Quote
-                        </button>
-
                         <button type="button" :class="{ 'is-active': editor.isActive('codeBlock') }"
                             @click="editor.chain().focus().toggleCodeBlock().run()">
                             CodeBlock
-                        </button>
-
-                        <button type="button" @click="editor.chain().focus().setHorizontalRule().run()">
-                            HR
-                        </button>
-
-                        <button type="button" @click="editor.chain().focus().undo().run()">
-                            Undo
-                        </button>
-
-                        <button type="button" @click="editor.chain().focus().redo().run()">
-                            Redo
-                        </button>
+                        </button> -->
                     </div>
                     <editor-content :editor="editor" style="width:100%; border: #e5e9f2 1px solid;"
                         v-if="editor && robotType == 'TextBot'" v-model="nodeData.dialogText" />
@@ -740,7 +740,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 <el-form-item label="User *" :label-width="formLabelWidth">
                     <el-input v-model="genTextReq.user" autocomplete="on" :row="5" type="textarea" />
                 </el-form-item>
-                <el-form-item label="" :label-width="formLabelWidth">
+                <el-form-item v-if="generatedText.length > 0" label="" :label-width="formLabelWidth">
                     Following generated text will be inserted when finish.
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">

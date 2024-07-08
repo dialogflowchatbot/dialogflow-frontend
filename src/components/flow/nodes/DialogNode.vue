@@ -11,6 +11,7 @@ import RiItalic from '~icons/ri/italic'
 import RiStrikethrough from '~icons/ri/strikethrough'
 import RiUnderline from '~icons/ri/underline'
 import RiFontColor from '~icons/ri/font-color'
+import BiHighlighter from '~icons/bi/highlighter'
 import RiHeading from '~icons/ri/heading'
 import RiListUnordered from '~icons/ri/list-unordered'
 import RiListOrdered from '~icons/ri/list-ordered'
@@ -49,6 +50,13 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import { Color } from '@tiptap/extension-color'
 import TextStyle from '@tiptap/extension-text-style'
+import Highlight from '@tiptap/extension-highlight'
+import Blockquote from '@tiptap/extension-blockquote'
+import TextAlign from '@tiptap/extension-text-align'
+import MaterialSymbolsFormatAlignLeft from '~icons/material-symbols/format-align-left'
+import MaterialSymbolsFormatAlignCenter from '~icons/material-symbols/format-align-center'
+import MaterialSymbolsFormatAlignRight from '~icons/material-symbols/format-align-right'
+import PhTrash from '~icons/ph/trash'
 
 export default defineComponent({
     name: "DialogNode",
@@ -205,10 +213,15 @@ export default defineComponent({
         if (this.robotType == 'TextBot') {
             this.editor = new Editor({
                 extensions: [
+                    // Blockquote,
                     Color,
+                    Highlight.configure({ multicolor: true }),
                     StarterKit,
                     Underline,
                     TextStyle,
+                    TextAlign.configure({
+                        types: ['heading', 'paragraph'],
+                    }),
                 ],
                 // content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
                 content: this.nodeData.dialogText,
@@ -470,12 +483,17 @@ export default defineComponent({
         RiItalic,
         RiStrikethrough,
         RiUnderline,
+        MaterialSymbolsFormatAlignLeft,
+        MaterialSymbolsFormatAlignCenter,
+        MaterialSymbolsFormatAlignRight,
+        BiHighlighter,
         RiFontColor,
         RiHeading,
         RiListUnordered,
         RiListOrdered,
         RiChatQuoteLine,
         IcBaselineHorizontalRule,
+        PhTrash,
         IcBaselineUndo,
         IcBaselineRedo,
         // EleTipTap,
@@ -572,6 +590,27 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
     background-color: black;
 } */
 </style>
+<style lang="scss">
+/* Basic editor styles */
+.tiptap {
+    :first-child {
+        margin-top: 0;
+    }
+
+    blockquote {
+        border-left: 3px solid gray;
+        margin: 1.5rem 0;
+        padding-left: 1rem;
+    }
+
+    mark {
+        background-color: #FAF594;
+        border-radius: 0.4rem;
+        box-decoration-break: clone;
+        padding: 0.1rem 0.3rem;
+    }
+}
+</style>
 <template>
     <div class="nodeBox">
         <div ref="nodeName" class="nodeTitle">
@@ -651,6 +690,22 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                                 @click="editor.chain().focus().toggleUnderline().run()"><el-icon>
                                     <RiUnderline />
                                 </el-icon></el-button>
+                            <el-button :color="editor.isActive({ textAlign: 'left' }) ? activeBtnColor : ''"
+                                @click="editor.chain().focus().setTextAlign('left').run()"><el-icon>
+                                    <MaterialSymbolsFormatAlignLeft />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive({ textAlign: 'center' }) ? activeBtnColor : ''"
+                                @click="editor.chain().focus().setTextAlign('center').run()"><el-icon>
+                                    <MaterialSymbolsFormatAlignCenter />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive({ textAlign: 'right' }) ? activeBtnColor : ''"
+                                @click="editor.chain().focus().setTextAlign('right').run()"><el-icon>
+                                    <MaterialSymbolsFormatAlignRight />
+                                </el-icon></el-button>
+                            <el-button :color="editor.isActive('highlight') ? activeBtnColor : ''"
+                                @click="editor.chain().focus().toggleHighlight().run()"><el-icon>
+                                    <BiHighlighter />
+                                </el-icon></el-button>
                             <el-button :color="editor.getAttributes('textStyle').color"
                                 @click="showColorPicker"><el-icon>
                                     <RiFontColor />
@@ -673,6 +728,9 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                                 </el-icon></el-button>
                             <el-button @click="editor.chain().focus().setHorizontalRule().run()"><el-icon>
                                     <IcBaselineHorizontalRule />
+                                </el-icon></el-button>
+                            <el-button @click="editor.chain().focus().setHorizontalRule().run()"><el-icon>
+                                    <PhTrash />
                                 </el-icon></el-button>
                             <el-button @click="editor.chain().focus().undo().run()"><el-icon>
                                     <IcBaselineUndo />

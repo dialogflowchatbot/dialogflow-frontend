@@ -473,7 +473,8 @@ export default defineComponent({
             // console.log(this.nodeData.dialogText)
         },
         showColorPicker() {
-            this.$refs.colorPicker.show()
+            // this.$refs.colorPicker.show()
+            this.$refs.colorPicker.click()
         },
     },
     components: {
@@ -637,13 +638,10 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                     <el-input v-model="nodeData.nodeName" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="Text from" :label-width="formLabelWidth">
+                <!-- <el-form-item label="Text from" :label-width="formLabelWidth">
                     <el-switch v-model="nodeData.textFromLLM" class="mb-2" active-text="LLM" inactive-text="Fixed text"
                         style="--el-switch-off-color: #13ce66" />
-                    <el-color-picker ref="colorPicker" :predefine="predefineColors"
-                        v-model="editor.getAttributes('textStyle').color"
-                        @change="(v) => editor.chain().focus().setColor(v).run()" style="visibility: hidden;" />
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
                     <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
                             <el-radio label="1">Plain text</el-radio>
@@ -729,7 +727,7 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                             <el-button @click="editor.chain().focus().setHorizontalRule().run()"><el-icon>
                                     <IcBaselineHorizontalRule />
                                 </el-icon></el-button>
-                            <el-button @click="editor.chain().focus().setHorizontalRule().run()"><el-icon>
+                            <el-button @click="editor.chain().focus().clearNodes().unsetAllMarks().run()"><el-icon>
                                     <PhTrash />
                                 </el-icon></el-button>
                             <el-button @click="editor.chain().focus().undo().run()"><el-icon>
@@ -739,6 +737,11 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                                     <IcBaselineRedo />
                                 </el-icon></el-button>
                         </el-button-group>
+                        <input ref="colorPicker" type="color" style="visibility: hidden;"
+                            @input="(e) => editor.chain().focus().setColor(e.target.value).run()" />
+                        <!-- <el-color-picker ref="colorPicker" :predefine="predefineColors"
+                            v-model="editor.getAttributes('textStyle').color"
+                            @change="(v) => editor.chain().focus().setColor(v).run()" style="visibility: hidden;" /> -->
                         <!-- <input type="color" @input="editor.chain().focus().setColor($event.target.value).run()"
                             :value="editor.getAttributes('textStyle').color"> -->
                         <!-- <button type="button" :class="{ 'is-active': editor.isActive('code') }"

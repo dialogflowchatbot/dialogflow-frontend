@@ -442,6 +442,7 @@ export default defineComponent({
                 this.processGenedText(value)
                 if (done) {
                     console.log('Connection finished.');
+                    this.textGenerating = false;
                     this.genTextVisible = false
                     if (this.editor) {
                         const endPos = this.editor.state.doc.content.size;

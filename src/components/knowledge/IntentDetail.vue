@@ -16,7 +16,7 @@ const intentData = reactive({
 });
 
 const formData = {
-    robotId:'',
+    robotId: '',
     id: '',
     data: '',
 };
@@ -31,7 +31,7 @@ onMounted(async () => {
         intentData.regexes = t.data.regexes;
         intentData.phrases = t.data.phrases.map((cur, idx, arr) => cur.phrase);
     }
-    t = await httpReq("GET", 'management/settings/model/check', {robotId:robotId}, null, null);
+    t = await httpReq("GET", 'management/settings/model/check/embedding', { robotId: robotId }, null, null);
     // console.log(t);
     phraseInputDisabled.value = t == null || t.status == null || t.status != 200;
     // console.log(phraseInputDisabled.value)
@@ -165,7 +165,7 @@ async function newPhrase() {
     if (phraseValue.value) {
         formData.id = route.query.id;
         formData.data = phraseValue.value;
-        const t = await httpReq('POST', 'intent/phrase', { robotId:robotId,id: formData.id, data: route.query.idx }, null, formData);
+        const t = await httpReq('POST', 'intent/phrase', { robotId: robotId, id: formData.id, data: route.query.idx }, null, formData);
         console.log(t.data);
         if (t.status == 200)
             intentData.phrases.push(phraseValue.value)

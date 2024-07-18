@@ -50,7 +50,7 @@ const settings = reactive({
         readTimeoutMillis: 3000,
     },
 });
-const formLabelWidth = '130px'
+const formLabelWidth = '150px'
 const loading = ref(false)
 const smtpPassed = ref(false)
 const smtpFailed = ref(false)
@@ -100,7 +100,7 @@ async function checkHfModelFiles() {
                 break;
             }
         }
-    }
+    } else showHfIncorrectGenerationModelTip.value = false;
     if (settings.sentenceEmbeddingProvider.provider.id == 'HuggingFace') {
         for (let i = 0; i < sentenceEmbeddingModelOptions.length; i++) {
             console.log(sentenceEmbeddingModelOptions[i].value)
@@ -114,9 +114,9 @@ async function checkHfModelFiles() {
                 break;
             }
         }
-    }
+    } else showHfIncorrectEmbeddingModelTip.value = false;
     if (repostories.size > 0) {
-        const r = await httpReq("POST", 'management/settings/model/check', null, null, Array.from(repostories.values()));
+        const r = await httpReq("POST", 'management/settings/model/check/files', null, null, Array.from(repostories.values()));
         console.log(r);
         if (r && r.data) {
             for (let [k, v] of repostories.entries()) {
@@ -297,11 +297,16 @@ const textGenerationProviders = [
             { label: 'Gemma', value: 'gemma' },
             { label: 'Mixtral', value: 'mixtral' },
             { label: 'Llama 2', value: 'llama2' },
-            { label: 'Qwen', value: 'qwen' },
+            // { label: 'Qwen', value: 'qwen' },
+            { label: 'Qwen 2 0.5b', value: 'qwen2:0.5b' },
+            { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
+            { label: 'Qwen 2 7b', value: 'qwen2:7b' },
+            { label: 'Qwen 2 72b', value: 'qwen2:72b' },
             { label: 'TinyLlama', value: 'tinyllama' },
             { label: 'Yi 1.5', value: 'yi' },
             { label: 'All Mini LM', value: 'all-minilm' },
-            { label: 'Llama 2 Chinese', value: 'llama2-chinese' }
+            { label: 'Llama 2 Chinese', value: 'llama2-chinese' },
+            { label: 'Other', value: 'other' },
         ],
     },
 ]
@@ -355,6 +360,7 @@ const sentenceEmbeddingProviders = [
             { label: 'Mixtral', value: 'mixtral' },
             { label: 'Llama 2', value: 'llama2' },
             { label: 'Qwen', value: 'qwen' },
+            { label: 'Qwen2 0.5b', value: 'qwen2:0.5b' },
             { label: 'TinyLlama', value: 'tinyllama' },
             { label: 'Yi 1.5', value: 'yi' },
             { label: 'All Mini LM', value: 'all-minilm' },
@@ -373,7 +379,7 @@ const changeTextGenerationProvider = (n) => {
             if (textGenerationProviders[i].apiUrlDisabled)
                 settings.textGenerationProvider.apiUrl = textGenerationProviders[i].apiUrl;
             else {
-                settings.textGenerationProvider.apiUrl = sentenceEmbeddingDynamicReqUrlMap.get(settings.TextGenerationProvider.provider.id);
+                settings.textGenerationProvider.apiUrl = sentenceEmbeddingDynamicReqUrlMap.get(settings.textGenerationProvider.provider.id);
                 if (!settings.textGenerationProvider.apiUrl)
                     settings.textGenerationProvider.apiUrl = textGenerationProviders[i].apiUrl;
             }

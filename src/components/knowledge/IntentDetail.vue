@@ -154,6 +154,8 @@ const phraseValue = ref('');
 const phraseInputDisabled = ref(true);
 const phraseInputVisible = ref(false);
 const phraseInputRef = ref();
+const showAddedPhraseFailedTip = ref(false)
+const regeneratingAllEmbeddings = ref(false)
 const showPhraseInput = () => {
     phraseInputVisible.value = true
     nextTick(() => {
@@ -169,6 +171,10 @@ async function newPhrase() {
         console.log(t.data);
         if (t.status == 200)
             intentData.phrases.push(phraseValue.value)
+        else {
+            ElMessage.error(t.err.message);
+            showAddedPhraseFailedTip.value = true
+        }
     }
     phraseInputVisible.value = false
     phraseValue.value = ''
@@ -204,6 +210,11 @@ async function removePhrase(w) {
             //     message: 'Delete canceled',
             // })
         })
+}
+
+const regenerateAll = () => {
+    regeneratingAllEmbeddings.value = true
+    httpReq('GET', 'intent/phrase/regenerate-all', { robotId: robotId, id: formData.id, data: '' }, null, null).then(v => regeneratingAllEmbeddings.value = false);
 }
 
 const goBack = () => {
@@ -252,6 +263,14 @@ const goBack = () => {
     </el-button>
     <div v-show="phraseInputDisabled">
         This feature was disabled since model files were missing, please goto <router-link
-            to="/settings">settings</router-link> and select one model first.
+            :to="{ name: 'settings', params: { robotId: robotId } }">settings</router-link> and select one model first.
+    </div>
+    <el-alert v-show="showAddedPhraseFailedTip" title="Added similar sentence failed." type="error"
+        description="But don't worry, maybe you switched different embedding provider caused this. You can press 'Regenerate all similar sentences.' button below to fix this issue."
+        show-icon />
+    <div>
+        <el-button :loading="regeneratingAllEmbeddings" class="button-new-tag ml-1" @click="regenerateAll">
+            Regenerate all similar sentences.
+        </el-button>
     </div>
 </template>

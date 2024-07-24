@@ -94,7 +94,7 @@ const models = [
                     </el-select>
                 </el-form-item>
                 <el-form-item label="History length" :label-width="formLabelWidth">
-                    <el-input-number v-model="nodeData.contextLength" :min="0" :max="100000" :step="10" />
+                    <el-input-number v-model="nodeData.contextLength" :min="0" :max="5000" :step="5" />
                     How many chat history records will be added in prompt.
                 </el-form-item>
                 <el-form-item label="Exit prompt" :label-width="formLabelWidth">

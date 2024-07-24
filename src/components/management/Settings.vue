@@ -314,10 +314,13 @@ const textGenerationProviders = [
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: [
+            { label: 'Meta Llama 3.1 8b', value: 'llama3.1:8b' },
+            { label: 'Meta Llama 3.1 70b', value: 'llama3.1:70b' },
             { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
             { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
             { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
             { label: 'Phi-3 14b', value: 'phi3:14b' },
+            { label: 'Phi-3 instruct', value: 'phi3:instruct' },
             { label: 'Gemma2 9b', value: 'gemma2:9b' },
             { label: 'Gemma2 27b', value: 'gemma2:27b' },
             { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
@@ -339,6 +342,16 @@ const textGenerationProviders = [
 
 const isAddingAnotherTextGenerationOllamaModel = ref(false)
 const anotherTextGenerationOllamaModel = ref('')
+const textGenerationModelSelector = ref()
+const addAnotherTextGenerationOllamaModel = (m) => {
+    const obj = { label: m, value: m };
+    textGenerationModelOptions.unshift(obj);
+    textGenerationProviders[2].models.unshift(obj);
+    textGenerationModelSelector.value.blur();
+    settings.textGenerationProvider.provider.id = 'Ollama';
+    settings.textGenerationProvider.provider.model = obj.value;
+    anotherTextGenerationOllamaModel.value = '';
+}
 
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
 const sentenceEmbeddingProviders = [
@@ -381,10 +394,13 @@ const sentenceEmbeddingProviders = [
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: [
+            { label: 'Meta Llama 3.1 8b', value: 'llama3.1:8b' },
+            { label: 'Meta Llama 3.1 70b', value: 'llama3.1:70b' },
             { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
             { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
             { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
             { label: 'Phi-3 14b', value: 'phi3:14b' },
+            { label: 'Phi-3 instruct', value: 'phi3:instruct' },
             { label: 'Gemma2 9b', value: 'gemma2:9b' },
             { label: 'Gemma2 27b', value: 'gemma2:27b' },
             { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
@@ -421,6 +437,11 @@ const changeTextGenerationProvider = (n) => {
             settings.textGenerationProvider.apiUrlDisabled = textGenerationProviders[i].apiUrlDisabled;
             settings.textGenerationProvider.showApiKeyInput = textGenerationProviders[i].showApiKeyInput;
             choosedTextGenerationProvider.value = n;
+            if (n == 'Ollama') {
+                if (textGenerationProviders[i].models.find(d => d.value == settings.textGenerationProvider.provider.model) == null) {
+                    addAnotherTextGenerationOllamaModel(settings.textGenerationProvider.provider.model);
+                }
+            }
             textGenerationModelOptions.splice(0, textGenerationModelOptions.length, ...textGenerationProviders[i].models)
             // console.log(modelOptions.length)
             break;
@@ -524,9 +545,26 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
                     <el-input v-model="settings.textGenerationProvider.apiKey" />
                 </el-form-item>
                 <el-form-item label="Model">
-                    <el-select v-model="settings.textGenerationProvider.provider.model" placeholder="Choose a model">
+                    <el-select ref="textGenerationModelSelector"
+                        v-model="settings.textGenerationProvider.provider.model" placeholder="Choose a model">
                         <el-option v-for="item in textGenerationModelOptions" :id="item.value" :key="item.value"
                             :label="item.label" :value="item.value" />
+                        <template #footer>
+                            <el-button :disabled="settings.textGenerationProvider.provider.id != 'Ollama'"
+                                v-if="!isAddingAnotherTextGenerationOllamaModel" text bg
+                                @click="isAddingAnotherTextGenerationOllamaModel = true">
+                                Another ollama model
+                            </el-button>
+                            <template v-else>
+                                <el-input v-model="anotherTextGenerationOllamaModel" placeholder="input model name"
+                                    style="margin-bottom: 8px;" />
+                                <el-button type="primary"
+                                    @click="addAnotherTextGenerationOllamaModel(anotherTextGenerationOllamaModel)">
+                                    confirm
+                                </el-button>
+                                <el-button @click="isAddingAnotherTextGenerationOllamaModel = false">cancel</el-button>
+                            </template>
+                        </template>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Max response token">

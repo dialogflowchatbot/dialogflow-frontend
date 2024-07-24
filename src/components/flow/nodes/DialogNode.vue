@@ -225,6 +225,15 @@ export default defineComponent({
                 ],
                 // content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
                 content: this.nodeData.dialogText,
+                editorProps: {
+                    // https://github.com/ueberdosis/tiptap/issues/943
+                    transformPastedText(text) {
+                        return text.replace(/\u200B/g, "").replace(/\xA0/g, " ");
+                    },
+                    transformPastedHTML(html) {
+                        return html.replace(/\u200B/g, "").replace(/\xA0/g, " ");
+                    },
+                },
                 onUpdate: () => {
                     // HTML
                     this.$emit('update:modelValue', this.editor.getHTML())

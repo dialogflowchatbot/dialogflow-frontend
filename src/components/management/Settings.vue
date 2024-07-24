@@ -61,6 +61,7 @@ const textGenerationModelRepository = ref('')
 const showHfIncorrectEmbeddingModelTip = ref(false)
 const showHfEmbeddingModelDownloadProgress = ref(false)
 const sentenceEmbeddingModelRepository = ref('')
+const originalSentenceEmbeddingModelId = ref('')
 const downloadingUrl = ref('')
 const downloadingProgress = ref('')
 
@@ -73,6 +74,8 @@ onMounted(async () => {
         // const d = t.data;
         // settings.port = d.port;
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
+        originalSentenceEmbeddingModelId.value = t.data.sentenceEmbeddingProvider.provider.id;
+        console.log('originalSentenceEmbeddingModelId=', originalSentenceEmbeddingModelId)
         changeTextGenerationProvider(settings.textGenerationProvider.provider.id);
         changeSentenceEmbeddingProvider(settings.sentenceEmbeddingProvider.provider.id);
     }
@@ -153,6 +156,26 @@ async function checkHfModelFiles() {
 }
 
 async function save() {
+    if (originalSentenceEmbeddingModelId.value != settings.sentenceEmbeddingProvider.provider.id) {
+        ElMessageBox.confirm(
+            'Sentence embedding model has been changed, this may cause dimension mismatch issue <strong>(You can regenerate all sentences to resolve)</strong>. Continue?',
+            'Warning',
+            {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+                dangerouslyUseHTMLString: true,
+            }
+        )
+            .then(() => {
+                saveSettings()
+            })
+            .catch(() => {
+            })
+    } else saveSettings();
+}
+
+async function saveSettings() {
     if (!settings.emailVerificationRegex)
         settings.emailVerificationRegex = defaultEmailVerificationRegex;
     settings.maxSessionIdleSec = (maxSessionIdleMin.value * 60)
@@ -253,18 +276,19 @@ const textGenerationProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: false,
         models: [
-            { label: 'microsoft/Phi-3-mini-4k-instruct (135MB)', value: 'Phi3Mini4kInstruct' },
-            { label: 'microsoft/Phi-3-mini-128k-instruct (135MB)', value: 'Phi3Mini128kInstruct' },
-            { label: 'microsoft/Phi-3-small-8k-instruct (439MB)', value: 'Phi3Small8kInstruct' },
-            { label: 'microsoft/Phi-3-small-128k-instruct (439MB)', value: 'Phi3Small128kInstruct' },
-            { label: 'microsoft/Phi-3-medium-4k-instruct (439MB)', value: 'Phi3Medium4kInstruct' },
-            { label: 'microsoft/Phi-3-medium-128k-instruct (439MB)', value: 'Phi3Medium128kInstruct' },
-            { label: 'google/gemma-2b-it (1.11GB)', value: 'Gemma2bInstruct', need_auth_header: true },
-            { label: 'google/gemma-7b-it (1.11GB)', value: 'Gemma7bInstruct', need_auth_header: true },
-            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (1.11GB)', value: 'MetaLlama3_8bInstruct', need_auth_header: true },
-            { label: 'upstage/SOLAR-10.7B-v1.0 (1.11GB)', value: 'Solar10_7bV1_0' },
-            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (1.11GB)', value: 'TinyLlama1_1bChatV1_0' },
-            { label: 'Qwen/Qwen2-72B-Instruct (91MB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            { label: 'microsoft/Phi-3-mini-4k-instruct (7.7GB)', value: 'Phi3Mini4kInstruct' },
+            { label: 'microsoft/Phi-3-mini-128k-instruct (7.7GB)', value: 'Phi3Mini128kInstruct' },
+            { label: 'microsoft/Phi-3-small-8k-instruct (15GB)', value: 'Phi3Small8kInstruct' },
+            { label: 'microsoft/Phi-3-small-128k-instruct (15GB)', value: 'Phi3Small128kInstruct' },
+            { label: 'microsoft/Phi-3-medium-4k-instruct (30GB)', value: 'Phi3Medium4kInstruct' },
+            { label: 'microsoft/Phi-3-medium-128k-instruct (30GB)', value: 'Phi3Medium128kInstruct' },
+            { label: 'google/gemma-2b-it (4.9GB)', value: 'Gemma2bInstruct', need_auth_header: true },
+            { label: 'google/gemma-7b-it (12.1GB)', value: 'Gemma7bInstruct', need_auth_header: true },
+            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (??GB)', value: 'MetaLlama3_8bInstruct', need_auth_header: true },
+            { label: 'upstage/SOLAR-10.7B-v1.0 (21.5GB)', value: 'Solar10_7bV1_0' },
+            { label: 'Qwen/Qwen2-7B-Instruct (15.4GB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            { label: 'Qwen/Qwen2-72B-Instruct (144GB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (2.2GB)', value: 'TinyLlama1_1bChatV1_0' },
         ]
     },
     {
@@ -290,26 +314,31 @@ const textGenerationProviders = [
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: [
-            { label: 'Meta Llama 3', value: 'llama3' },
-            { label: 'Phi-3', value: 'phi3' },
-            { label: 'WizardLM-2', value: 'wizardlm2' },
-            { label: 'Mistral', value: 'mistral' },
-            { label: 'Gemma', value: 'gemma' },
-            { label: 'Mixtral', value: 'mixtral' },
-            { label: 'Llama 2', value: 'llama2' },
-            // { label: 'Qwen', value: 'qwen' },
+            { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
+            { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
+            { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
+            { label: 'Phi-3 14b', value: 'phi3:14b' },
+            { label: 'Gemma2 9b', value: 'gemma2:9b' },
+            { label: 'Gemma2 27b', value: 'gemma2:27b' },
+            { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
+            { label: 'WizardLM-2 8x22b', value: 'wizardlm2:8x22b' },
+            { label: 'Mistral 7b', value: 'mistral:7b' },
+            { label: 'Mixtral 8x7b', value: 'mixtral:8x7b' },
+            { label: 'Mixtral 8x22b', value: 'mixtral:8x22b' },
             { label: 'Qwen 2 0.5b', value: 'qwen2:0.5b' },
             { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
             { label: 'Qwen 2 7b', value: 'qwen2:7b' },
             { label: 'Qwen 2 72b', value: 'qwen2:72b' },
-            { label: 'TinyLlama', value: 'tinyllama' },
-            { label: 'Yi 1.5', value: 'yi' },
-            { label: 'All Mini LM', value: 'all-minilm' },
-            { label: 'Llama 2 Chinese', value: 'llama2-chinese' },
-            { label: 'Other', value: 'other' },
+            { label: 'TinyLlama 1.1b', value: 'tinyllama:1.1b' },
+            { label: 'Yi 1.5 6b', value: 'yi:6b' },
+            { label: 'Yi 1.5 9b', value: 'yi:9b' },
+            { label: 'Yi 1.5 34b', value: 'yi:34b' },
         ],
     },
 ]
+
+const isAddingAnotherTextGenerationOllamaModel = ref(false)
+const anotherTextGenerationOllamaModel = ref('')
 
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
 const sentenceEmbeddingProviders = [
@@ -352,19 +381,25 @@ const sentenceEmbeddingProviders = [
         apiUrlDisabled: false,
         showApiKeyInput: false,
         models: [
-            { label: 'Meta Llama 3', value: 'llama3' },
-            { label: 'Phi-3', value: 'phi3' },
-            { label: 'WizardLM-2', value: 'wizardlm2' },
-            { label: 'Mistral', value: 'mistral' },
-            { label: 'Gemma', value: 'gemma' },
-            { label: 'Mixtral', value: 'mixtral' },
-            { label: 'Llama 2', value: 'llama2' },
-            { label: 'Qwen', value: 'qwen' },
-            { label: 'Qwen2 0.5b', value: 'qwen2:0.5b' },
-            { label: 'TinyLlama', value: 'tinyllama' },
-            { label: 'Yi 1.5', value: 'yi' },
-            { label: 'All Mini LM', value: 'all-minilm' },
-            { label: 'Llama 2 Chinese', value: 'llama2-chinese' }
+            { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
+            { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
+            { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
+            { label: 'Phi-3 14b', value: 'phi3:14b' },
+            { label: 'Gemma2 9b', value: 'gemma2:9b' },
+            { label: 'Gemma2 27b', value: 'gemma2:27b' },
+            { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
+            { label: 'WizardLM-2 8x22b', value: 'wizardlm2:8x22b' },
+            { label: 'Mistral 7b', value: 'mistral:7b' },
+            { label: 'Mixtral 8x7b', value: 'mixtral:8x7b' },
+            { label: 'Mixtral 8x22b', value: 'mixtral:8x22b' },
+            { label: 'Qwen 2 0.5b', value: 'qwen2:0.5b' },
+            { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
+            { label: 'Qwen 2 7b', value: 'qwen2:7b' },
+            { label: 'Qwen 2 72b', value: 'qwen2:72b' },
+            { label: 'TinyLlama 1.1b', value: 'tinyllama:1.1b' },
+            { label: 'Yi 1.5 6b', value: 'yi:6b' },
+            { label: 'Yi 1.5 9b', value: 'yi:9b' },
+            { label: 'Yi 1.5 34b', value: 'yi:34b' },
         ],
     },
 ]
@@ -410,11 +445,29 @@ const changeSentenceEmbeddingProvider = (n) => {
             settings.sentenceEmbeddingProvider.apiUrlDisabled = sentenceEmbeddingProviders[i].apiUrlDisabled;
             settings.sentenceEmbeddingProvider.showApiKeyInput = sentenceEmbeddingProviders[i].showApiKeyInput;
             choosedSentenceEmbeddingProvider.value = n;
+            if (n == 'Ollama') {
+                if (sentenceEmbeddingProviders[i].models.find(d => d.value == settings.sentenceEmbeddingProvider.provider.model) == null) {
+                    addAnotherSentenceEmbeddingOllamaModel(settings.sentenceEmbeddingProvider.provider.model);
+                }
+            }
             sentenceEmbeddingModelOptions.splice(0, sentenceEmbeddingModelOptions.length, ...sentenceEmbeddingProviders[i].models)
             // console.log(modelOptions.length)
             break;
         }
     }
+}
+
+const sentenceEmbeddingModelSelector = ref()
+const isAddingAnotherSentenceEmbeddingOllamaModel = ref(false)
+const anotherSentenceEmbeddingOllamaModel = ref('')
+const addAnotherSentenceEmbeddingOllamaModel = (m) => {
+    const obj = { label: m, value: m };
+    sentenceEmbeddingModelOptions.unshift(obj);
+    sentenceEmbeddingProviders[2].models.unshift(obj);
+    sentenceEmbeddingModelSelector.value.blur();
+    settings.sentenceEmbeddingProvider.provider.id = 'Ollama';
+    settings.sentenceEmbeddingProvider.provider.model = obj.value;
+    anotherSentenceEmbeddingOllamaModel.value = '';
 }
 </script>
 <template>
@@ -435,7 +488,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                     <el-button type="primary" @click="save">
                         {{ $t('lang.common.save') }}
                     </el-button>
-                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -507,7 +560,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                     <el-button type="primary" @click="save">
                         {{ $t('lang.common.save') }}
                     </el-button>
-                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -545,9 +598,27 @@ const changeSentenceEmbeddingProvider = (n) => {
                     <el-input v-model="settings.sentenceEmbeddingProvider.apiKey" />
                 </el-form-item>
                 <el-form-item label="Model">
-                    <el-select v-model="settings.sentenceEmbeddingProvider.provider.model" placeholder="Choose a model">
+                    <el-select ref="sentenceEmbeddingModelSelector"
+                        v-model="settings.sentenceEmbeddingProvider.provider.model" placeholder="Choose a model">
                         <el-option v-for="item in sentenceEmbeddingModelOptions" :id="item.value" :key="item.value"
                             :label="item.label" :value="item.value" />
+                        <template #footer>
+                            <el-button :disabled="settings.sentenceEmbeddingProvider.provider.id != 'Ollama'"
+                                v-if="!isAddingAnotherSentenceEmbeddingOllamaModel" text bg
+                                @click="isAddingAnotherSentenceEmbeddingOllamaModel = true">
+                                Another ollama model
+                            </el-button>
+                            <template v-else>
+                                <el-input v-model="anotherSentenceEmbeddingOllamaModel" placeholder="input model name"
+                                    style="margin-bottom: 8px;" />
+                                <el-button type="primary"
+                                    @click="addAnotherSentenceEmbeddingOllamaModel(anotherSentenceEmbeddingOllamaModel)">
+                                    confirm
+                                </el-button>
+                                <el-button
+                                    @click="isAddingAnotherSentenceEmbeddingOllamaModel = false">cancel</el-button>
+                            </template>
+                        </template>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Connect timeout"
@@ -576,7 +647,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                     <el-button type="primary" @click="save">
                         {{ $t('lang.common.save') }}
                     </el-button>
-                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -618,7 +689,7 @@ const changeSentenceEmbeddingProvider = (n) => {
                     <el-button type="primary" @click="save">
                         {{ $t('lang.common.save') }}
                     </el-button>
-                    <el-button @click="goBack()">{{ $t('lang.common.cancel') }}</el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
                 </el-form-item>
             </el-form>
         </el-col>

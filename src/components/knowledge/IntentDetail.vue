@@ -154,6 +154,7 @@ const phraseValue = ref('');
 const phraseInputDisabled = ref(true);
 const phraseInputVisible = ref(false);
 const phraseInputRef = ref();
+const addPhraseFailedAlertTitle = ref('')
 const showAddedPhraseFailedTip = ref(false)
 const regeneratingAllEmbeddings = ref(false)
 const showPhraseInput = () => {
@@ -172,7 +173,8 @@ async function newPhrase() {
         if (t.status == 200)
             intentData.phrases.push(phraseValue.value)
         else {
-            ElMessage.error(t.err.message);
+            addPhraseFailedAlertTitle.value = 'Added similar sentence failed: ' + t.err.message;
+            // ElMessage.error(t.err.message);
             showAddedPhraseFailedTip.value = true
         }
     }
@@ -212,7 +214,32 @@ async function removePhrase(w) {
         })
 }
 
-const regenerateAll = () => {
+const regenerateAll = async () => {
+    const t = await httpReq("GET", 'management/settings', { robotId: robotId }, null, null)
+    console.log(t);
+    if (t.status == 200 && t.data) {
+        if (t.data.sentenceEmbeddingProvider.provider.id == 'OpenAI') {
+            ElMessageBox.confirm(
+                'The sentence embedding providor is OpenAI, this will incur some fees. Continue?',
+                'Warning',
+                {
+                    confirmButtonText: 'Regenerate all',
+                    cancelButtonText: 'Cancel',
+                    type: 'warning',
+                }
+            )
+                .then(async () => {
+                    doRegenerateAll()
+                })
+                .catch(() => {
+                })
+            return;
+        }
+    }
+    doRegenerateAll()
+}
+
+const doRegenerateAll = async () => {
     regeneratingAllEmbeddings.value = true
     httpReq('GET', 'intent/phrase/regenerate-all', { robotId: robotId, id: formData.id, data: '' }, null, null).then(v => regeneratingAllEmbeddings.value = false);
 }
@@ -262,14 +289,17 @@ const goBack = () => {
         + {{ $t('lang.intent.detail.addSp') }}
     </el-button>
     <div v-show="phraseInputDisabled">
-        This feature was disabled since model files were missing, please goto <router-link
-            :to="{ name: 'settings', params: { robotId: robotId } }">settings</router-link> and select one model first.
+        This feature was disabled because <b>local model files were missing</b> or <b>api-key of OpenAI is empty</b>,
+        please
+        goto <router-link :to="{ name: 'settings', params: { robotId: robotId } }">settings</router-link> and select one
+        model first.
     </div>
-    <el-alert v-show="showAddedPhraseFailedTip" title="Added similar sentence failed." type="error"
+    <el-divider />
+    <el-alert v-show="showAddedPhraseFailedTip" :title="addPhraseFailedAlertTitle" type="error"
         description="But don't worry, maybe you switched different embedding provider caused this. You can press 'Regenerate all similar sentences.' button below to fix this issue."
         show-icon />
-    <div>
-        <el-button :loading="regeneratingAllEmbeddings" class="button-new-tag ml-1" @click="regenerateAll">
+    <div v-show="!phraseInputDisabled">
+        <el-button type="warning" plain :loading="regeneratingAllEmbeddings" @click="regenerateAll">
             Regenerate all similar sentences.
         </el-button>
     </div>

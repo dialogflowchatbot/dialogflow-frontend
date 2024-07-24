@@ -93,13 +93,12 @@ const models = [
                         <el-option v-for="item in models" :key="item.label" :label="item.label" :value="item.value" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="Context window" :label-width="formLabelWidth">
+                <el-form-item label="History length" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.contextLength" :min="0" :max="100000" :step="10" />
-                </el-form-item>
-                <el-form-item label="Context length" :label-width="formLabelWidth">
-                    <el-input-number v-model="nodeData.contextLength" :min="0" :max="100000" :step="10" />
+                    How many chat history records will be added in prompt.
                 </el-form-item>
                 <el-form-item label="Exit prompt" :label-width="formLabelWidth">
+                    Intention
                     <el-input v-model="nodeData.exitPrompt" />
                 </el-form-item>
             </el-form>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, provide } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { copyProperties, httpReq, getRobotType } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
@@ -42,6 +42,7 @@ const settings = reactive({
             id: '',
             model: '',
         },
+        similarityThreshold: 80,
         apiUrl: '',
         apiUrlDisabled: false,
         showApiKeyInput: true,
@@ -267,6 +268,31 @@ const smtpTest = async () => {
     loading.value = false
 }
 
+const ollamaModels = [
+    { label: 'Meta Llama 3.1 8b', value: 'llama3.1:8b' },
+    { label: 'Meta Llama 3.1 70b', value: 'llama3.1:70b' },
+    { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
+    { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
+    { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
+    { label: 'Phi-3 14b', value: 'phi3:14b' },
+    { label: 'Phi-3 instruct', value: 'phi3:instruct' },
+    { label: 'Gemma2 9b', value: 'gemma2:9b' },
+    { label: 'Gemma2 27b', value: 'gemma2:27b' },
+    { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
+    { label: 'WizardLM-2 8x22b', value: 'wizardlm2:8x22b' },
+    { label: 'Mistral 7b', value: 'mistral:7b' },
+    { label: 'Mixtral 8x7b', value: 'mixtral:8x7b' },
+    { label: 'Mixtral 8x22b', value: 'mixtral:8x22b' },
+    { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
+    { label: 'Qwen 2 7b', value: 'qwen2:7b' },
+    { label: 'Qwen 2 72b', value: 'qwen2:72b' },
+    { label: 'TinyLlama 1.1b', value: 'tinyllama:1.1b' },
+    { label: 'Yi 1.5 6b', value: 'yi:6b' },
+    { label: 'Yi 1.5 9b', value: 'yi:9b' },
+    { label: 'Yi 1.5 34b', value: 'yi:34b' },
+]
+provide('ollamaModels', { ollamaModels })
+
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
 const textGenerationProviders = [
     {
@@ -313,30 +339,7 @@ const textGenerationProviders = [
         apiUrl: 'http://localhost:11434/api/generate',
         apiUrlDisabled: false,
         showApiKeyInput: false,
-        models: [
-            { label: 'Meta Llama 3.1 8b', value: 'llama3.1:8b' },
-            { label: 'Meta Llama 3.1 70b', value: 'llama3.1:70b' },
-            { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
-            { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
-            { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
-            { label: 'Phi-3 14b', value: 'phi3:14b' },
-            { label: 'Phi-3 instruct', value: 'phi3:instruct' },
-            { label: 'Gemma2 9b', value: 'gemma2:9b' },
-            { label: 'Gemma2 27b', value: 'gemma2:27b' },
-            { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
-            { label: 'WizardLM-2 8x22b', value: 'wizardlm2:8x22b' },
-            { label: 'Mistral 7b', value: 'mistral:7b' },
-            { label: 'Mixtral 8x7b', value: 'mixtral:8x7b' },
-            { label: 'Mixtral 8x22b', value: 'mixtral:8x22b' },
-            { label: 'Qwen 2 0.5b', value: 'qwen2:0.5b' },
-            { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
-            { label: 'Qwen 2 7b', value: 'qwen2:7b' },
-            { label: 'Qwen 2 72b', value: 'qwen2:72b' },
-            { label: 'TinyLlama 1.1b', value: 'tinyllama:1.1b' },
-            { label: 'Yi 1.5 6b', value: 'yi:6b' },
-            { label: 'Yi 1.5 9b', value: 'yi:9b' },
-            { label: 'Yi 1.5 34b', value: 'yi:34b' },
-        ],
+        models: ollamaModels,
     },
 ]
 
@@ -393,30 +396,7 @@ const sentenceEmbeddingProviders = [
         apiUrl: 'http://localhost:11434/api/embeddings',
         apiUrlDisabled: false,
         showApiKeyInput: false,
-        models: [
-            { label: 'Meta Llama 3.1 8b', value: 'llama3.1:8b' },
-            { label: 'Meta Llama 3.1 70b', value: 'llama3.1:70b' },
-            { label: 'Meta Llama 3 8b', value: 'llama3:8b' },
-            { label: 'Meta Llama 3 70b', value: 'llama3:70b' },
-            { label: 'Phi-3 3.8b', value: 'phi3:3.8b' },
-            { label: 'Phi-3 14b', value: 'phi3:14b' },
-            { label: 'Phi-3 instruct', value: 'phi3:instruct' },
-            { label: 'Gemma2 9b', value: 'gemma2:9b' },
-            { label: 'Gemma2 27b', value: 'gemma2:27b' },
-            { label: 'WizardLM-2 7b', value: 'wizardlm2:7b' },
-            { label: 'WizardLM-2 8x22b', value: 'wizardlm2:8x22b' },
-            { label: 'Mistral 7b', value: 'mistral:7b' },
-            { label: 'Mixtral 8x7b', value: 'mixtral:8x7b' },
-            { label: 'Mixtral 8x22b', value: 'mixtral:8x22b' },
-            { label: 'Qwen 2 0.5b', value: 'qwen2:0.5b' },
-            { label: 'Qwen 2 1.5b', value: 'qwen2:1.5b' },
-            { label: 'Qwen 2 7b', value: 'qwen2:7b' },
-            { label: 'Qwen 2 72b', value: 'qwen2:72b' },
-            { label: 'TinyLlama 1.1b', value: 'tinyllama:1.1b' },
-            { label: 'Yi 1.5 6b', value: 'yi:6b' },
-            { label: 'Yi 1.5 9b', value: 'yi:9b' },
-            { label: 'Yi 1.5 34b', value: 'yi:34b' },
-        ],
+        models: ollamaModels,
     },
 ]
 const textGenerationModelOptions = reactive([])
@@ -490,6 +470,9 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
     settings.sentenceEmbeddingProvider.provider.model = obj.value;
     anotherSentenceEmbeddingOllamaModel.value = '';
 }
+
+const usedBySentenceEmbeddingSmall = 'http://localhost:5173/src/assets/usedBySentenceEmbedding-thumbnail.png';
+const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySentenceEmbedding.png'];
 </script>
 <template>
     <el-page-header :title="$t('lang.common.back')" @back="goBack">
@@ -515,7 +498,7 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
         </el-col>
     </el-row>
     <h3>
-        Text generation
+        Chat
         <el-tooltip effect="light" placement="right">
             <template #content>
                 You don’t need to download the large model file unless you want to use the functionalities
@@ -524,7 +507,7 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
                 Currently, its function is merely to provide automatic response capabilities and suggested
                 reply templates for dialogue nodes.
             </template>
-            <el-button circle>i</el-button>
+            <el-button circle>?</el-button>
         </el-tooltip>
     </h3>
     <el-row>
@@ -604,6 +587,96 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
         </el-col>
     </el-row>
     <h3>
+        Text generation
+        <el-tooltip effect="light" placement="right">
+            <template #content>
+                You don’t need to download the large model file unless you want to use the functionalities
+                described below.
+                <br />
+                Currently, its function is merely to provide automatic response capabilities and suggested
+                reply templates for dialogue nodes.
+            </template>
+            <el-button circle>?</el-button>
+        </el-tooltip>
+    </h3>
+    <el-row>
+        <el-col :span="11" :offset="1">
+            <el-form :model="settings.textGenerationProvider" :label-width="formLabelWidth" style="max-width: 600px">
+                <el-form-item label="Provider">
+                    <el-radio-group v-model="settings.textGenerationProvider.provider.id" size="large"
+                        @change="changeTextGenerationProvider">
+                        <el-radio-button v-for="item in textGenerationProviders" :id="item.id" :key="item.id"
+                            :label="item.id" :value="item.id" />
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="Request address">
+                    <el-input v-model="settings.textGenerationProvider.apiUrl"
+                        :disabled="settings.textGenerationProvider.apiUrlDisabled" />
+                </el-form-item>
+                <el-form-item label="OpenAI API key" v-show="settings.textGenerationProvider.showApiKeyInput">
+                    <el-input v-model="settings.textGenerationProvider.apiKey" />
+                </el-form-item>
+                <el-form-item label="Model">
+                    <el-select ref="textGenerationModelSelector"
+                        v-model="settings.textGenerationProvider.provider.model" placeholder="Choose a model">
+                        <el-option v-for="item in textGenerationModelOptions" :id="item.value" :key="item.value"
+                            :label="item.label" :value="item.value" />
+                        <template #footer>
+                            <el-button :disabled="settings.textGenerationProvider.provider.id != 'Ollama'"
+                                v-if="!isAddingAnotherTextGenerationOllamaModel" text bg
+                                @click="isAddingAnotherTextGenerationOllamaModel = true">
+                                Another ollama model
+                            </el-button>
+                            <template v-else>
+                                <el-input v-model="anotherTextGenerationOllamaModel" placeholder="input model name"
+                                    style="margin-bottom: 8px;" />
+                                <el-button type="primary"
+                                    @click="addAnotherTextGenerationOllamaModel(anotherTextGenerationOllamaModel)">
+                                    confirm
+                                </el-button>
+                                <el-button @click="isAddingAnotherTextGenerationOllamaModel = false">cancel</el-button>
+                            </template>
+                        </template>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Max response token">
+                    <el-input-number v-model="settings.textGenerationProvider.maxResponseTokenLength" :min="10"
+                        :max="100000" :step="5" />
+                </el-form-item>
+                <el-form-item label="Connect timeout"
+                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.textGenerationProvider.connectTimeoutMillis" :min="100"
+                        :max="50000" :step="100" />
+                    millis
+                </el-form-item>
+                <el-form-item label="Read timeout"
+                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.textGenerationProvider.readTimeoutMillis" :min="1000"
+                        :max="65530" :step="100" />
+                    millis
+                </el-form-item>
+                <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
+                    HuggingFace model files were incorrect or missing, please <el-button type="primary" text
+                        @click="downloadModels(settings.textGenerationProvider.provider.model)">
+                        click here to download model files from Huggingface.co
+                    </el-button>, or you can download manually and put them in ./data/model/{{
+                        textGenerationModelRepository
+                    }}
+                </el-form-item>
+                <el-form-item label="" v-show="showHfGenerationModelDownloadProgress">
+                    Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button type="primary" @click="save">
+                        {{ $t('lang.common.save') }}
+                    </el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+        <el-col :span="6" :offset="1"></el-col>
+    </el-row>
+    <h3>
         Sentence embedding provider
         <el-tooltip effect="light" placement="right">
             <template #content>
@@ -615,7 +688,7 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
                 without
                 downloading the model.
             </template>
-            <el-button circle>i</el-button>
+            <el-button circle>?</el-button>
         </el-tooltip>
     </h3>
     <el-row>
@@ -659,6 +732,16 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
                         </template>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="Similarity threshold">
+                    ≥<el-input-number v-model="settings.sentenceEmbeddingProvider.similarityThreshold" :min="1" :max="99"
+                        :step="1" />%
+                    <el-tooltip effect="light" placement="right">
+                        <template #content>
+                            An intent is used when the expression matching similarity exceeds the threshold.
+                        </template>
+                        <el-button circle>?</el-button>
+                    </el-tooltip>
+                </el-form-item>
                 <el-form-item label="Connect timeout"
                     v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.sentenceEmbeddingProvider.connectTimeoutMillis" :min="100"
@@ -688,6 +771,12 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
                     <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
                 </el-form-item>
             </el-form>
+        </el-col>
+        <el-col :span="6" :offset="1">
+            <div>This setting is used by intention similar sentences.</div>
+            <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
+            <el-image :src="usedBySentenceEmbeddingSmall" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+                :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
         </el-col>
     </el-row>
     <h3>Email settings</h3>

@@ -8,6 +8,7 @@ import EndNode from './nodes/EndNode.vue';
 import GotoNode from './nodes/GotoNode.vue';
 import ExternalHttpNode from './nodes/ExternalHttpNode.vue';
 import SendEmailNode from './nodes/SendEmailNode.vue';
+import LlmDialogNode from './nodes/LlmDialogNode.vue';
 import { Graph } from '@antv/x6';
 // https://x6.antv.vision/zh/docs/tutorial/advanced/react#%E6%B8%B2%E6%9F%93-vue-%E8%8A%82%E7%82%B9
 import { register, getTeleport } from "@antv/x6-vue-shape";
@@ -263,8 +264,40 @@ register({
     }
 });
 
+register({
+    shape: "LlmDialogNode",
+    width: 270,
+    height: 100,
+    component: LlmDialogNode,
+    ports: {
+        groups: {
+            absolute: {
+                position: {
+                    name: 'absolute',
+                },
+                attrs: {
+                    circle: {
+                        r: 5,
+                        magnet: true,
+                        stroke: 'black',
+                        strokeWidth: 1,
+                        fill: '#fff',
+                        style: {
+                            visibility: 'show',
+                        },
+                    },
+                },
+                label: {
+                    position: 'left',
+                }
+            },
+        },
+    }
+});
+
 const nodes = [
     { name: tm('lang.flow.nodes')[0], type: 'DialogNode', desc: tm('lang.flow.nodesDesc')[0], cnt: 1 },
+    { name: 'LlmDialogNode', type: 'LlmDialogNode', desc: 'Llm dialog node', cnt: 1 },
     { name: tm('lang.flow.nodes')[1], type: 'ConditionNode', desc: tm('lang.flow.nodesDesc')[1], cnt: 1 },
     { name: tm('lang.flow.nodes')[2], type: 'CollectNode', desc: tm('lang.flow.nodesDesc')[2], cnt: 1 },
     { name: 'ExternalHttpNode', type: 'ExternalHttpNode', desc: 'Request and send data to external HTTP API with variables', cnt: 1 },
@@ -707,6 +740,10 @@ const popupRundryWindow = async () => {
 }
 
 .EndNode {
+    border-left: 5px solid rgb(34, 25, 106);
+}
+
+.LlmDialogNode {
     border-left: 5px solid rgb(34, 25, 106);
 }
 

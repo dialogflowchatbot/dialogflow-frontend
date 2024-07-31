@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { copyProperties, httpReq, getRobotType } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
+import sentenceEmbeddingPicThumbnail from '@/assets/usedBySentenceEmbedding-thumbnail.png'
+import sentenceEmbeddingPic from '@/assets/usedBySentenceEmbedding.png'
+
 const { t, tm } = useI18n();
 const route = useRoute()
 const router = useRouter();
@@ -23,6 +26,20 @@ const settings = reactive({
     smtpPassword: '',
     smtpTimeoutSec: 60,
     emailVerificationRegex: '',
+    chatProvider: {
+        provider: {
+            id: '',
+            model: '',
+        },
+        apiUrl: '',
+        apiUrlDisabled: false,
+        showApiKeyInput: true,
+        apiKey: '',
+        max_token_len: 5000,
+        connectTimeoutMillis: 1500,
+        readTimeoutMillis: 3000,
+        maxResponseTokenLength: 5000,
+    },
     textGenerationProvider: {
         provider: {
             id: '',
@@ -56,6 +73,9 @@ const loading = ref(false)
 const smtpPassed = ref(false)
 const smtpFailed = ref(false)
 const smtpFailedDetail = ref('')
+const showHfIncorrectChatModelTip = ref(false)
+const showHfChatModelDownloadProgress = ref(false)
+const chatModelRepository = ref('')
 const showHfIncorrectGenerationModelTip = ref(false)
 const showHfGenerationModelDownloadProgress = ref(false)
 const textGenerationModelRepository = ref('')
@@ -77,6 +97,7 @@ onMounted(async () => {
         // settings.maxSessionDurationMin = d.maxSessionDurationMin;
         originalSentenceEmbeddingModelId.value = t.data.sentenceEmbeddingProvider.provider.id;
         console.log('originalSentenceEmbeddingModelId=', originalSentenceEmbeddingModelId)
+        changeChatProvider(settings.chatProvider.provider.id);
         changeTextGenerationProvider(settings.textGenerationProvider.provider.id);
         changeSentenceEmbeddingProvider(settings.sentenceEmbeddingProvider.provider.id);
     }
@@ -91,6 +112,20 @@ onUnmounted(
 
 async function checkHfModelFiles() {
     const repostories = new Map()
+    if (settings.chatProvider.provider.id == 'HuggingFace') {
+        for (let i = 0; i < chatModelOptions.length; i++) {
+            console.log(chatModelOptions[i].value)
+            if (chatModelOptions[i].value == settings.chatProvider.provider.model) {
+                let l = chatModelOptions[i].value;
+                const p = l.lastIndexOf(' ');
+                if (p > -1)
+                    l = l.substring(0, p);
+                chatModelRepository.value = l;
+                repostories.set(showHfIncorrectGenerationModelTip, l)
+                break;
+            }
+        }
+    } else showHfIncorrectChatModelTip.value = false;
     if (settings.textGenerationProvider.provider.id == 'HuggingFace') {
         for (let i = 0; i < textGenerationModelOptions.length; i++) {
             console.log(textGenerationModelOptions[i].value)
@@ -294,6 +329,70 @@ const ollamaModels = [
 provide('ollamaModels', { ollamaModels })
 
 // https://docs.spring.io/spring-ai/reference/api/embeddings.html
+const chatProviders = [
+    {
+        id: 'HuggingFace',
+        name: 'HuggingFace',
+        apiUrl: 'Model will be downloaded locally at ./data/models',
+        apiUrlDisabled: true,
+        showApiKeyInput: false,
+        models: [
+            { label: 'microsoft/Phi-3-mini-4k-instruct (7.7GB)', value: 'Phi3Mini4kInstruct' },
+            { label: 'microsoft/Phi-3-mini-128k-instruct (7.7GB)', value: 'Phi3Mini128kInstruct' },
+            { label: 'microsoft/Phi-3-small-8k-instruct (15GB)', value: 'Phi3Small8kInstruct' },
+            { label: 'microsoft/Phi-3-small-128k-instruct (15GB)', value: 'Phi3Small128kInstruct' },
+            { label: 'microsoft/Phi-3-medium-4k-instruct (30GB)', value: 'Phi3Medium4kInstruct' },
+            { label: 'microsoft/Phi-3-medium-128k-instruct (30GB)', value: 'Phi3Medium128kInstruct' },
+            { label: 'google/gemma-2b-it (4.9GB)', value: 'Gemma2bInstruct', need_auth_header: true },
+            { label: 'google/gemma-7b-it (12.1GB)', value: 'Gemma7bInstruct', need_auth_header: true },
+            { label: 'meta-llama/Meta-Llama-3-8B-Instruct (??GB)', value: 'MetaLlama3_8bInstruct', need_auth_header: true },
+            { label: 'upstage/SOLAR-10.7B-v1.0 (21.5GB)', value: 'Solar10_7bV1_0' },
+            { label: 'Qwen/Qwen2-7B-Instruct (15.4GB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            { label: 'Qwen/Qwen2-72B-Instruct (144GB)', value: 'Qwen2_72BInstruct', dimenssions: 384 },
+            { label: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0 (2.2GB)', value: 'TinyLlama1_1bChatV1_0' },
+        ]
+    },
+    {
+        id: 'OpenAI',
+        name: 'OpenAI',
+        apiUrl: 'https://api.openai.com/v1/chat/completions',
+        apiUrlDisabled: true,
+        showApiKeyInput: true,
+        models: [
+        { label: 'gpt-4o', value: 'gpt-4' },
+        { label: 'gpt-4o-mini', value: 'gpt-4-mini' },
+            { label: 'gpt-4', value: 'gpt-4' },
+            { label: 'gpt-4-turbo', value: 'gpt-4-turbo' },
+            { label: 'gpt-4-vision-preview', value: 'gpt-4-vision-preview' },
+            { label: 'gpt-4-32k', value: 'gpt-4-32k' },
+            { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
+            { label: 'gpt-3.5-turbo-16k', value: 'gpt-3.5-turbo-16k' },
+            { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
+        ]
+    },
+    {
+        id: 'Ollama',
+        name: 'Ollama',
+        apiUrl: 'http://localhost:11434/api/chat',
+        apiUrlDisabled: false,
+        showApiKeyInput: false,
+        models: ollamaModels,
+    },
+]
+
+const isAddingAnotherChatOllamaModel = ref(false)
+const anotherChatOllamaModel = ref('')
+const chatModelSelector = ref()
+const addAnotherChatOllamaModel = (m) => {
+    const obj = { label: m, value: m };
+    chatModelOptions.unshift(obj);
+    chatProviders[2].models.unshift(obj);
+    chatModelSelector.value.blur();
+    settings.chatProvider.provider.id = 'Ollama';
+    settings.chatProvider.provider.model = obj.value;
+    anotherChatOllamaModel.value = '';
+}
+
 const textGenerationProviders = [
     {
         id: 'HuggingFace',
@@ -386,8 +485,8 @@ const sentenceEmbeddingProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: true,
         models: [
-            { label: 'text-embedding-3-small', value: 'text-embedding-3-small' },
-            { label: 'text-embedding-3-large', value: 'text-embedding-3-large' },
+        { label: 'text-embedding-3-large', value: 'text-embedding-3-large' },
+        { label: 'text-embedding-3-small', value: 'text-embedding-3-small' },
             { label: 'text-embedding-ada-002', value: 'text-embedding-ada-002' }]
     },
     {
@@ -399,6 +498,35 @@ const sentenceEmbeddingProviders = [
         models: ollamaModels,
     },
 ]
+const chatModelOptions = reactive([])
+const chatDynamicReqUrlMap = new Map();
+const choosedChatProvider = ref('')
+const changeChatProvider = (n) => {
+    if (choosedChatProvider.value)
+        chatDynamicReqUrlMap.set(choosedChatProvider.value, settings.chatProvider.apiUrl);
+    for (let i = 0; i < chatProviders.length; i++) {
+        if (chatProviders[i].id == n) {
+            if (chatProviders[i].apiUrlDisabled)
+                settings.chatProvider.apiUrl = chatProviders[i].apiUrl;
+            else {
+                settings.chatProvider.apiUrl = sentenceEmbeddingDynamicReqUrlMap.get(settings.chatProvider.provider.id);
+                if (!settings.chatProvider.apiUrl)
+                    settings.chatProvider.apiUrl = chatProviders[i].apiUrl;
+            }
+            settings.chatProvider.apiUrlDisabled = chatProviders[i].apiUrlDisabled;
+            settings.chatProvider.showApiKeyInput = chatProviders[i].showApiKeyInput;
+            choosedChatProvider.value = n;
+            if (n == 'Ollama') {
+                if (chatProviders[i].models.find(d => d.value == settings.chatProvider.provider.model) == null) {
+                    addAnotherChatOllamaModel(settings.chatProvider.provider.model);
+                }
+            }
+            chatModelOptions.splice(0, chatModelOptions.length, ...chatProviders[i].models)
+            // console.log(modelOptions.length)
+            break;
+        }
+    }
+}
 const textGenerationModelOptions = reactive([])
 const textGenerationDynamicReqUrlMap = new Map();
 const choosedTextGenerationProvider = ref('')
@@ -471,8 +599,8 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
     anotherSentenceEmbeddingOllamaModel.value = '';
 }
 
-const usedBySentenceEmbeddingSmall = 'http://localhost:5173/src/assets/usedBySentenceEmbedding-thumbnail.png';
-const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySentenceEmbedding.png'];
+// const usedBySentenceEmbeddingSmall = 'http://localhost:5173/src/assets/usedBySentenceEmbedding-thumbnail.png';
+const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
 </script>
 <template>
     <el-page-header :title="$t('lang.common.back')" @back="goBack">
@@ -498,7 +626,7 @@ const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySent
         </el-col>
     </el-row>
     <h3>
-        Chat
+        Chat bot
         <el-tooltip effect="light" placement="right">
             <template #content>
                 You don’t need to download the large model file unless you want to use the functionalities
@@ -512,69 +640,65 @@ const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySent
     </h3>
     <el-row>
         <el-col :span="11" :offset="1">
-            <el-form :model="settings.textGenerationProvider" :label-width="formLabelWidth" style="max-width: 600px">
+            <el-form :model="settings.chatProvider" :label-width="formLabelWidth" style="max-width: 600px">
                 <el-form-item label="Provider">
-                    <el-radio-group v-model="settings.textGenerationProvider.provider.id" size="large"
-                        @change="changeTextGenerationProvider">
-                        <el-radio-button v-for="item in textGenerationProviders" :id="item.id" :key="item.id"
-                            :label="item.id" :value="item.id" />
+                    <el-radio-group v-model="settings.chatProvider.provider.id" size="large"
+                        @change="changeChatProvider">
+                        <el-radio-button v-for="item in chatProviders" :id="item.id" :key="item.id" :label="item.id"
+                            :value="item.id" />
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="Request address">
-                    <el-input v-model="settings.textGenerationProvider.apiUrl"
-                        :disabled="settings.textGenerationProvider.apiUrlDisabled" />
+                    <el-input v-model="settings.chatProvider.apiUrl" :disabled="settings.chatProvider.apiUrlDisabled" />
                 </el-form-item>
-                <el-form-item label="OpenAI API key" v-show="settings.textGenerationProvider.showApiKeyInput">
-                    <el-input v-model="settings.textGenerationProvider.apiKey" />
+                <el-form-item label="OpenAI API key" v-show="settings.chatProvider.showApiKeyInput">
+                    <el-input v-model="settings.chatProvider.apiKey" />
                 </el-form-item>
                 <el-form-item label="Model">
-                    <el-select ref="textGenerationModelSelector"
-                        v-model="settings.textGenerationProvider.provider.model" placeholder="Choose a model">
-                        <el-option v-for="item in textGenerationModelOptions" :id="item.value" :key="item.value"
+                    <el-select ref="chatModelSelector" v-model="settings.chatProvider.provider.model"
+                        placeholder="Choose a model">
+                        <el-option v-for="item in chatModelOptions" :id="item.value" :key="item.value"
                             :label="item.label" :value="item.value" />
                         <template #footer>
-                            <el-button :disabled="settings.textGenerationProvider.provider.id != 'Ollama'"
-                                v-if="!isAddingAnotherTextGenerationOllamaModel" text bg
-                                @click="isAddingAnotherTextGenerationOllamaModel = true">
+                            <el-button :disabled="settings.chatProvider.provider.id != 'Ollama'"
+                                v-if="!isAddingAnotherChatOllamaModel" text bg
+                                @click="isAddingAnotherChatOllamaModel = true">
                                 Another ollama model
                             </el-button>
                             <template v-else>
-                                <el-input v-model="anotherTextGenerationOllamaModel" placeholder="input model name"
+                                <el-input v-model="anotherChatOllamaModel" placeholder="input model name"
                                     style="margin-bottom: 8px;" />
-                                <el-button type="primary"
-                                    @click="addAnotherTextGenerationOllamaModel(anotherTextGenerationOllamaModel)">
+                                <el-button type="primary" @click="addAnotherChatOllamaModel(anotherChatOllamaModel)">
                                     confirm
                                 </el-button>
-                                <el-button @click="isAddingAnotherTextGenerationOllamaModel = false">cancel</el-button>
+                                <el-button @click="isAddingAnotherChatOllamaModel = false">cancel</el-button>
                             </template>
                         </template>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Max response token">
-                    <el-input-number v-model="settings.textGenerationProvider.maxResponseTokenLength" :min="10"
-                        :max="100000" :step="5" />
+                    <el-input-number v-model="settings.chatProvider.maxResponseTokenLength" :min="10" :max="100000"
+                        :step="5" />
                 </el-form-item>
-                <el-form-item label="Connect timeout"
-                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.textGenerationProvider.connectTimeoutMillis" :min="100"
-                        :max="50000" :step="100" />
+                <el-form-item label="Connect timeout" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.chatProvider.connectTimeoutMillis" :min="100" :max="50000"
+                        :step="100" />
                     millis
                 </el-form-item>
-                <el-form-item label="Read timeout"
-                    v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.textGenerationProvider.readTimeoutMillis" :min="1000"
-                        :max="65530" :step="100" />
+                <el-form-item label="Read timeout" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
+                    <el-input-number v-model="settings.chatProvider.readTimeoutMillis" :min="1000" :max="65530"
+                        :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
-                        @click="downloadModels(settings.textGenerationProvider.provider.model)">
+                        @click="downloadModels(settings.chatProvider.provider.model)">
                         click here to download model files from Huggingface.co
                     </el-button>, or you can download manually and put them in ./data/model/{{
-                        textGenerationModelRepository
+                        chatModelRepository
                     }}
                 </el-form-item>
-                <el-form-item label="" v-show="showHfGenerationModelDownloadProgress">
+                <el-form-item label="" v-show="showHfChatModelDownloadProgress">
                     Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
@@ -733,8 +857,8 @@ const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySent
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Similarity threshold">
-                    ≥<el-input-number v-model="settings.sentenceEmbeddingProvider.similarityThreshold" :min="1" :max="99"
-                        :step="1" />%
+                    ≥<el-input-number v-model="settings.sentenceEmbeddingProvider.similarityThreshold" :min="1"
+                        :max="99" :step="1" />%
                     <el-tooltip effect="light" placement="right">
                         <template #content>
                             An intent is used when the expression matching similarity exceeds the threshold.
@@ -775,7 +899,7 @@ const usedBySentenceEmbeddingBig = ['http://localhost:5173/src/assets/usedBySent
         <el-col :span="6" :offset="1">
             <div>This setting is used by intention similar sentences.</div>
             <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
-            <el-image :src="usedBySentenceEmbeddingSmall" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+            <el-image :src="sentenceEmbeddingPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
                 :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
         </el-col>
     </el-row>

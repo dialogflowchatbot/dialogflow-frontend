@@ -104,7 +104,7 @@ defaultConditionGroup[0].push(cloneObj(defaultCondition));
 
 onMounted(async () => {
     // console.log('conditionNode')
-    let t = await httpReq('GET', 'intent', null, null, null);
+    let t = await httpReq('GET', 'intent', { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
         const d = targetOptionsSet.UserIntent;

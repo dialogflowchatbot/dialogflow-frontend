@@ -4,6 +4,10 @@ import { useRoute, useRouter } from 'vue-router';
 import { copyProperties, httpReq, getRobotType } from '../../assets/tools.js'
 // import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n'
+import chatPicThumbnail from '@/assets/usedByLlmChatNode-thumbnail.png'
+import chatPic from '@/assets/usedByLlmChatNode.png'
+import textGenerationPicThumbnail from '@/assets/usedByDialogNodeTextGeneration-thumbnail.png'
+import textGenerationPic from '@/assets/usedByDialogNodeTextGeneration.png'
 import sentenceEmbeddingPicThumbnail from '@/assets/usedBySentenceEmbedding-thumbnail.png'
 import sentenceEmbeddingPic from '@/assets/usedBySentenceEmbedding.png'
 
@@ -599,7 +603,8 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
     anotherSentenceEmbeddingOllamaModel.value = '';
 }
 
-// const usedBySentenceEmbeddingSmall = 'http://localhost:5173/src/assets/usedBySentenceEmbedding-thumbnail.png';
+const usedByLlmChatNodeBig = [chatPic]
+const usedByTextGenerationBig = [textGenerationPic]
 const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
 </script>
 <template>
@@ -709,6 +714,12 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
             </el-form>
         </el-col>
+        <el-col :span="6" :offset="1">
+            <div>This is used by LLM chat node.</div>
+            <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
+            <el-image :src="chatPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+                :preview-src-list="usedByLlmChatNodeBig" :initial-index="4" fit="cover" />
+        </el-col>
     </el-row>
     <h3>
         Text generation
@@ -798,7 +809,12 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
             </el-form>
         </el-col>
-        <el-col :span="6" :offset="1"></el-col>
+        <el-col :span="6" :offset="1">
+            <div>This is used by dialog node.</div>
+            <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
+            <el-image :src="textGenerationPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+                :preview-src-list="usedByTextGenerationBig" :initial-index="4" fit="cover" />
+        </el-col>
     </el-row>
     <h3>
         Sentence embedding provider
@@ -897,7 +913,7 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
             </el-form>
         </el-col>
         <el-col :span="6" :offset="1">
-            <div>This setting is used by intention similar sentences.</div>
+            <div>This is used by intention similar sentences.</div>
             <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
             <el-image :src="sentenceEmbeddingPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
                 :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />

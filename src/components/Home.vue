@@ -88,9 +88,9 @@ const getBotAvatar = (type) => {
     return ''
 }
 const getBotType = (type) => {
-  if (type == 'OutboundBot')
+  if (type == 'OutboundCallBot')
     return 'Telephone outbound bot'
-  else if (type == 'InboundBot')
+  else if (type == 'InboundCallBot')
     return 'Telephone incoming bot'
   else if (type == 'TextBot')
     return 'Text chat bot'
@@ -298,8 +298,8 @@ const getBotType = (type) => {
       <el-form-item label="Type" :label-width="formLabelWidth">
         <el-select v-model="robotData.robotType" placeholder="">
           <el-option label="Text bot" value="TextBot" />
-          <el-option label="Inbound bot" value="InboundBot" />
-          <el-option label="Outbound bot" value="OutboundBot" />
+          <el-option label="Inbound call bot" value="InboundCallBot" />
+          <el-option label="Outbound call bot" value="OutboundCallBot" />
         </el-select>
       </el-form-item>
     </el-form>

@@ -22,6 +22,7 @@ const goBack = () => {
     router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
+const similarityThreshold = ref(85)
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const settings = reactive({
     maxSessionIdleSec: 1800,
@@ -63,7 +64,7 @@ const settings = reactive({
             id: '',
             model: '',
         },
-        similarityThreshold: 80,
+        similarityThreshold: 0.85,
         apiUrl: '',
         apiUrlDisabled: false,
         showApiKeyInput: true,
@@ -219,6 +220,7 @@ async function saveSettings() {
     if (!settings.emailVerificationRegex)
         settings.emailVerificationRegex = defaultEmailVerificationRegex;
     settings.maxSessionIdleSec = (maxSessionIdleMin.value * 60)
+    settings.sentenceEmbeddingProvider.similarityThreshold = similarityThreshold.value / 100;
     let r = await httpReq("POST", 'management/settings', { robotId: robotId }, null, settings)
     console.log(r);
     if (r.status == 200) {
@@ -363,8 +365,8 @@ const chatProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: true,
         models: [
-        { label: 'gpt-4o', value: 'gpt-4' },
-        { label: 'gpt-4o-mini', value: 'gpt-4-mini' },
+            { label: 'gpt-4o', value: 'gpt-4' },
+            { label: 'gpt-4o-mini', value: 'gpt-4-mini' },
             { label: 'gpt-4', value: 'gpt-4' },
             { label: 'gpt-4-turbo', value: 'gpt-4-turbo' },
             { label: 'gpt-4-vision-preview', value: 'gpt-4-vision-preview' },
@@ -489,8 +491,8 @@ const sentenceEmbeddingProviders = [
         apiUrlDisabled: true,
         showApiKeyInput: true,
         models: [
-        { label: 'text-embedding-3-large', value: 'text-embedding-3-large' },
-        { label: 'text-embedding-3-small', value: 'text-embedding-3-small' },
+            { label: 'text-embedding-3-large', value: 'text-embedding-3-large' },
+            { label: 'text-embedding-3-small', value: 'text-embedding-3-small' },
             { label: 'text-embedding-ada-002', value: 'text-embedding-ada-002' }]
     },
     {
@@ -499,7 +501,12 @@ const sentenceEmbeddingProviders = [
         apiUrl: 'http://localhost:11434/api/embeddings',
         apiUrlDisabled: false,
         showApiKeyInput: false,
-        models: ollamaModels,
+        models: [
+            { label: 'nomic-embed-text:v1.5', value: 'nomic-embed-text:v1.5' },
+            { label: 'mxbai-embed-large:335m', value: 'mxbai-embed-large:335m' },
+            { label: 'snowflake-arctic-embed:335m', value: 'snowflake-arctic-embed:335m' },
+            { label: 'jina-embeddings-v2-base-en', value: 'jina/jina-embeddings-v2-base-en:latest' },
+        ],
     },
 ]
 const chatModelOptions = reactive([])
@@ -873,8 +880,7 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Similarity threshold">
-                    ≥<el-input-number v-model="settings.sentenceEmbeddingProvider.similarityThreshold" :min="1"
-                        :max="99" :step="1" />%
+                    ≥<el-input-number v-model="similarityThreshold" :min="1" :max="99" :step="1" />%
                     <el-tooltip effect="light" placement="right">
                         <template #content>
                             An intent is used when the expression matching similarity exceeds the threshold.

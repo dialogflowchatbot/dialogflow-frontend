@@ -7,11 +7,13 @@ const { t, tm, rt } = useI18n();
 const nodeData = reactive({
     nodeName: 'Llm chat node',
     brief: '',
+    prompt: '',
     nodeExitType: 'exitByIntent',
     contextLength: 5,
     exitIntent: '',
-    exitSpecificInputs: '',
+    exitSpecialInputs: '',
     maxChatTimes: 1,
+    responseStream: false,
     valid: false,
     invalidMessages: [],
     newNode: true,
@@ -155,22 +157,32 @@ const hideForm = () => {
                     {{ modelId }} - {{ modelName }}
                     (<router-link :to="{ name: 'settings', params: { robotId: robotId } }">change</router-link>)
                 </el-form-item>
-                <el-form-item label="History length" :label-width="formLabelWidth">
+                <el-form-item label="Prompt" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.prompt" :rows="6" type="textarea" placeholder="" />
+                </el-form-item>
+                <el-form-item label="Context length" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.contextLength" :min="0" :max="50" :step="5" />
                     How many chat history records will be added in prompt.
                 </el-form-item>
                 <el-form-item label="Exit condition" :label-width="formLabelWidth">
                     <el-radio-group v-model="nodeData.nodeExitType">
                         <el-radio value="exitByIntent">Intent</el-radio>
-                        <el-radio value="exitBySpecificInputs">Specific inputs</el-radio>
+                        <el-radio value="exitBySpecialInputs">Special inputs</el-radio>
                         <el-radio value="exitByMaxChatTimes">Max chat times</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="Response type" :label-width="formLabelWidth">
+                    <el-radio-group v-model="nodeData.responseStream">
+                        <el-radio value="enabled">Enabled</el-radio>
+                        <el-radio value="disabled">Disabled</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-select v-model="nodeData.exitIntent" v-show="nodeData.nodeExitType == 'exitByIntent'">
                         <el-option v-for="item in intents" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
-                    <el-input v-model="nodeData.exitSpecificInputs" v-show="nodeData.nodeExitType == 'exitBySpecificInputs'" />
+                    <el-input v-model="nodeData.exitSpecialInputs"
+                        v-show="nodeData.nodeExitType == 'exitBySpecialInputs'" />
                     <el-input-number v-model="nodeData.maxChatTimes" :min="1" :max="99999" :step="1"
                         v-show="nodeData.nodeExitType == 'exitByMaxChatTimes'" />
                 </el-form-item>

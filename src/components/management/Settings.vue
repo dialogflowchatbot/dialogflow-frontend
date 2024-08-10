@@ -41,9 +41,10 @@ const settings = reactive({
         showApiKeyInput: true,
         apiKey: '',
         max_token_len: 5000,
-        connectTimeoutMillis: 1500,
-        readTimeoutMillis: 3000,
+        connectTimeoutMillis: 5000,
+        readTimeoutMillis: 10000,
         maxResponseTokenLength: 5000,
+        proxyUrl: '',
     },
     textGenerationProvider: {
         provider: {
@@ -55,9 +56,10 @@ const settings = reactive({
         showApiKeyInput: true,
         apiKey: '',
         max_token_len: 5000,
-        connectTimeoutMillis: 1500,
-        readTimeoutMillis: 3000,
+        connectTimeoutMillis: 5000,
+        readTimeoutMillis: 10000,
         maxResponseTokenLength: 5000,
+        proxyUrl: '',
     },
     sentenceEmbeddingProvider: {
         provider: {
@@ -69,8 +71,9 @@ const settings = reactive({
         apiUrlDisabled: false,
         showApiKeyInput: true,
         apiKey: '',
-        connectTimeoutMillis: 1500,
-        readTimeoutMillis: 3000,
+        connectTimeoutMillis: 5000,
+        readTimeoutMillis: 10000,
+        proxyUrl: '',
     },
 });
 const formLabelWidth = '150px'
@@ -386,6 +389,7 @@ const chatProviders = [
     },
 ]
 
+const chatProviderProxyEnabled = ref(false)
 const isAddingAnotherChatOllamaModel = ref(false)
 const anotherChatOllamaModel = ref('')
 const chatModelSelector = ref()
@@ -448,6 +452,7 @@ const textGenerationProviders = [
     },
 ]
 
+const textGenerationProviderProxyEnabled = ref(false)
 const isAddingAnotherTextGenerationOllamaModel = ref(false)
 const anotherTextGenerationOllamaModel = ref('')
 const textGenerationModelSelector = ref()
@@ -509,6 +514,7 @@ const sentenceEmbeddingProviders = [
         ],
     },
 ]
+const sentenceEmbeddingProviderProxyEnabled = ref(false)
 const chatModelOptions = reactive([])
 const chatDynamicReqUrlMap = new Map();
 const choosedChatProvider = ref('')
@@ -702,6 +708,10 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                         :step="100" />
                     millis
                 </el-form-item>
+                <el-form-item label="Proxy" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
+                    <el-checkbox v-model="chatProviderProxyEnabled" label="Enable" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!chatProviderProxyEnabled" />
+                </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
                         @click="downloadModels(settings.chatProvider.provider.model)">
@@ -796,6 +806,10 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                     <el-input-number v-model="settings.textGenerationProvider.readTimeoutMillis" :min="1000"
                         :max="65530" :step="100" />
                     millis
+                </el-form-item>
+                <el-form-item label="Proxy" v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
+                    <el-checkbox v-model="textGenerationProviderProxyEnabled" label="Enable" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!textGenerationProviderProxyEnabled" />
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
@@ -899,6 +913,10 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                     <el-input-number v-model="settings.sentenceEmbeddingProvider.readTimeoutMillis" :min="1000"
                         :max="65530" :step="100" />
                     millis
+                </el-form-item>
+                <el-form-item label="Proxy" v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
+                    <el-checkbox v-model="sentenceEmbeddingProviderProxyEnabled" label="Enable" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!sentenceEmbeddingProviderProxyEnabled" />
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text

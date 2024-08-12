@@ -76,6 +76,7 @@ export default defineComponent({
             nodeData: {
                 nodeName: this.t('lang.dialogNode.nodeName'),
                 dialogText: '',
+                dialogTextType: this.robotType == 'TextBot' ? 'TextHtml' : 'TextPlain',
                 textFromLLM: false,
                 branches: [],
                 nextStep: 'WaitUserResponse',

@@ -13,7 +13,7 @@ const nodeData = reactive({
     exitIntent: '',
     exitSpecialInputs: '',
     maxChatTimes: 1,
-    responseStream: false,
+    responseStreaming: false,
     valid: false,
     invalidMessages: [],
     newNode: true,
@@ -34,7 +34,7 @@ getNode().on("change:data", ({ current }) => {
 });
 
 onMounted(async () => {
-    // console.log('gotoNode')
+    // console.log('llmChatNode')
     const node = getNode();
     const data = node.getData();
     copyProperties(data, nodeData);
@@ -171,19 +171,19 @@ const hideForm = () => {
                         <el-radio value="exitByMaxChatTimes">Max chat times</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="Response type" :label-width="formLabelWidth">
-                    <el-radio-group v-model="nodeData.responseStream">
+                <!-- <el-form-item label="Response type" :label-width="formLabelWidth">
+                    <el-radio-group v-model="nodeData.responseStreaming">
                         <el-radio value="enabled">Enabled</el-radio>
                         <el-radio value="disabled">Disabled</el-radio>
                     </el-radio-group>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="" :label-width="formLabelWidth">
                     <el-select v-model="nodeData.exitIntent" v-show="nodeData.nodeExitType == 'exitByIntent'">
                         <el-option v-for="item in intents" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                     <el-input v-model="nodeData.exitSpecialInputs"
                         v-show="nodeData.nodeExitType == 'exitBySpecialInputs'" />
-                    <el-input-number v-model="nodeData.maxChatTimes" :min="1" :max="99999" :step="1"
+                    <el-input-number v-model="nodeData.maxChatTimes" :min="1" :max="200" :step="1"
                         v-show="nodeData.nodeExitType == 'exitByMaxChatTimes'" />
                 </el-form-item>
             </el-form>

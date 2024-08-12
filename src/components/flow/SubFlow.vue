@@ -297,7 +297,7 @@ register({
 
 const nodes = [
     { name: tm('lang.flow.nodes')[0], type: 'DialogNode', desc: tm('lang.flow.nodesDesc')[0], cnt: 1 },
-    { name: 'LlmChatNode', type: 'LlmChatNode', desc: 'Llm dialog node', cnt: 1 },
+    // { name: 'LlmChatNode', type: 'LlmChatNode', desc: 'Llm dialog node', cnt: 1 },
     { name: tm('lang.flow.nodes')[1], type: 'ConditionNode', desc: tm('lang.flow.nodesDesc')[1], cnt: 1 },
     { name: tm('lang.flow.nodes')[2], type: 'CollectNode', desc: tm('lang.flow.nodesDesc')[2], cnt: 1 },
     { name: 'ExternalHttpNode', type: 'ExternalHttpNode', desc: 'Request and send data to external HTTP API with variables', cnt: 1 },

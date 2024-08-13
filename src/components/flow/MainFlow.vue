@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { useRoute,useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { btoa, httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 // import { ElMessage, ElMessageBox } from 'element-plus';
@@ -20,7 +20,7 @@ const formLabelWidth = '130px';
 const tableData = ref([])
 
 onMounted(async () => {
-    const t = await httpReq('GET', 'mainflow', { robotId:robotId}, null, null);
+    const t = await httpReq('GET', 'mainflow', { robotId: robotId }, null, null);
     // console.log(t);
     showMainFlows(t);
 });
@@ -32,7 +32,7 @@ const showMainFlows = (t) => {
 }
 
 const goBack = () => {
-    router.push({name:'robotDetail', params:{robotId:robotId}});
+    router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
 const toSubflow = (idx, d) => {
@@ -67,7 +67,7 @@ const deleteMainFlow = async (idx, d) => {
         }
     ).then(async () => {
         mainFlowData.id = d.id
-        const t = await httpReq('DELETE', 'mainflow', null, null, mainFlowData);
+        const t = await httpReq('DELETE', 'mainflow', { robotId: robotId }, null, mainFlowData);
         // console.log(t);
         tableData.value.splice(idx, 1);
         hideForm();
@@ -93,7 +93,7 @@ function hideForm() {
 
 const saveForm = async () => {
     const editRecord = mainFlowData.id;
-    const r = await httpReq(editRecord ? 'PUT' : 'POST', 'mainflow', null, null, mainFlowData);
+    const r = await httpReq(editRecord ? 'PUT' : 'POST', 'mainflow', { robotId: robotId }, null, mainFlowData);
     // console.log(r);
     if (editRecord) {
         console.log(mainFlowData._idx, mainFlowData, mainFlowData.value);

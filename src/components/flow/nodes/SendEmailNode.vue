@@ -176,6 +176,7 @@ const saveForm = () => {
         nodeData.branches.push(branch);
     }
     validate()
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
     hideForm();
 }

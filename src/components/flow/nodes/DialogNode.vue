@@ -193,6 +193,7 @@ export default defineComponent({
                 },
             });
             this.nodeData.newNode = false;
+            node.removeData({ silent: true });
             node.setData(this.nodeData, { silent: false });
         }
         this.validate();
@@ -341,6 +342,7 @@ export default defineComponent({
             this.validate();
             this.setPreview();
             // console.log(this.preview);
+            node.removeData({ silent: true });
             node.setData(this.nodeData, { silent: false });
             this.hideForm();
             // console.log(node.getData());

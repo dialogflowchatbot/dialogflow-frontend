@@ -113,6 +113,7 @@ function saveForm() {
         nodeData.collect_type = { "CustomizeRegex": nodeData.customizeRegex };
     else
         nodeData.collect_type = nodeData.collectType;
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
     hideForm();
 }
@@ -164,32 +165,34 @@ const formLabelWidth = '140px'
         <div>{{ t('lang.collectNode.cTypeName') }}: {{ nodeData.collectTypeName }}</div>
         <div>{{ t('lang.collectNode.varName') }}: {{ nodeData.collectSaveVarName }}</div>
         <!-- <teleport to="body"> -->
-            <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true" :destroy-on-close="true">
-                <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 460px">
-                    <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
-                        <el-input v-model="nodeData.nodeName" />
-                    </el-form-item>
-                    <el-form-item :label="labels[0]" :label-width="formLabelWidth">
-                        <el-select v-model="nodeData.collectType" :placeholder="labels[1]">
-                            <el-option v-for="item in collectionTypes" :key="item.label" :label="item.label"
-                                :value="item.value" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item v-show="nodeData.collectType == 'CustomizeRegex'" :label="labels[2]" :label-width="formLabelWidth">
-                        <el-input v-model="nodeData.customizeRegex" />
-                    </el-form-item>
-                    <el-form-item :label="labels[3]" :label-width="formLabelWidth">
-                        <el-select v-model="nodeData.collectSaveVarName" :placeholder="labels[4]">
-                            <el-option v-for="item in variables" :key="item.label" :label="item.label"
-                                :value="item.value" />
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <div class="demo-drawer__footer">
-                    <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
-                    <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
-                </div>
-            </el-drawer>
+        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
+            :append-to-body="true" :destroy-on-close="true">
+            <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 460px">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
+                <el-form-item :label="labels[0]" :label-width="formLabelWidth">
+                    <el-select v-model="nodeData.collectType" :placeholder="labels[1]">
+                        <el-option v-for="item in collectionTypes" :key="item.label" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-show="nodeData.collectType == 'CustomizeRegex'" :label="labels[2]"
+                    :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.customizeRegex" />
+                </el-form-item>
+                <el-form-item :label="labels[3]" :label-width="formLabelWidth">
+                    <el-select v-model="nodeData.collectSaveVarName" :placeholder="labels[4]">
+                        <el-option v-for="item in variables" :key="item.label" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div class="demo-drawer__footer">
+                <el-button type="primary" :loading="loading" @click="saveForm()">{{ t('lang.common.save') }}</el-button>
+                <el-button @click="hideForm()">{{ t('lang.common.cancel') }}</el-button>
+            </div>
+        </el-drawer>
         <!-- </teleport> -->
     </div>
 </template>

@@ -10,14 +10,17 @@ const nodeData = reactive({
     prompt: '',
     nodeExitType: 'exitByIntent',
     contextLength: 5,
+    exitCondition: { "": "" },
     exitIntent: '',
     exitSpecialInputs: '',
     maxChatTimes: 1,
     responseStreaming: false,
     valid: false,
     invalidMessages: [],
+    branches: [],
     newNode: true,
 });
+const settings = reactive({})
 const getNode = inject('getNode');
 const { robotId } = inject('robotId');
 // const { ollamaModels } = inject('ollamaModels');
@@ -26,6 +29,7 @@ const intents = reactive([])
 const modelId = ref('')
 const modelName = ref('')
 const nodeName = ref();
+const prompt = ref('')
 
 getNode().on("change:data", ({ current }) => {
     // console.log('toggled');
@@ -37,6 +41,7 @@ onMounted(async () => {
     // console.log('llmChatNode')
     const node = getNode();
     const data = node.getData();
+    console.log('data', data);
     copyProperties(data, nodeData);
     // if (data) {
     //     if (data.nodeName)
@@ -50,39 +55,41 @@ onMounted(async () => {
     //     if (data.newNode)
     //         nodeData.newNode = data.newNode;
     // }
-    node.addPort({
-        group: 'absolute',
-        args: { x: nodeName.value.offsetWidth - 15, y: 104 },
-        markup: [
-            { tagName: "circle", selector: "bopdy" },
-            { tagName: "rect", selector: "bg" }
-        ],
-        attrs: {
-            text: {
-                text: 'Next',
-                fontSize: 12,
-            },
-            // https://codesandbox.io/s/port-label-viwnos?file=/src/App.tsx
-            bg: {
-                ref: "text",
-                refWidth: "100%",
-                refHeight: "110%",
-                refX: "-100%",
-                refX2: -15,
-                refY: -5,
-                fill: "rgb(235,238,245)"
-            }
-        },
-    });
-
-    if (nodeData.newNode)
+    if (nodeData.newNode) {
         nodeData.nodeName += data.nodeCnt.toString();
+        // node.removePorts();
+        node.addPort({
+            group: 'absolute',
+            args: { x: nodeName.value.offsetWidth - 15, y: 104 },
+            markup: [
+                { tagName: "circle", selector: "bopdy" },
+                { tagName: "rect", selector: "bg" }
+            ],
+            attrs: {
+                text: {
+                    text: 'Next',
+                    fontSize: 12,
+                },
+                // https://codesandbox.io/s/port-label-viwnos?file=/src/App.tsx
+                bg: {
+                    ref: "text",
+                    refWidth: "100%",
+                    refHeight: "110%",
+                    refX: "-100%",
+                    refX2: -15,
+                    refY: -5,
+                    fill: "rgb(235,238,245)"
+                }
+            },
+        });
+    }
     nodeData.newNode = false;
     validate();
     httpReq("GET", 'management/settings', { robotId: robotId }, null, null).then((res) => {
         // const r = res.json();
         if (res.data) {
-            updateBrief(res.data);
+            copyProperties(res.data, settings);
+            updateBrief();
         }
     })
     const r = await httpReq('GET', 'intent', { robotId: robotId }, null, null);
@@ -91,7 +98,7 @@ onMounted(async () => {
         intents.splice(0, intents.length, ...r.data);
 })
 
-const updateBrief = (settings) => {
+const updateBrief = () => {
     modelId.value = settings.chatProvider.provider.id;
     modelName.value = settings.chatProvider.provider.model;
     let h = 'Chat model: ' + settings.chatProvider.provider.model + ' from ' + settings.chatProvider.provider.id;
@@ -100,9 +107,42 @@ const updateBrief = (settings) => {
     nodeData.brief = h;
 }
 
-const validate = () => { }
+const validate = () => {
+    const d = nodeData;
+    const m = d.invalidMessages;
+    m.splice(0, m.length);
+    if (!d.prompt)
+        m.push('Please fill out "prompt" field.');
+    if (d.nodeExitType == 'exitByIntent' && !d.exitIntent)
+        m.push('Please select an intent to use for exiting.');
+    if (d.nodeExitType == 'exitBySpecialInputs' && !d.exitSpecialInputs)
+        m.push('Please type some special inputs for exiting.');
+    d.valid = m.length == 0;
+}
 
 const saveForm = () => {
+    const node = getNode();
+    const ports = node.getPorts();
+    const branch = getDefaultBranch();
+    branch.branchName = ports[0].attrs.text.text;
+    branch.branchId = ports[0].id;
+    branch.branchType = 'GotoAnotherNode';
+    nodeData.branches.splice(0, nodeData.branches.length, branch);
+    validate()
+    delete nodeData.exitCondition;
+    nodeData.exitCondition = {};
+    const nodeExitType = nodeData.nodeExitType.replace(/exitBy/, '');
+    if (nodeExitType == 'Intent')
+        nodeData.exitCondition[nodeExitType] = nodeData.exitIntent;
+    else if (nodeExitType == 'SpecialInputs')
+        nodeData.exitCondition[nodeExitType] = nodeData.exitSpecialInputs;
+    else if (nodeExitType == 'MaxChatTimes')
+        nodeData.exitCondition[nodeExitType] = nodeData.maxChatTimes;
+    nodeData.prompt = JSON.stringify([{ "role": "user", "content": prompt.value },])
+    console.log('nodeData', nodeData);
+    node.removeData({ silent: true });
+    node.setData(nodeData, { silent: false });
+    updateBrief();
     hideForm();
 }
 
@@ -158,7 +198,7 @@ const hideForm = () => {
                     (<router-link :to="{ name: 'settings', params: { robotId: robotId } }">change</router-link>)
                 </el-form-item>
                 <el-form-item label="Prompt" :label-width="formLabelWidth">
-                    <el-input v-model="nodeData.prompt" :rows="6" type="textarea" placeholder="" />
+                    <el-input v-model="prompt" :rows="6" type="textarea" placeholder="" />
                 </el-form-item>
                 <el-form-item label="Context length" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.contextLength" :min="0" :max="50" :step="5" />

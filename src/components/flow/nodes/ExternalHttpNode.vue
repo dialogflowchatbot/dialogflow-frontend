@@ -39,6 +39,7 @@ const saveForm = () => {
     branch.branchId = port.id;
     validate();
     // console.log(this.nodeData);
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
     hideForm()
 }

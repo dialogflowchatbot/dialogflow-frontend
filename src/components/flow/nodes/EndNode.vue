@@ -43,6 +43,7 @@ const nodeAnswer = ref()
 function saveForm() {
     const node = getNode();
     validate();
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
     hideForm();
     const heightOffset = nodeName.value.offsetHeight + nodeAnswer.value.offsetHeight;

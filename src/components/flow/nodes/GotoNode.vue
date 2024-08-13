@@ -150,6 +150,7 @@ function saveForm() {
     const node = getNode();
     validate();
     console.log(nodeData);
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
     hideForm();
 }

@@ -301,6 +301,7 @@ function saveForm() {
     }
     node.resize(node.size().width, 20 + heightOffset, { direction: 'bottom', silent: false })
     validate();
+    node.removeData({ silent: true });
     node.setData(nodeData, { silent: true });
     hideForm();
     // console.log(node.getData());

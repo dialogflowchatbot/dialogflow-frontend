@@ -76,7 +76,7 @@ export default defineComponent({
             nodeData: {
                 nodeName: this.t('lang.dialogNode.nodeName'),
                 dialogText: '',
-                dialogTextType: this.robotType == 'TextBot' ? 'TextHtml' : 'TextPlain',
+                dialogTextType: '',
                 textFromLLM: false,
                 branches: [],
                 nextStep: 'WaitUserResponse',
@@ -213,6 +213,8 @@ export default defineComponent({
         console.log('robotType=' + this.robotType);
         // console.log(this.nodeData.dialogText)
         if (this.robotType == 'TextBot') {
+            this.nodeData.dialogTextType = this.robotType == 'TextBot' ? 'TextHtml' : 'TextPlain',
+            // console.log('dialogTextType=' + this.nodeData.dialogTextType);
             this.editor = new Editor({
                 extensions: [
                     // Blockquote,

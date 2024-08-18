@@ -8,6 +8,7 @@ const nodeData = reactive({
     nodeName: 'Llm chat node',
     brief: '',
     prompt: '',
+    promptText: '',
     nodeExitType: 'exitByIntent',
     contextLength: 5,
     exitCondition: { "": "" },
@@ -15,6 +16,9 @@ const nodeData = reactive({
     exitSpecialInputs: '',
     maxChatTimes: 1,
     responseStreaming: false,
+    connectTimeout: 1000,
+    readTimeout: 10000,
+    whenTimeoutThen: null,
     valid: false,
     invalidMessages: [],
     branches: [],
@@ -29,7 +33,9 @@ const intents = reactive([])
 const modelId = ref('')
 const modelName = ref('')
 const nodeName = ref();
-const prompt = ref('')
+const overrideTimeoutEnabled = ref(false)
+const whenTimeoutThen = ref('DoNothing')
+const responseAlternateText = ref('')
 
 getNode().on("change:data", ({ current }) => {
     // console.log('toggled');
@@ -84,18 +90,31 @@ onMounted(async () => {
         });
     }
     nodeData.newNode = false;
+    if (typeof (nodeData.whenTimeoutThen) == 'string')
+        whenTimeoutThen.value = nodeData.whenTimeoutThen;
+    else {
+        whenTimeoutThen.value = 'ResponseAlternateText'
+        responseAlternateText.value = nodeData.whenTimeoutThen.ResponseAlternateText;
+    }
     validate();
     httpReq("GET", 'management/settings', { robotId: robotId }, null, null).then((res) => {
         // const r = res.json();
         if (res.data) {
             copyProperties(res.data, settings);
             updateBrief();
+            if (nodeData.connectTimeout > 0 && nodeData.readTimeout > 0)
+                overrideTimeoutEnabled.value = true;
+            if (!nodeData.connectTimeout)
+                nodeData.connectTimeout = settings.chatProvider.connectTimeoutMillis;
+            if (!nodeData.readTimeout)
+                nodeData.readTimeout = settings.chatProvider.readTimeoutMillis;
         }
     })
     const r = await httpReq('GET', 'intent', { robotId: robotId }, null, null);
     // console.log(r);
-    if (r.status == 200)
+    if (r.status == 200) {
         intents.splice(0, intents.length, ...r.data);
+    }
 })
 
 const updateBrief = () => {
@@ -117,6 +136,8 @@ const validate = () => {
         m.push('Please select an intent to use for exiting.');
     if (d.nodeExitType == 'exitBySpecialInputs' && !d.exitSpecialInputs)
         m.push('Please type some special inputs for exiting.');
+    if (whenTimeoutThen.value == 'ResponseAlternateText' && !responseAlternateText.value)
+        m.push('Please enter alternate text.');
     d.valid = m.length == 0;
 }
 
@@ -138,7 +159,17 @@ const saveForm = () => {
         nodeData.exitCondition[nodeExitType] = nodeData.exitSpecialInputs;
     else if (nodeExitType == 'MaxChatTimes')
         nodeData.exitCondition[nodeExitType] = nodeData.maxChatTimes;
-    nodeData.prompt = JSON.stringify([{ "role": "user", "content": prompt.value },])
+    nodeData.prompt = JSON.stringify([{ "role": "user", "content": nodeData.promptText },])
+    if (!overrideTimeoutEnabled.value) {
+        nodeData.connectTimeout = null;
+        nodeData.readTimeout = null;
+    }
+    delete nodeData.whenTimeoutThen;
+    if (whenTimeoutThen.value == 'ResponseAlternateText') {
+        nodeData.whenTimeoutThen = { ResponseAlternateText: responseAlternateText }
+    } else {
+        nodeData.whenTimeoutThen = whenTimeoutThen;
+    }
     console.log('nodeData', nodeData);
     node.removeData({ silent: true });
     node.setData(nodeData, { silent: false });
@@ -189,7 +220,7 @@ const hideForm = () => {
         <!-- <teleport to="body"> -->
         <el-drawer v-if="nodeSetFormVisible" v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl"
             size="70%" :append-to-body="true" :destroy-on-close="true">
-            <el-form :label-position="labelPosition" label-width="106px" :model="nodeData" style="max-width: 700px">
+            <el-form :label-position="labelPosition" label-width="135px" :model="nodeData" style="max-width: 800px">
                 <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
                     <el-input v-model="nodeData.nodeName" />
                 </el-form-item>
@@ -198,7 +229,7 @@ const hideForm = () => {
                     (<router-link :to="{ name: 'settings', params: { robotId: robotId } }">change</router-link>)
                 </el-form-item>
                 <el-form-item label="Prompt" :label-width="formLabelWidth">
-                    <el-input v-model="prompt" :rows="6" type="textarea" placeholder="" />
+                    <el-input v-model="nodeData.promptText" :rows="6" type="textarea" placeholder="" />
                 </el-form-item>
                 <el-form-item label="Context length" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.contextLength" :min="0" :max="50" :step="5" />
@@ -225,6 +256,37 @@ const hideForm = () => {
                         v-show="nodeData.nodeExitType == 'exitBySpecialInputs'" />
                     <el-input-number v-model="nodeData.maxChatTimes" :min="1" :max="200" :step="1"
                         v-show="nodeData.nodeExitType == 'exitByMaxChatTimes'" />
+                </el-form-item>
+                <el-form-item label="Timeout" :label-width="formLabelWidth">
+                    <el-checkbox label="Override timeout of settings" v-model="overrideTimeoutEnabled" />
+                    <el-divider direction="vertical" />
+                    Current settings are: [Connect: {{ settings.chatProvider.connectTimeoutMillis }} millis, Read: {{
+                        settings.chatProvider.readTimeoutMillis }} mills]
+                </el-form-item>
+                <el-form-item label="Connection" :label-width="formLabelWidth">
+                    <el-input-number v-model="nodeData.connectTimeout" :min="100" :max="65500"
+                        :disabled="!overrideTimeoutEnabled" />
+                </el-form-item>
+                <el-form-item label="Read" :label-width="formLabelWidth">
+                    <el-input-number v-model="nodeData.readTimeout" :min="200" :max="65500"
+                        :disabled="!overrideTimeoutEnabled" />
+                </el-form-item>
+                <el-form-item label="When timeout then" :label-width="formLabelWidth">
+                    <el-radio-group v-model="whenTimeoutThen">
+                        <el-radio value="GotoAnotherNode">Goto next node</el-radio>
+                        <el-radio value="ResponseAlternateText">Response alternate text</el-radio>
+                        <el-radio value="DoNothing">Do nothing</el-radio>
+                        <el-tooltip effect="light" placement="right">
+                            <template #content>
+                                Stay at this node until meet one of exiting condition.
+                            </template>
+                            <el-button size="small" circle>?</el-button>
+                        </el-tooltip>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="Alternate text" :label-width="formLabelWidth"
+                    v-show="whenTimeoutThen == 'ResponseAlternateText'">
+                    <el-input v-model="responseAlternateText" />
                 </el-form-item>
             </el-form>
             <div>

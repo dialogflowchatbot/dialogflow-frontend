@@ -699,12 +699,12 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                         :step="5" />
                 </el-form-item>
                 <el-form-item label="Connect timeout" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.chatProvider.connectTimeoutMillis" :min="100" :max="50000"
+                    <el-input-number v-model="settings.chatProvider.connectTimeoutMillis" :min="100" :max="65500"
                         :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.chatProvider.readTimeoutMillis" :min="1000" :max="65530"
+                    <el-input-number v-model="settings.chatProvider.readTimeoutMillis" :min="200" :max="65500"
                         :step="100" />
                     millis
                 </el-form-item>
@@ -798,13 +798,13 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 <el-form-item label="Connect timeout"
                     v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.textGenerationProvider.connectTimeoutMillis" :min="100"
-                        :max="50000" :step="100" />
+                        :max="65500" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout"
                     v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.textGenerationProvider.readTimeoutMillis" :min="1000"
-                        :max="65530" :step="100" />
+                        :max="65500" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Proxy" v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
@@ -905,13 +905,13 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 <el-form-item label="Connect timeout"
                     v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
                     <el-input-number v-model="settings.sentenceEmbeddingProvider.connectTimeoutMillis" :min="100"
-                        :max="50000" :step="100" />
+                        :max="65500" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Read timeout"
                     v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
-                    <el-input-number v-model="settings.sentenceEmbeddingProvider.readTimeoutMillis" :min="1000"
-                        :max="65530" :step="100" />
+                    <el-input-number v-model="settings.sentenceEmbeddingProvider.readTimeoutMillis" :min="500"
+                        :max="65500" :step="100" />
                     millis
                 </el-form-item>
                 <el-form-item label="Proxy" v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">

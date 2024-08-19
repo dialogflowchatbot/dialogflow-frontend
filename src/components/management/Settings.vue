@@ -710,7 +710,8 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
                 <el-form-item label="Proxy" v-show="settings.chatProvider.provider.id != 'HuggingFace'">
                     <el-checkbox v-model="chatProviderProxyEnabled" label="Enable" />
-                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!chatProviderProxyEnabled" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270"
+                        :disabled="!chatProviderProxyEnabled" />
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
@@ -809,7 +810,8 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
                 <el-form-item label="Proxy" v-show="settings.textGenerationProvider.provider.id != 'HuggingFace'">
                     <el-checkbox v-model="textGenerationProviderProxyEnabled" label="Enable" />
-                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!textGenerationProviderProxyEnabled" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270"
+                        :disabled="!textGenerationProviderProxyEnabled" />
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectGenerationModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text
@@ -916,7 +918,8 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
                 <el-form-item label="Proxy" v-show="settings.sentenceEmbeddingProvider.provider.id != 'HuggingFace'">
                     <el-checkbox v-model="sentenceEmbeddingProviderProxyEnabled" label="Enable" />
-                    <el-input v-model="input" placeholder="http://127.0.0.1:9270" :disabled="!sentenceEmbeddingProviderProxyEnabled" />
+                    <el-input v-model="input" placeholder="http://127.0.0.1:9270"
+                        :disabled="!sentenceEmbeddingProviderProxyEnabled" />
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text

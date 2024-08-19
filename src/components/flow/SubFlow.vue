@@ -611,6 +611,7 @@ async function release() {
 const loading = ref(false)
 const saveLoading = ref(false);
 const releaseLoading = ref(false);
+const waitingResponse = ref(false)
 
 const dryrunDisabled = ref(false);
 const chatScrollbarRef = ref()
@@ -623,18 +624,20 @@ function newSessionId() {
     const d = Date.now().toString();
     return d + Math.random().toString(16);
 }
-function addChat(t, c) {
+function addChat(t, c, aT) {
     chatRecords.value.push({
         id: 'chat-' + Math.random().toString(16),
         text: t,
         cssClass: c,
+        answerType: aT,
     });
 }
 async function dryrun() {
     if (chatRecords.value.length > 0 && !userAsk.value)
         return;
+    waitingResponse.value = true;
     if (userAsk.value)
-        addChat(userAsk.value, 'userText');
+        addChat(userAsk.value, 'userText', 'TextPlan');
     if (!sessionId)
         sessionId = newSessionId();
     const req = {
@@ -652,10 +655,10 @@ async function dryrun() {
         const data = r.data;
         const answers = data.answers;
         for (let i = 0; i < answers.length; i++)
-            addChat(answers[i].text, 'responseText');
+            addChat(answers[i].text, 'responseText', answers[i].answerType);
         userAsk.value = '';
         if (data.nextAction == 'Terminate') {
-            addChat(t('lang.flow.guideReset'), 'terminateText');
+            addChat(t('lang.flow.guideReset'), 'terminateText', 'TextPlain');
             dryrunDisabled.value = true;
         }
         nextTick(() => {
@@ -669,6 +672,7 @@ async function dryrun() {
             type: 'error',
         });
     }
+    waitingResponse.value = false;
     dryrunInput.value.focus();
 }
 async function dryrunClear() {
@@ -921,7 +925,8 @@ const popupRundryWindow = async () => {
                     <div ref="dryrunChatRecords">
                         <div v-for="item in chatRecords" :key="item.id" :class="item.cssClass">
                             <!-- <span v-html="item.text"></span> -->
-                            <el-text>{{ item.text }}</el-text>
+                            <el-text v-if="item.answerType == 'TextPlain'">{{ item.text }}</el-text>
+                            <el-text v-else v-html="item.text"></el-text>
                         </div>
                     </div>
                 </el-scrollbar>
@@ -931,7 +936,8 @@ const popupRundryWindow = async () => {
                     <el-input ref="dryrunInput" :disabled="dryrunDisabled" v-model="userAsk" placeholder=""
                         style="width: 200px" @keypress="(e) => { if (e.keyCode == 13) dryrun(); }" />
                     <el-button-group>
-                        <el-button type="primary" :disabled="dryrunDisabled" @click="dryrun">{{ $t('lang.flow.send')
+                        <el-button type="primary" :disabled="dryrunDisabled" @click="dryrun"
+                            :loading="waitingResponse">{{ $t('lang.flow.send')
                             }}</el-button>
                         <el-button @click="dryrunClear">{{ $t('lang.flow.reset') }}</el-button>
                     </el-button-group>

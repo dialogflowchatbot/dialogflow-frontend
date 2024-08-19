@@ -120,7 +120,7 @@ onMounted(async () => {
 const updateBrief = () => {
     modelId.value = settings.chatProvider.provider.id;
     modelName.value = settings.chatProvider.provider.model;
-    let h = 'Chat model: ' + settings.chatProvider.provider.model + ' from ' + settings.chatProvider.provider.id;
+    let h = 'Chat model: ' + settings.chatProvider.provider.model + ' of ' + settings.chatProvider.provider.id;
     h += '<br/>History context length: ' + nodeData.contextLength;
     h += '<br/>Exit this node by: ' + nodeData.nodeExitType;
     nodeData.brief = h;

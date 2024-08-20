@@ -18,7 +18,7 @@ const checkUpdateResult = ref(0)
 const fromPage = 'guide';
 const updateLoading = ref(false)
 const newVersion = ref('')
-const changelog  = reactive([])
+const changelog = reactive([])
 const checkUpdate = async () => {
   updateLoading.value = true
   const t = await httpReq('GET', 'check-new-version.json', null, null, null);
@@ -45,6 +45,7 @@ const toSettings = () => {
 .header-row {
   margin-top: 20px;
 }
+
 .header {
   margin-left: 20px;
   font-size: 38px;
@@ -74,7 +75,7 @@ const toSettings = () => {
     <template #content>
       <span class="text-large font-600 mr-3"> Workspace </span>
     </template>
-  </el-page-header> -->
+</el-page-header> -->
   <div></div>
   <el-row class="header-row">
     <el-col :span="8">
@@ -86,7 +87,11 @@ const toSettings = () => {
       </el-button> -->
       <el-button size="large" :loading="updateLoading" @click="checkUpdate">
         <el-icon size="large">
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"><path d="M256 504c137 0 248-111 248-248S393 8 256 8S8 119 8 256s111 248 248 248zm0-448c110.5 0 200 89.5 200 200s-89.5 200-200 200S56 366.5 56 256S145.5 56 256 56zm20 328h-40c-6.6 0-12-5.4-12-12V256h-67c-10.7 0-16-12.9-8.5-20.5l99-99c4.7-4.7 12.3-4.7 17 0l99 99c7.6 7.6 2.2 20.5-8.5 20.5h-67v116c0 6.6-5.4 12-12 12z" fill="currentColor"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+            <path
+              d="M256 504c137 0 248-111 248-248S393 8 256 8S8 119 8 256s111 248 248 248zm0-448c110.5 0 200 89.5 200 200s-89.5 200-200 200S56 366.5 56 256S145.5 56 256 56zm20 328h-40c-6.6 0-12-5.4-12-12V256h-67c-10.7 0-16-12.9-8.5-20.5l99-99c4.7-4.7 12.3-4.7 17 0l99 99c7.6 7.6 2.2 20.5-8.5 20.5h-67v116c0 6.6-5.4 12-12 12z"
+              fill="currentColor"></path>
+          </svg>
         </el-icon>
       </el-button>
       <el-button size="large" @click="toSettings">
@@ -111,8 +116,10 @@ const toSettings = () => {
       <a href="https://github.com/dialogflowchatbot/dialogflow/releases">Go to download</a>
     </template>
   </el-popover>
-  <el-alert v-show="checkUpdateResult == 2" title="You're using the latest verion." type="success" @close="checkUpdateResult = 0" />
-  <el-alert v-show="checkUpdateResult == 3" title="Failed to query update information, please try again later." type="danger" @close="checkUpdateResult = 0" />
+  <el-alert v-show="checkUpdateResult == 2" title="You're using the latest verion." type="success"
+    @close="checkUpdateResult = 0" />
+  <el-alert v-show="checkUpdateResult == 3" title="Failed to query update information, please try again later."
+    type="danger" @close="checkUpdateResult = 0" />
   <!-- <el-button v-show="checkUpdateResult == 2" type="success" text>You're using the latest verion</el-button>
   <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
     again

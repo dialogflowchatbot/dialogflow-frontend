@@ -15,7 +15,7 @@ const { t, tm } = useI18n();
 const route = useRoute()
 const router = useRouter();
 const robotId = route.params.robotId
-// const robotType = getRobotType(robotId)
+const robotType = getRobotType(robotId)
 const maxSessionIdleMin = ref(30)
 
 const goBack = () => {
@@ -25,6 +25,7 @@ const goBack = () => {
 const similarityThreshold = ref(85)
 const defaultEmailVerificationRegex = '[-\\w\\.\\+]{1,100}@[A-Za-z0-9]{1,30}[A-Za-z\\.]{2,30}';
 const settings = reactive({
+    version: 1017000,
     maxSessionIdleSec: 1800,
     smtpHost: '',
     smtpUsername: '',
@@ -75,6 +76,34 @@ const settings = reactive({
         readTimeoutMillis: 10000,
         proxyUrl: '',
     },
+    asrProvider: {
+        enabled: false,
+        provider: {
+            id: '',
+            model: '',
+        },
+        apiUrl: '',
+        apiUrlDisabled: false,
+        showApiKeyInput: true,
+        apiKey: '',
+        connectTimeoutMillis: 5000,
+        readTimeoutMillis: 10000,
+        proxyUrl: '',
+    },
+    ttsProvider: {
+        enabled: false,
+        provider: {
+            id: '',
+            model: '',
+        },
+        apiUrl: '',
+        apiUrlDisabled: false,
+        showApiKeyInput: true,
+        apiKey: '',
+        connectTimeoutMillis: 5000,
+        readTimeoutMillis: 10000,
+        proxyUrl: '',
+    },
 });
 const formLabelWidth = '150px'
 const loading = ref(false)
@@ -108,6 +137,7 @@ onMounted(async () => {
         changeChatProvider(settings.chatProvider.provider.id);
         changeTextGenerationProvider(settings.textGenerationProvider.provider.id);
         changeSentenceEmbeddingProvider(settings.sentenceEmbeddingProvider.provider.id);
+        changeTtsProvider(settings.ttsProvider.provider.id);
     }
     await checkHfModelFiles();
 })
@@ -616,6 +646,63 @@ const addAnotherSentenceEmbeddingOllamaModel = (m) => {
     anotherSentenceEmbeddingOllamaModel.value = '';
 }
 
+// TTS
+
+// https://docs.spring.io/spring-ai/reference/api/embeddings.html
+const ttsProviders = [
+    {
+        id: 'HuggingFace',
+        name: 'HuggingFace',
+        apiUrl: 'Model will be downloaded locally at ./data/models',
+        apiUrlDisabled: true,
+        showApiKeyInput: false,
+        models: [
+            { label: 'parler-tts/parler-tts-mini-v1 (English 3.51GB)', value: 'ParlerTtsMiniV1' },
+            { label: 'parler-tts/parler-tts-large-v1 (English 9.35GB)', value: 'ParlerTtsLargeV1' },
+        ]
+    },
+    // {
+    //     id: 'ChatTTS',
+    //     name: 'ChatTTS',
+    //     apiUrl: 'http://localhost:11434/api/embeddings',
+    //     apiUrlDisabled: false,
+    //     showApiKeyInput: false,
+    //     models: [
+    //         { label: 'nomic-embed-text:v1.5', value: 'nomic-embed-text:v1.5' },
+    //         { label: 'mxbai-embed-large:335m', value: 'mxbai-embed-large:335m' },
+    //         { label: 'snowflake-arctic-embed:335m', value: 'snowflake-arctic-embed:335m' },
+    //         { label: 'jina-embeddings-v2-base-en', value: 'jina/jina-embeddings-v2-base-en:latest' },
+    //     ],
+    // },
+    // {
+    //     id: 'MicrosoftTTS',
+    //     name: 'MicrosoftTTS',
+    //     apiUrl: 'http://localhost:11434/api/embeddings',
+    //     apiUrlDisabled: false,
+    //     showApiKeyInput: false,
+    //     models: [
+    //         { label: 'nomic-embed-text:v1.5', value: 'nomic-embed-text:v1.5' },
+    //         { label: 'mxbai-embed-large:335m', value: 'mxbai-embed-large:335m' },
+    //         { label: 'snowflake-arctic-embed:335m', value: 'snowflake-arctic-embed:335m' },
+    //         { label: 'jina-embeddings-v2-base-en', value: 'jina/jina-embeddings-v2-base-en:latest' },
+    //     ],
+    // },
+]
+const ttsModelOptions = reactive([])
+const ttsDynamicReqUrlMap = new Map();
+const choosedTtsProvider = ref('')
+const changeTtsProvider = (n) => {
+    if (choosedTtsProvider.value)
+        ttsDynamicReqUrlMap.set(choosedTtsProvider.value, settings.ttsProvider.apiUrl);
+    for (let i = 0; i < ttsProviders.length; i++) {
+        if (ttsProviders[i].id == n) {
+            ttsModelOptions.splice(0, ttsModelOptions.length, ...ttsProviders[i].models)
+            // console.log(modelOptions.length)
+            break;
+        }
+    }
+}
+
 const usedByLlmChatNodeBig = [chatPic]
 const usedByTextGenerationBig = [textGenerationPic]
 const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
@@ -920,6 +1007,66 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                     <el-checkbox v-model="sentenceEmbeddingProviderProxyEnabled" label="Enable" />
                     <el-input v-model="input" placeholder="http://127.0.0.1:9270"
                         :disabled="!sentenceEmbeddingProviderProxyEnabled" />
+                </el-form-item>
+                <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
+                    HuggingFace model files were incorrect or missing, please <el-button type="primary" text
+                        @click="downloadModels(settings.sentenceEmbeddingProvider.provider.model)">
+                        click here to download model files from Huggingface.co
+                    </el-button>, or you can download manually and put them in ./data/model/{{
+                        sentenceEmbeddingModelRepository }}
+                </el-form-item>
+                <el-form-item label="" v-show="showHfEmbeddingModelDownloadProgress">
+                    Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button type="primary" @click="save">
+                        {{ $t('lang.common.save') }}
+                    </el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+        <el-col :span="6" :offset="1">
+            <div>This is used by intention similar sentences.</div>
+            <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
+            <el-image :src="sentenceEmbeddingPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
+                :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
+        </el-col>
+    </el-row>
+    <h3 v-if="robotType != 'TextBot'">
+        TTS
+        <el-tooltip effect="light" placement="right">
+            <template #content>
+                Downloading model files is not necessary.<br />
+                Its function is merely to enhance the accuracy of intent recognition for user inputs, and it will
+                not
+                affect the response functionality of the process.<br />
+                User intent can also be recognized through the configuration of keywords and regular expressions
+                without
+                downloading the model.
+            </template>
+            <el-button circle>?</el-button>
+        </el-tooltip>
+    </h3>
+    <el-row v-if="robotType != 'TextBot'">
+        <el-col :span="11" :offset="1">
+            <el-form :model="settings.ttsProvider" :label-width="formLabelWidth" style="max-width: 600px">
+                <el-form-item label="Enable">
+                    <el-switch v-model="settings.ttsProvider.enabled" active-text="Response TTS stream"
+                        inactive-text="Response text" />
+                </el-form-item>
+                <el-form-item label="Provider" v-show="settings.ttsProvider.enabled" @change="changeTtsProvider">
+                    <el-radio-group v-model="settings.ttsProvider.provider.id" size="large">
+                        <el-radio-button v-for="item in ttsProviders" :id="item.id" :key="item.id" :label="item.id"
+                            :value="item.id" />
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="Model" v-show="settings.ttsProvider.enabled">
+                    <el-select ref="ttsModelSelector" v-model="settings.ttsProvider.provider.model"
+                        placeholder="Choose a model">
+                        <el-option v-for="item in ttsModelOptions" :id="item.value" :key="item.value"
+                            :label="item.label" :value="item.value" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
                     HuggingFace model files were incorrect or missing, please <el-button type="primary" text

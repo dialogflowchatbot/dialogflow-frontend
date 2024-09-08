@@ -32,16 +32,16 @@ const routes = [
   // { path: '/introduction', component: Intro },
   // { path: '/docs', component: Doc },
   { path: '/demo/:demo', component: SubFlow },
-  { path: '/mainflows/:robotId', name:'mainflows',component: MainFlow },
+  { path: '/mainflows/:robotId', name: 'mainflows', component: MainFlow },
   { path: '/subflow/:robotId/:id/:name', name: 'subflow', component: SubFlow, props: true },
   { path: '/settings', component: GlobalSettings },
-  { path: '/settings/:robotId',name:'settings', component: Settings },
+  { path: '/settings/:robotId', name: 'settings', component: Settings },
   { path: '/robot/:robotId', name: 'robotDetail', component: RobotDetail },
-  { path: '/intents/:robotId', name:'intents', component: IntentList },
+  { path: '/intents/:robotId', name: 'intents', component: IntentList },
   { path: '/intent/detail', component: IntentDetail },
-  { path: '/variables/:robotId',name:'variables', component: Variable },
+  { path: '/variables/:robotId', name: 'variables', component: Variable },
   // { path: '/tutorial', component: Tutorial },
-  { path: '/external/httpApis/:robotId',name:'externalHttpApis', component: HttpApiList },
+  { path: '/external/httpApis/:robotId', name: 'externalHttpApis', component: HttpApiList },
   { path: '/external/httpApi/:robotId/:id', name: 'externalHttpApiDetail', component: HttpApiDetail },
 ]
 
@@ -61,7 +61,7 @@ import 'virtual:uno.css'
 const app = createApp(App)
 
 // for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  // app.component(key, component)
+// app.component(key, component)
 // }
 
 // app.use(ElementPlus)

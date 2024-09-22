@@ -131,7 +131,7 @@ async function deleteRobot() {
     </el-icon>
     <router-link :to="{ name: 'mainflows', params: { robotId: robotId } }">{{ $t('lang.guide.nav1') }}</router-link>
   <div class="description">
-    <Demos :parentPage="fromPage" />
+    <Demos :parentPage="robotDetail" />
     <!-- <router-link :to="{ name: 'subflow', params: { id: 'demo-repay', name: btoa('Repay Demo') } }">
             {{ $t('lang.home.demo1') }}
           </router-link>

@@ -2,7 +2,7 @@
 const props = defineProps({
     parentPage: {
         type: String,
-        default: 'home',
+        default: '',
     }
 })
 import { useRouter } from 'vue-router';

@@ -232,10 +232,10 @@ export default defineComponent({
                     editorProps: {
                         // https://github.com/ueberdosis/tiptap/issues/943
                         transformPastedText(text) {
-                            return text.replace(/\u200B/g, "").replace(/\xA0/g, " ");
+                            return text.replace(/\u200B/g, "").replace(/[\xA0|\u3000]/g, " ");
                         },
                         transformPastedHTML(html) {
-                            return html.replace(/\u200B/g, "").replace(/\xA0/g, " ");
+                            return html.replace(/\u200B/g, "").replace(/[\xA0|\u3000]/g, " ");
                         },
                     },
                     onUpdate: () => {

@@ -517,6 +517,8 @@ const sentenceEmbeddingProviders = [
             { label: 'intfloat/multilingual-e5-base (1.11GB)', value: 'MultilingualE5Base' },
             { label: 'intfloat/multilingual-e5-large (2.24GB)', value: 'MultilingualE5Large' },
             { label: 'mixedbread-ai/mxbai-embed-large-v1 (1.34GB)', value: 'MxbaiEmbedLargeV1' },
+            { label: 'moka-ai/m3e-base (409MB)', value: 'MokaAiM3eBase' },
+            { label: 'moka-ai/m3e-large (1.3GB)', value: 'MokaAiM3eLarge' },
         ]
     },
     {
@@ -1033,24 +1035,26 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
         </el-col>
     </el-row>
-    <h3 v-if="robotType != 'TextBot'">
-        TTS
+    <h3>
+        Document QA
         <el-tooltip effect="light" placement="right">
             <template #content>
-                Downloading model files is not necessary.<br />
-                Its function is merely to enhance the accuracy of intent recognition for user inputs, and it will
-                not
-                affect the response functionality of the process.<br />
-                User intent can also be recognized through the configuration of keywords and regular expressions
-                without
-                downloading the model.
+                Support file type: Doc, Docx, PPT, PDF, JPG, PNG, Markdown.
             </template>
             <el-button circle>?</el-button>
         </el-tooltip>
     </h3>
-    <el-row v-if="robotType != 'TextBot'">
+    <el-row>
         <el-col :span="11" :offset="1">
+            <h3>Current documents</h3>
             <el-form :model="settings.ttsProvider" :label-width="formLabelWidth" style="max-width: 600px">
+                <el-form-item label="Upload">
+                    <el-select v-model="value">
+                        <el-option label="Dialog flow API" value="Normal" />
+                        <el-option label="Slack robot" value="Normal" />
+                        <el-option label="TTS Stream" value="Normal" :disabled="robotType == 'TextBot'" />
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="Enable">
                     <el-switch v-model="settings.ttsProvider.enabled" active-text="Response TTS stream"
                         inactive-text="Response text" />
@@ -1086,11 +1090,66 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
             </el-form>
         </el-col>
-        <el-col :span="6" :offset="1">
-            <div>This is used by intention similar sentences.</div>
-            <!-- <img src="../../assets/usedBySentenceEmbedding-thumbnail.png" /> -->
-            <el-image :src="sentenceEmbeddingPicThumbnail" :zoom-rate="1.2" :max-scale="7" :min-scale="0.2"
-                :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
+    </el-row>
+    <h3>
+        Response adapter
+        <el-tooltip effect="light" placement="right">
+            <template #content>
+                Downloading model files is not necessary.<br />
+                Its function is merely to enhance the accuracy of intent recognition for user inputs, and it will
+                not
+                affect the response functionality of the process.<br />
+                User intent can also be recognized through the configuration of keywords and regular expressions
+                without
+                downloading the model.
+            </template>
+            <el-button circle>?</el-button>
+        </el-tooltip>
+    </h3>
+    <el-row>
+        <el-col :span="11" :offset="1">
+            <el-form :model="settings.ttsProvider" :label-width="formLabelWidth" style="max-width: 600px">
+                <el-form-item label="Adapter">
+                    <el-select v-model="value">
+                        <el-option label="Dialog flow API" value="Normal" />
+                        <el-option label="Slack robot" value="Normal" />
+                        <el-option label="TTS Stream" value="Normal" :disabled="robotType == 'TextBot'" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Enable">
+                    <el-switch v-model="settings.ttsProvider.enabled" active-text="Response TTS stream"
+                        inactive-text="Response text" />
+                </el-form-item>
+                <el-form-item label="Provider" v-show="settings.ttsProvider.enabled" @change="changeTtsProvider">
+                    <el-radio-group v-model="settings.ttsProvider.provider.id" size="large">
+                        <el-radio-button v-for="item in ttsProviders" :id="item.id" :key="item.id" :label="item.id"
+                            :value="item.id" />
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="Model" v-show="settings.ttsProvider.enabled">
+                    <el-select ref="ttsModelSelector" v-model="settings.ttsProvider.provider.model"
+                        placeholder="Choose a model">
+                        <el-option v-for="item in ttsModelOptions" :id="item.value" :key="item.value"
+                            :label="item.label" :value="item.value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="" v-show="showHfIncorrectEmbeddingModelTip">
+                    HuggingFace model files were incorrect or missing, please <el-button type="primary" text
+                        @click="downloadModels(settings.sentenceEmbeddingProvider.provider.model)">
+                        click here to download model files from Huggingface.co
+                    </el-button>, or you can download manually and put them in ./data/model/{{
+                        sentenceEmbeddingModelRepository }}
+                </el-form-item>
+                <el-form-item label="" v-show="showHfEmbeddingModelDownloadProgress">
+                    Downloading: {{ downloadingUrl }}, {{ downloadingProgress }}%
+                </el-form-item>
+                <el-form-item label="" :label-width="formLabelWidth">
+                    <el-button type="primary" @click="save">
+                        {{ $t('lang.common.save') }}
+                    </el-button>
+                    <el-button @click="goBack()">{{ $t('lang.common.back') }}</el-button>
+                </el-form-item>
+            </el-form>
         </el-col>
     </el-row>
     <h3>Email settings</h3>

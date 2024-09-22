@@ -97,6 +97,23 @@ const getBotType = (type) => {
   else
     return ''
 }
+const compareDifferentRobotTypeData = [
+  {
+    rtype: 'Telephone outbound bot',
+    dialogNodeAnswerTextType: 'Plain text',
+    llmChatNodeAsyncResponse: 'Not supported',
+  },
+  {
+    rtype: 'Telephone incoming bot',
+    dialogNodeAnswerTextType: 'Plain text',
+    llmChatNodeAsyncResponse: 'Not supported',
+  },
+  {
+    rtype: 'Text chat bot',
+    dialogNodeAnswerTextType: 'Rich text',
+    llmChatNodeAsyncResponse: 'Supported by SSE',
+  },
+];
 </script>
 <style scoped>
 .header-row {
@@ -210,9 +227,14 @@ const getBotType = (type) => {
           </el-button>
         </h1>
       </el-col>
-      <el-col :span="12">
+      <!-- <el-col :span="12">
         <h1>
         </h1>
+      </el-col> -->
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <Demos :parentPage="HomeV2" />
       </el-col>
     </el-row>
     <el-space wrap size="large">
@@ -241,39 +263,39 @@ const getBotType = (type) => {
         </div>
       </el-col>
     </el-row> -->
-  <div class="title">
-    <el-icon :size="30">
-      <EpSetting />
-    </el-icon>
-    Global settings
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link to="/settings">Global settings</router-link>
-  <div class="description">{{ $t('lang.guide.desc4') }}</div>
-  </p>
-
-  <div class="title">
-    <el-icon :size="30">
-      <SolarDocumentTextLinear />
-    </el-icon>
-    {{ $t('lang.guide.title5') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
-    <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
-      {{ $t('lang.guide.nav5') }}
-      <el-icon>
-        <BiBoxArrowUpRight />
+    <div class="title">
+      <el-icon :size="30">
+        <EpSetting />
       </el-icon>
-    </a>
-  <div class="description">{{ $t('lang.guide.desc5') }}</div>
-  </p>
+      Global settings
+    </div>
+    <p>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link to="/settings">Global settings</router-link>
+    <div class="description">{{ $t('lang.guide.desc4') }}</div>
+    </p>
+
+    <div class="title">
+      <el-icon :size="30">
+        <SolarDocumentTextLinear />
+      </el-icon>
+      {{ $t('lang.guide.title5') }}
+    </div>
+    <p>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
+      <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
+        {{ $t('lang.guide.nav5') }}
+        <el-icon>
+          <BiBoxArrowUpRight />
+        </el-icon>
+      </a>
+      <div class="description">{{ $t('lang.guide.desc5') }}</div>
+    </p>
   </p>
   <p>
   <div class="text-center">
@@ -303,8 +325,13 @@ const getBotType = (type) => {
         </el-select>
       </el-form-item>
     </el-form>
+    <el-table :data="compareDifferentRobotTypeData">
+      <el-table-column property="rtype" label="" width="150" />
+      <el-table-column property="dialogNodeAnswerTextType" label="Dialog node" width="50" />
+      <el-table-column property="llmChatNodeAsyncResponse" label="Llm chat node" width="50" />
+    </el-table>
     <template #footer>
-      <el-button type="primary" :loading="loading" @click="newRobot()">{{ $t('lang.common.save') }}</el-button>
+      <el-button type="primary" @click="newRobot()">{{ $t('lang.common.save') }}</el-button>
       <el-button @click="setFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
     </template>
   </el-dialog>

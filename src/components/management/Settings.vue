@@ -1035,7 +1035,7 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 :preview-src-list="usedBySentenceEmbeddingBig" :initial-index="4" fit="cover" />
         </el-col>
     </el-row>
-    <h3>
+    <!-- <h3>
         Document QA
         <el-tooltip effect="light" placement="right">
             <template #content>
@@ -1151,7 +1151,7 @@ const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
                 </el-form-item>
             </el-form>
         </el-col>
-    </el-row>
+    </el-row> -->
     <h3>Email settings</h3>
     <el-row>
         <el-col :span="11" :offset="1">

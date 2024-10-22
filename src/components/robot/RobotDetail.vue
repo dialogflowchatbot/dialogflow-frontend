@@ -6,6 +6,7 @@ import { copyProperties, httpReq, persistRobotType } from '../../assets/tools.js
 import Demos from "../Demos.vue"
 import EpArrowRightBold from '~icons/ep/arrow-right-bold'
 import BiChatSquareDots from '~icons/bi/chat-square-dots'
+import MaterialSymbolsBook5Outline from '~icons/material-symbols/book-5-outline'
 import RiBardLine from '~icons/ri/bard-line'
 import SolarDownloadOutline from '~icons/solar/download-outline'
 import SolarRouting2Linear from '~icons/solar/routing-2-linear'
@@ -15,7 +16,7 @@ import BiBoxArrowUpRight from '~icons/bi/box-arrow-up-right'
 useI18n();
 const route = useRoute();
 const router = useRouter();
-const fromPage = 'guide';
+// const fromPage = 'guide';
 const robotId = route.params.robotId;
 let robotNameForRestore = '';
 const robotData = reactive({
@@ -147,6 +148,24 @@ async function deleteRobot() {
           </router-link> -->
   </div>
   </p>
+
+  <div class="title">
+    <el-icon :size="30">
+      <MaterialSymbolsBook5Outline />
+    </el-icon>
+    Knowledge base
+  </div>
+  <p>
+    <el-icon :size="15">
+      <EpArrowRightBold />
+    </el-icon>
+    <router-link :to="{ name: 'kb', params: { robotId: robotId } }">Knowledge base</router-link>
+  <div class="description">
+    {{ $t('lang.guide.desc2') }}<br />
+    We have built-in "Positive" and "Negative" intentions. If that's not enough, you can add your own
+  </div>
+  </p>
+
 
   <div class="title">
     <el-icon :size="30">

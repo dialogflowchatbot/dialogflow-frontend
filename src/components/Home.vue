@@ -214,7 +214,7 @@ const compareDifferentRobotTypeData = [
   <el-button v-show="checkUpdateResult == 3" type="danger" text>Failed to query update information, please try
     again
     later.</el-button> -->
-  <p style="margin-left:50px">
+  <div style="margin-left:50px">
     <el-row>
       <el-col :span="12">
         <h1>
@@ -237,6 +237,7 @@ const compareDifferentRobotTypeData = [
         <Demos :parentPage="HomeV2" />
       </el-col>
     </el-row>
+    <p>&nbsp;</p>
     <el-space wrap size="large">
       <div class="grid-content bg-color-light" v-for="n in robots" :key="n.robotId">
         <el-result :title="n.robotName" :sub-title="getBotType(n.robotType)">
@@ -269,13 +270,13 @@ const compareDifferentRobotTypeData = [
       </el-icon>
       Global settings
     </div>
-    <p>
+    <div>
       <el-icon :size="15">
         <EpArrowRightBold />
       </el-icon>
       <router-link to="/settings">Global settings</router-link>
-    <div class="description">{{ $t('lang.guide.desc4') }}</div>
-    </p>
+      <div class="description">{{ $t('lang.guide.desc4') }}</div>
+    </div>
 
     <div class="title">
       <el-icon :size="30">
@@ -283,7 +284,7 @@ const compareDifferentRobotTypeData = [
       </el-icon>
       {{ $t('lang.guide.title5') }}
     </div>
-    <p>
+    <div>
       <el-icon :size="15">
         <EpArrowRightBold />
       </el-icon>
@@ -295,23 +296,23 @@ const compareDifferentRobotTypeData = [
         </el-icon>
       </a>
       <div class="description">{{ $t('lang.guide.desc5') }}</div>
-    </p>
-  </p>
-  <p>
-  <div class="text-center">
-    Version: {{ currentVersion }}<br />
-    <a href="https://dialogflowchatbot.github.io/" target="_blank">https://dialogflowchatbot.github.io/</a><br />
-    If you have any questions or suggestions, please
-    create a <a href="https://github.com/dialogflowchatbot/dialogflow/discussions" target="_blank">discussion</a> on
-    Github
-    or
-    email to: dialogflow@yeah.net
+    </div>
   </div>
-  <div class="text-center">
-    Icons were created by
-    <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
+  <div>
+    <div class="text-center">
+      Version: {{ currentVersion }}<br />
+      <a href="https://dialogflowchatbot.github.io/" target="_blank">https://dialogflowchatbot.github.io/</a><br />
+      If you have any questions or suggestions, please
+      create a <a href="https://github.com/dialogflowchatbot/dialogflow/discussions" target="_blank">discussion</a> on
+      Github
+      or
+      email to: dialogflow@yeah.net
+    </div>
+    <div class="text-center">
+      Icons were created by
+      <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
+    </div>
   </div>
-  </p>
   <el-dialog v-model="setFormVisible" title="Create a new robot" width="60%">
     <el-form :model="robotData">
       <el-form-item label="Name" :label-width="formLabelWidth">

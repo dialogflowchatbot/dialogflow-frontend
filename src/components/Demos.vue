@@ -33,7 +33,7 @@ function gotoDemo(id, name) {
 </script>
 <template>
     <div>
-        {{ $t('lang.home.demo') }}:
+        <strong>{{ $t('lang.home.demo') }}</strong>:
         <template v-if="props.parentPage == 'home'">
             <ol>
                 <li>
@@ -51,13 +51,11 @@ function gotoDemo(id, name) {
             </ol>
         </template>
         <template v-else>
-            <el-link type="success" @click="gotoDemo('demo-repay', 'UmVwYXkgRGVtbw==')">{{
+            &gt; 1. <el-link type="success" @click="gotoDemo('demo-repay', 'UmVwYXkgRGVtbw==')">{{
                 $t('lang.home.demo1') }}</el-link>
-            |
-            <el-link type="success" @click="gotoDemo('demo-collect', 'SW5mb3JtYXRpb24gQ29sbGVjdGlvbiBEZW1v')">{{
+            &gt; 2. <el-link type="success" @click="gotoDemo('demo-collect', 'SW5mb3JtYXRpb24gQ29sbGVjdGlvbiBEZW1v')">{{
                 $t('lang.home.demo2') }}</el-link>
-            |
-            <el-link type="success" @click="gotoDemo('demo-notify', 'T25lIFNlbnRlbmNlIE5vdGlmaWNhdGlvbiBEZW1v')">{{
+            &gt; 3. <el-link type="success" @click="gotoDemo('demo-notify', 'T25lIFNlbnRlbmNlIE5vdGlmaWNhdGlvbiBEZW1v')">{{
                 $t('lang.home.demo3') }}</el-link>
         </template>
     </div>

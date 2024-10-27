@@ -239,9 +239,9 @@ const changeTab = (v) => {
           <el-tab-pane label="Request body" name="f" v-if="httpApiData.method == 'POST'">
             Request body type:
             <el-radio-group v-model="httpApiData.postContentType" class="ml-4">
-              <el-radio label="UrlEncoded" size="large">application/x-www-form-urlencoded</el-radio>
-              <el-radio label="JSON" size="large">JSON</el-radio>
-              <!-- <el-radio label="1" size="large">multipart/form-data</el-radio> -->
+              <el-radio value="UrlEncoded" size="large">application/x-www-form-urlencoded</el-radio>
+              <el-radio value="JSON" size="large">JSON</el-radio>
+              <!-- <el-radio value="1" size="large">multipart/form-data</el-radio> -->
             </el-radio-group>
             <el-table v-if="httpApiData.postContentType == 'UrlEncoded'" :data="httpApiData.formData" stripe
               style="width: 100%">

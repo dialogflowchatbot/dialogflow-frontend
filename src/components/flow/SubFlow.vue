@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CollectNode from './nodes/CollectNode.vue';
 import ConditionNode from './nodes/ConditionNode.vue';
 import DialogNode from './nodes/DialogNode.vue';
+import KnowledgeBaseAnswerNode from './nodes/KnowledgeBaseAnswerNode.vue';
 import EndNode from './nodes/EndNode.vue';
 import GotoNode from './nodes/GotoNode.vue';
 import ExternalHttpNode from './nodes/ExternalHttpNode.vue';
@@ -114,6 +115,37 @@ register({
     width: 270,
     height: 100,
     component: DialogNode,
+    ports: {
+        groups: {
+            absolute: {
+                position: {
+                    name: 'absolute',
+                },
+                attrs: {
+                    circle: {
+                        r: 5,
+                        magnet: true,
+                        stroke: 'black',
+                        strokeWidth: 1,
+                        fill: '#fff',
+                        style: {
+                            visibility: 'show',
+                        },
+                    },
+                },
+                label: {
+                    position: 'left',
+                }
+            },
+        },
+    }
+});
+
+register({
+    shape: "KnowledgeBaseAnswerNode",
+    width: 270,
+    height: 100,
+    component: KnowledgeBaseAnswerNode,
     ports: {
         groups: {
             absolute: {
@@ -297,6 +329,7 @@ register({
 
 const nodes = [
     { name: tm('lang.flow.nodes')[0], type: 'DialogNode', desc: tm('lang.flow.nodesDesc')[0], cnt: 1 },
+    { name: 'KnowledgeNode', type: 'KnowledgeBaseAnswerNode', desc: 'Knowledge base answer node', cnt: 1 },
     { name: 'LlmChatNode', type: 'LlmChatNode', desc: 'Llm chat node', cnt: 1 },
     { name: tm('lang.flow.nodes')[1], type: 'ConditionNode', desc: tm('lang.flow.nodesDesc')[1], cnt: 1 },
     { name: tm('lang.flow.nodes')[2], type: 'CollectNode', desc: tm('lang.flow.nodesDesc')[2], cnt: 1 },
@@ -721,6 +754,10 @@ const popupRundryWindow = async () => {
 
 .DialogNode {
     border-left: 5px solid rgb(255, 196, 0);
+}
+
+.KnowledgeBaseAnswerNode {
+    border-left: 5px solid #EFB7BA;
 }
 
 .ConditionNode {

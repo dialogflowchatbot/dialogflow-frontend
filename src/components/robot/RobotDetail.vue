@@ -120,20 +120,20 @@ async function deleteRobot() {
       </el-button>
     </el-col>
   </el-row>
-  <p style="margin-left:50px">
-  <div class="title">
-    <el-icon :size="30">
-      <BiChatSquareDots />
-    </el-icon>{{ $t('lang.guide.title1') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'mainflows', params: { robotId: robotId } }">{{ $t('lang.guide.nav1') }}</router-link>
-  <div class="description">
-    <Demos :parentPage="robotDetail" />
-    <!-- <router-link :to="{ name: 'subflow', params: { id: 'demo-repay', name: btoa('Repay Demo') } }">
+  <div style="margin-left:50px">
+    <div class="title">
+      <el-icon :size="30">
+        <BiChatSquareDots />
+      </el-icon>{{ $t('lang.guide.title1') }}
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'mainflows', params: { robotId: robotId } }">{{ $t('lang.guide.nav1') }}</router-link>
+      <div class="description">
+        <Demos :parentPage="robotDetail" />
+        <!-- <router-link :to="{ name: 'subflow', params: { id: 'demo-repay', name: btoa('Repay Demo') } }">
             {{ $t('lang.home.demo1') }}
           </router-link>
           |
@@ -146,106 +146,105 @@ async function deleteRobot() {
             :to="{ name: 'subflow', params: { id: 'demo-notify', name: btoa('One Sentence Notification Demo') } }">
             {{ $t('lang.home.demo3') }}
           </router-link> -->
-  </div>
-  </p>
+      </div>
+    </div>
 
-  <div class="title">
-    <el-icon :size="30">
-      <MaterialSymbolsBook5Outline />
-    </el-icon>
-    Knowledge base
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'kb', params: { robotId: robotId } }">Knowledge base</router-link>
-  <div class="description">
-    {{ $t('lang.guide.desc2') }}<br />
-    We have built-in "Positive" and "Negative" intentions. If that's not enough, you can add your own
-  </div>
-  </p>
-
-
-  <div class="title">
-    <el-icon :size="30">
-      <RiBardLine />
-    </el-icon>
-    {{ $t('lang.guide.title2') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'intents', params: { robotId: robotId } }">{{ $t('lang.guide.nav2') }}</router-link>
-  <div class="description">
-    {{ $t('lang.guide.desc2') }}<br />
-    We have built-in "Positive" and "Negative" intentions. If that's not enough, you can add your own
-  </div>
-  </p>
-
-  <div class="title">
-    <el-icon :size="30">
-      <SolarDownloadOutline />
-    </el-icon>
-    {{ $t('lang.guide.title3') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'variables', params: { robotId: robotId } }">{{ $t('lang.guide.nav3') }}</router-link>
-  <div class="description">{{ $t('lang.guide.desc3') }}</div>
-  </p>
-
-  <div class="title">
-    <el-icon :size="30">
-      <SolarRouting2Linear />
-    </el-icon>
-    External APIs call
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'externalHttpApis', params: { robotId: robotId } }">External HTTP API list</router-link>
-  <div class="description">By using this function, you can send data to external URLs and receive response.</div>
-  </p>
-
-  <div class="title">
-    <el-icon :size="30">
-      <EpSetting />
-    </el-icon>
-    {{ $t('lang.guide.title4') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <router-link :to="{ name: 'settings', params: { robotId: robotId } }">{{ $t('lang.guide.nav4') }}</router-link>
-  <div class="description">Change maximum session idle time, Embedding provider and Email STMP information.</div>
-  </p>
-
-  <div class="title">
-    <el-icon :size="30">
-      <SolarDocumentTextLinear />
-    </el-icon>
-    {{ $t('lang.guide.title5') }}
-  </div>
-  <p>
-    <el-icon :size="15">
-      <EpArrowRightBold />
-    </el-icon>
-    <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
-    <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
-      {{ $t('lang.guide.nav5') }}
-      <el-icon>
-        <BiBoxArrowUpRight />
+    <div class="title">
+      <el-icon :size="30">
+        <MaterialSymbolsBook5Outline />
       </el-icon>
-    </a>
-  <div class="description">{{ $t('lang.guide.desc5') }}</div>
-  </p>
-  </p>
+      Knowledge base
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'kb', params: { robotId: robotId } }">Knowledge base</router-link>
+      <div class="description">
+        {{ $t('lang.guide.desc2') }}<br />
+        We have built-in "Positive" and "Negative" intentions. If that's not enough, you can add your own
+      </div>
+    </div>
+
+    <div class="title">
+      <el-icon :size="30">
+        <RiBardLine />
+      </el-icon>
+      {{ $t('lang.guide.title2') }}
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'intents', params: { robotId: robotId } }">{{ $t('lang.guide.nav2') }}</router-link>
+      <div class="description">
+        {{ $t('lang.guide.desc2') }}<br />
+        We have built-in "Positive" and "Negative" intentions. If that's not enough, you can add your own
+      </div>
+    </div>
+
+    <div class="title">
+      <el-icon :size="30">
+        <SolarDownloadOutline />
+      </el-icon>
+      {{ $t('lang.guide.title3') }}
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'variables', params: { robotId: robotId } }">{{ $t('lang.guide.nav3') }}</router-link>
+      <div class="description">{{ $t('lang.guide.desc3') }}</div>
+    </div>
+
+    <div class="title">
+      <el-icon :size="30">
+        <SolarRouting2Linear />
+      </el-icon>
+      External APIs call
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'externalHttpApis', params: { robotId: robotId } }">External HTTP API list</router-link>
+      <div class="description">By using this function, you can send data to external URLs and receive response.</div>
+    </div>
+
+    <div class="title">
+      <el-icon :size="30">
+        <EpSetting />
+      </el-icon>
+      {{ $t('lang.guide.title4') }}
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <router-link :to="{ name: 'settings', params: { robotId: robotId } }">{{ $t('lang.guide.nav4') }}</router-link>
+      <div class="description">Change maximum session idle time, Embedding provider and Email STMP information.</div>
+    </div>
+
+    <div class="title">
+      <el-icon :size="30">
+        <SolarDocumentTextLinear />
+      </el-icon>
+      {{ $t('lang.guide.title5') }}
+    </div>
+    <div>
+      <el-icon :size="15">
+        <EpArrowRightBold />
+      </el-icon>
+      <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
+      <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
+        {{ $t('lang.guide.nav5') }}
+        <el-icon>
+          <BiBoxArrowUpRight />
+        </el-icon>
+      </a>
+      <div class="description">{{ $t('lang.guide.desc5') }}</div>
+    </div>
+  </div>
   <el-dialog v-model="dialogFormVisible" title="Change robot name">
     <el-form :model="form">
       <el-form-item label="Name" :label-width="formLabelWidth">

@@ -659,8 +659,8 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
                 </el-form-item> -->
                 <el-form-item :label="t('lang.dialogNode.form.label')" :label-width="formLabelWidth">
                     <!-- <el-radio-group v-model="textEditor" class="ml-4" @change="changeEditorNote">
-                            <el-radio label="1">Plain text</el-radio>
-                            <el-radio label="2">Rich text</el-radio>
+                            <el-radio value="1">Plain text</el-radio>
+                            <el-radio value="2">Rich text</el-radio>
                         </el-radio-group> -->
                     <el-input v-if="editor == null || robotType != 'TextBot'" ref="textArea"
                         v-model="nodeData.dialogText" type="textarea" @blur="getSel" />

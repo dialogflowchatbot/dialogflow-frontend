@@ -246,8 +246,8 @@ const hideForm = () => {
                 </el-form-item>
                 <el-form-item label="Content type">
                     <el-radio-group v-model="nodeData.contentType" class="ml-4">
-                        <el-radio label="TextHtml" size="large">text/html</el-radio>
-                        <el-radio label="TextPlain" size="large">text/plain</el-radio>
+                        <el-radio value="TextHtml" size="large">text/html</el-radio>
+                        <el-radio value="TextPlain" size="large">text/plain</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="">

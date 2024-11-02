@@ -168,7 +168,7 @@ export default defineComponent({
             this.nodeData.branches.push(b);
             const heightOffset = this.$refs.nodeName.offsetHeight + this.$refs.nodeAnswer.offsetHeight + 20;
             const x = this.$refs.nodeName.offsetWidth - 15;
-            this.getNode().addPort({
+            node.addPort({
                 group: 'absolute',
                 args: { x: x, y: heightOffset },
                 markup: [

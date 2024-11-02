@@ -18,11 +18,51 @@ const nodeData = reactive({
     invalidMessages: [],
     newNode: true,
 });
+const brief = ref('')
+const genBrief = () => {
+    let h = 'Knowledge recall thresholds: ' + nodeData.recallThresholds
+    h += '%\nWhen no knowledge is recalled then: ';
+    if (nodeData.noAnswerThen == 'GotoNextNode')
+        h += 'Goto next node.';
+    else if (nodeData.noAnswerThen == 'ReturnAlternativeAnswerInstead') {
+        h += 'Return "' + nodeData.alternativeAnswer + '" instead.';
+    }
+    brief.value = h;
+}
+const nodeName = ref();
+const nodeBrief = ref()
 onMounted(async () => {
     // const node = getNode();
     const data = node.getData();
     copyProperties(data, nodeData);
+    genBrief();
     if (nodeData.newNode) {
+        const heightOffset = nodeName.value.offsetHeight + 100;
+        const x = nodeName.value.offsetWidth - 15;
+        node.addPort({
+            group: 'absolute',
+            args: { x: x, y: heightOffset },
+            markup: [
+                { tagName: "circle", selector: "bopdy" },
+                { tagName: "rect", selector: "bg" }
+            ],
+            attrs: {
+                text: {
+                    text: 'Goto next node',
+                    fontSize: 12,
+                },
+                // https://codesandbox.io/s/port-label-viwnos?file=/src/App.tsx
+                bg: {
+                    ref: "text",
+                    refWidth: "100%",
+                    refHeight: "110%",
+                    refX: "-100%",
+                    refX2: -15,
+                    refY: -5,
+                    fill: "rgb(235,238,245)"
+                }
+            },
+        });
         nodeData.nodeName += data.nodeCnt.toString();
         nodeData.newNode = false;
     }
@@ -35,6 +75,7 @@ const validate = () => {
 }
 const saveForm = () => {
     validate()
+    genBrief()
     hideForm()
 }
 const hideForm = () => {
@@ -42,7 +83,6 @@ const hideForm = () => {
 }
 const formLabelWidth = '215px'
 const nodeSetFormVisible = ref(false)
-const nodeName = ref();
 </script>
 <style scoped>
 .nodeBox {
@@ -74,7 +114,7 @@ const nodeName = ref();
                 </el-tooltip>
             </span>
         </div>
-        <div ref="nodeAnswer" style="white-space: pre-wrap;font-size:12px;">{{ nodeData.endingText }}</div>
+        <div ref="nodeBrief" style="white-space: pre-wrap;font-size:12px;">{{ brief }}</div>
         <!-- <teleport to="body"> -->
         <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
             :append-to-body="true" :destroy-on-close="true">

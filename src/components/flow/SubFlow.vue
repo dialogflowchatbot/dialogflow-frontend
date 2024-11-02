@@ -144,7 +144,7 @@ register({
 register({
     shape: "KnowledgeBaseAnswerNode",
     width: 270,
-    height: 100,
+    height: 150,
     component: KnowledgeBaseAnswerNode,
     ports: {
         groups: {

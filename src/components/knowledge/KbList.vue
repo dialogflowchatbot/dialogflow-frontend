@@ -5,6 +5,8 @@ import { UploadFilled } from '@element-plus/icons-vue'
 const route = useRoute()
 const router = useRouter();
 const robotId = route.params.robotId
+const uploadUrlHost = window.location.href.indexOf('localhost') > -1 ? 'http://localhost:12715' : '';
+const uploadUrl = uploadUrlHost + "/kb/doc/upload?robotId=" + robotId
 const newDoc = reactive({
     question: '',
     similarQuestions: [''],
@@ -40,8 +42,7 @@ const formLabelWidth = '120px'
     <el-container>
         <el-aside width="300px">
             <h3>Docs</h3>
-            <el-upload class="upload-demo" drag action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                multiple>
+            <el-upload drag :action="uploadUrl" multiple>
                 <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                 <div class="el-upload__text">
                     Drop file here or <em>click to upload</em>
@@ -55,7 +56,7 @@ const formLabelWidth = '120px'
         </el-aside>
         <el-main>
             <h3>QA</h3>
-            <el-button type="success" @click="dialogVisible = true">New similar question</el-button>
+            <el-button type="success" @click="dialogVisible = true">Add QnA pair</el-button>
             <el-dialog v-model="dialogVisible" title="Add new QA" width="800">
                 <el-form :model="newDoc">
                     <el-form-item label="Question" :label-width="formLabelWidth">
@@ -71,7 +72,7 @@ const formLabelWidth = '120px'
                         <el-button plain @click="newDoc.similarQuestions.push('')">New similar question</el-button>
                     </el-form-item>
                     <el-form-item label="Answer" :label-width="formLabelWidth">
-                        <el-input v-model="newDoc.answer" placeholder="" type="password" />
+                        <el-input v-model="newDoc.answer" placeholder="" type="textarea" :rows="5" />
                     </el-form-item>
                 </el-form>
                 <template #footer>

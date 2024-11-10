@@ -22,7 +22,8 @@ import Home from './components/Home.vue'
 import HttpApiList from './components/external/HttpApiList.vue'
 import HttpApiDetail from './components/external/HttpApiDetail.vue'
 import RobotDetail from './components/robot/RobotDetail.vue'
-import KbList from './components/knowledge/KbList.vue'
+import DocList from './components/knowledge/DocList.vue'
+import QnAList from './components/knowledge/QnAList.vue'
 
 // import 'element-plus/dist/index.css'
 // import ElementTiptapPlugin from 'element-tiptap-vue3-fixed';
@@ -44,7 +45,8 @@ const routes = [
   // { path: '/tutorial', component: Tutorial },
   { path: '/external/httpApis/:robotId', name: 'externalHttpApis', component: HttpApiList },
   { path: '/external/httpApi/:robotId/:id', name: 'externalHttpApiDetail', component: HttpApiDetail },
-  { path: '/kb/:robotId', name: 'kb', component: KbList },
+  { path: '/kb/doc/:robotId', name: 'kbDoc', component: DocList },
+  { path: '/kb/qa/:robotId', name: 'kbQA', component: QnAList },
 ]
 
 const router = createRouter({

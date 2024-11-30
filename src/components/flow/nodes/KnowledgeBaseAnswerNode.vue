@@ -12,7 +12,7 @@ node.on("change:data", ({ current }) => {
 const nodeData = reactive({
     nodeName: 'Knowledge base answer node',
     recallThresholds: 85,
-    noAnswerThen: 'GotoNextNode',
+    noAnswerThen: 'GotoAnotherNode',
     alternativeAnswer: '',
     valid: false,
     invalidMessages: [],
@@ -22,7 +22,7 @@ const brief = ref('')
 const genBrief = () => {
     let h = 'Knowledge recall thresholds: ' + nodeData.recallThresholds
     h += '%\nWhen no knowledge is recalled then: ';
-    if (nodeData.noAnswerThen == 'GotoNextNode')
+    if (nodeData.noAnswerThen == 'GotoAnotherNode')
         h += 'Goto next node.';
     else if (nodeData.noAnswerThen == 'ReturnAlternativeAnswerInstead') {
         h += 'Return "' + nodeData.alternativeAnswer + '" instead.';
@@ -124,7 +124,7 @@ const nodeSetFormVisible = ref(false)
                 </el-form-item>
                 <el-form-item label="When no knowledge is recalled" :label-width="formLabelWidth">
                     <el-radio-group v-model="nodeData.noAnswerThen">
-                        <el-radio value="GotoNextNode">Goto the next node</el-radio>
+                        <el-radio value="GotoAnotherNode">Goto the next node</el-radio>
                         <el-radio value="ReturnAlternativeAnswerInstead">Return to the text below instead and stay at
                             the current node.</el-radio>
                     </el-radio-group>

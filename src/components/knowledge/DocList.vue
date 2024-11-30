@@ -41,7 +41,7 @@ const goBack = () => {
     <!-- <h3>Docs</h3> -->
     <el-upload drag :action="uploadUrl" multiple>
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">
+        <div>
             Drop file here or <em>click to upload</em>
         </div>
         <template #tip>

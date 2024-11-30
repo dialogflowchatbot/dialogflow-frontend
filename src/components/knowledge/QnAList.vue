@@ -2,10 +2,13 @@
 import { reactive, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { httpReq } from '../../assets/tools.js'
+import { useI18n } from 'vue-i18n'
+const { t, tm, rt } = useI18n();
 const route = useRoute()
 const router = useRouter();
 const robotId = route.params.robotId
-const newDoc = reactive({
+const qaData = reactive({
+    id: null,
     question: {
         question: ''
     },
@@ -17,16 +20,65 @@ const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
     console.log(column);
     return { rowspan: column.length, colspan: 1 }
 }
-onMounted(async () => {
+const listQa = async () => {
     const t = await httpReq('GET', 'kb/qa', { robotId: robotId }, null, null);
     console.log(t);
     if (t.status == 200)
         tableData.splice(0, tableData.length, ...t.data);
+}
+onMounted(() => {
+    listQa();
 })
+const newQa = () => {
+    qaData.id = null;
+    qaData.question.question = '';
+    qaData.similarQuestions = [];
+    qaData.answer = ''
+    dialogVisible.value = true
+}
+const editQa = (idx) => {
+    const d = tableData[idx];
+    if (d) {
+        qaData.id = d.id;
+        qaData.question.question = d.question.question;
+        qaData.similarQuestions.splice(0, qaData.similarQuestions.length, ...d.similarQuestions);
+        qaData.answer = d.answer
+        dialogVisible.value = true
+    }
+}
 const saveQa = async () => {
-    const t = await httpReq('POST', 'kb/qa', { robotId: robotId }, null, newDoc);
+    const t = await httpReq('POST', 'kb/qa', { robotId: robotId }, null, qaData);
     console.log(t);
-    dialogVisible = false
+    dialogVisible.value = false
+    listQa()
+}
+const deleteQa = async (idx) => {
+    ElMessageBox.confirm(
+        'Confirm to delete this QnA?',
+        'Warning',
+        {
+            confirmButtonText: t('lang.common.del'),
+            cancelButtonText: t('lang.common.cancel'),
+            type: 'warning',
+        }
+    ).then(async () => {
+        const d = tableData[idx];
+        if (d) {
+            qaData.id = d.id;
+            const t = await httpReq('DELETE', 'kb/qa', { robotId: robotId }, null, qaData);
+            console.log(t);
+            listQa()
+        }
+    }).catch(() => {
+        // ElMessage({
+        //     type: 'info',
+        //     message: 'Delete canceled',
+        // })
+    })
+}
+const testQa = async () => {
+    const t = await httpReq('GET', 'kb/qa/dryrun', { robotId: robotId, text: '' }, null, null);
+    console.log(t);
 }
 const goBack = () => {
     router.push({ name: 'robotDetail', params: { robotId: robotId } });
@@ -35,6 +87,29 @@ const goBack = () => {
 const dialogVisible = ref(false)
 const formLabelWidth = '120px'
 </script>
+<style scoped>
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: none;
+}
+
+tr:nth-child(even) {
+    background-color: #fff;
+}
+
+tr:nth-child(odd) {
+    background-color: #f7f6f6;
+}
+
+tr:hover {
+    background-color: #eee;
+}
+
+td {
+    border: none;
+}
+</style>
 <template>
     <el-page-header :title="$t('lang.common.back')" @back="goBack">
         <template #content>
@@ -43,41 +118,57 @@ const formLabelWidth = '120px'
     </el-page-header>
     <br />
     <!-- <h3>QA</h3> -->
-    <el-button type="success" @click="dialogVisible = true">Add QnA pair</el-button>
-    <table border="1" cellspacing="0">
-        <tr>
-            <th width="200">Question</th>
-            <th width="200">Similar questions</th>
-            <th width="200">Answer</th>
-        </tr>
-        <tr v-for="(item, index) in tableData" :id="index" :key="index">
-            <td>{{ item.qaData.question.question }}</td>
-            <td>
-                <table>
-                    <tr v-for="(sq, idx) in item.qaData.similarQuestions" :id="idx" :key="idx">
-                        <td>{{ sq.question }}</td>
-                    </tr>
-                </table>
-            </td>
-            <td>{{ item.qaData.answer }}</td>
-        </tr>
-    </table>
+    <el-button type="success" @click="newQa">Add QnA pair</el-button>
+    <div v-for="(qa, index) in tableData" :id="index" :key="index">
+        <table cellspacing="0">
+            <tbody>
+                <tr>
+                    <td width="130">Question</td>
+                    <td width="700">{{ qa.question.question }}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Similar questions</td>
+                    <td>
+                        <el-table :data="qa.similarQuestions" :show-header="false" style="width: 100%">
+                            <el-table-column prop="question" label="" />
+                        </el-table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Answer</td>
+                    <td>{{ qa.answer }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <el-button type="primary" link @click="editQa(index)">
+                            Edit
+                        </el-button>
+                        <el-button type="danger" link @click="deleteQa(index)">
+                            Delete
+                        </el-button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <el-divider />
+    </div>
     <el-dialog v-model="dialogVisible" title="Add new QA" width="800">
-        <el-form :model="newDoc">
+        <el-form :model="qaData">
             <el-form-item label="Question" :label-width="formLabelWidth">
-                <el-input v-model="newDoc.question.question" placeholder="" />
+                <el-input v-model="qaData.question.question" placeholder="" />
             </el-form-item>
-            <el-form-item v-for="(item, index) in newDoc.similarQuestions" :id="index" :key="index"
+            <el-form-item v-for="(item, index) in qaData.similarQuestions" :id="index" :key="index"
                 :label="index == 0 ? 'Similar questions' : ''" :label-width="formLabelWidth">
-                <el-input v-model="newDoc.similarQuestions[index].question" placeholder="" style="width: 90%;" />
-                <el-button circle @click="newDoc.similarQuestions.splice(index, 1)" v-show="index > 0">-</el-button>
+                <el-input v-model="qaData.similarQuestions[index].question" placeholder="" style="width: 90%;" />
+                <el-button circle @click="qaData.similarQuestions.splice(index, 1)">-</el-button>
             </el-form-item>
             <el-form-item label="" :label-width="formLabelWidth">
-                <el-button plain @click="newDoc.similarQuestions.push({ question: '' })">New similar
+                <el-button plain @click="qaData.similarQuestions.push({ question: '' })">New similar
                     question</el-button>
             </el-form-item>
             <el-form-item label="Answer" :label-width="formLabelWidth">
-                <el-input v-model="newDoc.answer" placeholder="" type="textarea" :rows="5" />
+                <el-input v-model="qaData.answer" placeholder="" type="textarea" :rows="5" />
             </el-form-item>
         </el-form>
         <template #footer>

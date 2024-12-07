@@ -10,6 +10,8 @@ const router = useRouter();
 const intentData = ref([]);
 const formLabelWidth = '70px';
 const dialogFormVisible = ref(false);
+const dryRunFormVisible = ref(false)
+const loading = ref(false)
 const intentName = ref('');
 const robotId = route.params.robotId;
 
@@ -35,7 +37,7 @@ async function newIntent() {
         await list();
 }
 function editIntent(idx, row) {
-    router.push({ path: '/intent/detail', query: { robotId: robotId, id: intentData.value[idx].id, idx: idx, name: row.name } });
+    router.push({ path: '/robot/' + robotId + '/intent/detail', query: { id: intentData.value[idx].id, idx: idx, name: row.name } });
 }
 async function deleteIntent(idx, row) {
     ElMessageBox.confirm(
@@ -72,32 +74,50 @@ async function deleteIntent(idx, row) {
 
 const testIntentDetectionText = ref('')
 const intentDetectResult = ref('')
-async function detectIntent() {
-    if (testIntentDetectionText.value == null || testIntentDetectionText.value.length < 1)
-        return;
-    const formData = { robotId: robotId, id: '', data: testIntentDetectionText.value };
-    const t = await httpReq('POST', 'intent/detect', null, null, formData);
-    console.log(t.data);
-    if (t.status == 200) {
-        if (t.data == null)
-            intentDetectResult.value = 'No intention detected.';
-        else
-            intentDetectResult.value = 'The detected intention is: ' + t.data;
-    }
+function detectIntent() {
+    // if (testIntentDetectionText.value == null || testIntentDetectionText.value.length < 1)
+    //     return;
+    // const formData = { robotId: robotId, id: '', data: testIntentDetectionText.value };
+    // const t = await httpReq('POST', 'intent/detect', null, null, formData);
+    // console.log(t.data);
+    // if (t.status == 200) {
+    //     if (t.data == null)
+    //         intentDetectResult.value = 'No intention detected.';
+    //     else
+    //         intentDetectResult.value = 'The detected intention is: ' + t.data;
+    // }
+    loading.value = true;
+    (async function () {
+        if (testIntentDetectionText.value == null || testIntentDetectionText.value.length < 1)
+            return;
+        const formData = { robotId: robotId, id: '', data: testIntentDetectionText.value };
+        const t = await httpReq('POST', 'intent/detect', null, null, formData);
+        console.log(t.data);
+        if (t.status == 200) {
+            if (t.data == null)
+                intentDetectResult.value = 'No intention detected.';
+            else
+                intentDetectResult.value = 'The detected intention is: ' + t.data;
+        }
+    })().then(() => loading.value = false);
 }
 </script>
 <template>
-    <el-page-header :title="t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3">{{ $t('lang.intent.title') }}</span>
         </template>
-        <template #extra>
+<template #extra>
             <div class="flex items-center">
                 <el-button type="primary" class="ml-2" @click="dialogFormVisible = true">{{ $t('lang.intent.add')
                     }}</el-button>
             </div>
         </template>
-    </el-page-header>
+</el-page-header> -->
+    <h1>{{ $t('lang.intent.title') }}</h1>
+    <el-button type="primary" class="ml-2" @click="dialogFormVisible = true">{{ $t('lang.intent.add')
+        }}</el-button>
+    <el-button type="primary" @click="dryRunFormVisible = true">Test intent detection</el-button>
     <el-table :data="intentData" stripe style="width: 100%">
         <el-table-column prop="name" :label="tm('lang.intent.table')[0]" width="180" />
         <el-table-column prop="keyword_num" :label="tm('lang.intent.table')[1]" width="180" />
@@ -113,10 +133,6 @@ async function detectIntent() {
         </el-table-column>
     </el-table>
     <el-divider />
-    <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts"
-        @change="detectIntent" />
-    <el-button type="primary" @click="detectIntent">Test intent detection</el-button>
-    <div>{{ intentDetectResult }}</div>
     <el-dialog v-model="dialogFormVisible" :title="t('lang.intent.form.title')">
         <el-form :model="form">
             <el-form-item :label="t('lang.intent.form.name')" :label-width="formLabelWidth">
@@ -132,4 +148,18 @@ async function detectIntent() {
             </span>
         </template>
     </el-dialog>
+    <el-drawer v-model="dryRunFormVisible" title="Test intent detection" direction="rtl" size="50%">
+        <el-form>
+            <el-form-item label="">
+                <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts" />
+            </el-form-item>
+            <el-form-item label="">
+                <div>{{ intentDetectResult }}</div>
+            </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+            <el-button type="primary" :loading="loading" @click="detectIntent">Test</el-button>
+            <el-button @click="dryRunFormVisible = false">Close</el-button>
+        </div>
+    </el-drawer>
 </template>

@@ -60,7 +60,7 @@ const delApi = (idx, row) => {
 }
 </script>
 <template>
-    <el-page-header :title="t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3"> External HTTP API list </span>
         </template>
@@ -69,7 +69,9 @@ const delApi = (idx, row) => {
                 <el-button type="primary" class="ml-2" @click="newApi()">Add new external API</el-button>
             </div>
         </template>
-    </el-page-header>
+    </el-page-header> -->
+    <h1>External HTTP APIs list</h1>
+    <el-button type="primary" class="ml-2" @click="newApi()">Add new external API</el-button>
     <div style="padding:10px;border: 1px solid #E6A23C; background-color: #fdf6ec;margin:10px">
         Now you can not only send data to the outside, but also get data from the outside and save it in variables
         by setting value source to a HTTP API.

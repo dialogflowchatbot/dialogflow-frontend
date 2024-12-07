@@ -153,7 +153,7 @@ async function saveForm() {
 </script>
 <style scoped></style>
 <template>
-    <el-page-header :title="t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3"> {{ $t('lang.var.title') }} </span>
         </template>
@@ -162,7 +162,9 @@ async function saveForm() {
                 <el-button type="primary" class="ml-2" @click="newVar()">{{ $t('lang.var.add') }}</el-button>
             </div>
         </template>
-    </el-page-header>
+    </el-page-header> -->
+    <h1>{{ $t('lang.var.title') }}</h1>
+    <el-button type="primary" class="ml-2" @click="newVar()">{{ $t('lang.var.add') }}</el-button>
     <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="varName" :label="tm('lang.var.table')[0]" width="300" />
         <el-table-column prop="varTypeT" :label="tm('lang.var.table')[1]" width="180" />

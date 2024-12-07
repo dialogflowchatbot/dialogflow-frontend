@@ -32,13 +32,12 @@ const goBack = () => {
 
 </script>
 <template>
-    <el-page-header :title="$t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="$t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3">Documents management</span>
         </template>
-    </el-page-header>
-
-    <!-- <h3>Docs</h3> -->
+    </el-page-header> -->
+    <h1>Documents</h1>
     <el-upload drag :action="uploadUrl" multiple>
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div>

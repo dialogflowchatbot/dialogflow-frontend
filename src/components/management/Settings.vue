@@ -710,11 +710,12 @@ const usedByTextGenerationBig = [textGenerationPic]
 const usedBySentenceEmbeddingBig = [sentenceEmbeddingPic];
 </script>
 <template>
-    <el-page-header :title="$t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="$t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3">{{ $t('lang.settings.title') }}</span>
         </template>
-    </el-page-header>
+    </el-page-header> -->
+    <h1>{{ $t('lang.settings.title') }}</h1>
     <h3>Common settings</h3>
     <el-row>
         <el-col :span="12" :offset="1">

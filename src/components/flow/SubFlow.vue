@@ -858,7 +858,7 @@ const popupRundryWindow = async () => {
 <template>
     <div>
         <!-- <div id="modal-container"></div> -->
-        <el-container>
+        <el-container style="min-height: 100vh;max-height: 100vh;">
             <el-header height="40px">
                 <el-page-header :title="t('lang.common.back')" @back="goBack">
                     <template #content>

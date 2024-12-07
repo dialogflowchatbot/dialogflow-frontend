@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n'
 const { t, tm, rt } = useI18n();
 const route = useRoute();
 const router = useRouter();
-const robotId = route.query.robotId;
+const robotId = route.params.robotId;
 
 const intentData = reactive({
     keywords: [],

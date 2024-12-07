@@ -112,7 +112,7 @@ const saveForm = async () => {
 </script>
 <style scoped></style>
 <template>
-    <el-page-header :title="t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3"> {{ $t('lang.mainflow.title') }} </span>
         </template>
@@ -121,7 +121,9 @@ const saveForm = async () => {
                 <el-button type="primary" class="ml-2" @click="newMainFlow()">{{ $t('lang.mainflow.add') }}</el-button>
             </div>
         </template>
-    </el-page-header>
+    </el-page-header> -->
+    <h1>{{ $t('lang.mainflow.title') }}</h1>
+    <el-button type="primary" class="ml-2" @click="newMainFlow()">{{ $t('lang.mainflow.add') }}</el-button>
     <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="Id" width="270" />
         <el-table-column prop="name" :label="tm('lang.mainflow.table')[0]" width="360" />

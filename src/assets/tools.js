@@ -139,10 +139,32 @@ export function isOnGithub() {
     return u.indexOf('dialogflowchatbot.github.io') > -1;
 }
 
-export function persistRobotType(robotId, robotType) {
-    window.localStorage.setItem(robotId + 'type', robotType);
+export function persistRobotDetail(robotDetail) {
+    window.sessionStorage.setItem('prd' + robotDetail.robotId, JSON.stringify(robotDetail));
+}
+
+export function getRobotName(robotId) {
+    const s = window.sessionStorage.getItem('prd' + robotId);
+    if (s) {
+        const robotDetail = JSON.parse(s)
+        return robotDetail.robotName;
+    }
+    return '';
 }
 
 export function getRobotType(robotId) {
-    return window.localStorage.getItem(robotId + 'type');
+    const s = window.sessionStorage.getItem('prd' + robotId);
+    if (s) {
+        const robotDetail = JSON.parse(s)
+        return robotDetail.robotType;
+    }
+    return '';
 }
+
+// export function persistRobotType(robotId, robotType) {
+//     window.localStorage.setItem(robotId + 'type', robotType);
+// }
+
+// export function getRobotType(robotId) {
+//     return window.localStorage.getItem(robotId + 'type');
+// }

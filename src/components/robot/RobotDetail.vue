@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router';
-import { copyProperties, httpReq, persistRobotType } from '../../assets/tools.js'
+import { copyProperties, httpReq, persistRobotDetail } from '../../assets/tools.js'
 import Demos from "../Demos.vue"
 import EpArrowRightBold from '~icons/ep/arrow-right-bold'
 import BiChatSquareDots from '~icons/bi/chat-square-dots'
@@ -33,7 +33,8 @@ onMounted(async () => {
   if (t.status == 200 && t.data != null) {
     copyProperties(t.data, robotData)
     robotNameForRestore = robotData.robotName;
-    persistRobotType(t.data.robotId, t.data.robotType);
+    persistRobotDetail(t.data);
+    // persistRobotType(t.data.robotId, t.data.robotType);
   } else {
     ElMessage.error('Can NOT find robot information by robotId.');
   }
@@ -159,7 +160,7 @@ async function deleteRobot() {
       <el-icon :size="15">
         <EpArrowRightBold />
       </el-icon>
-      <router-link :to="{ name: 'kbQA', params: { robotId: robotId } }">Question and answers</router-link>
+      <router-link :to="{ name: 'kbQA', params: { robotId: robotId } }">Questions and answer</router-link>
       &nbsp;&nbsp;
       <el-icon :size="15">
         <EpArrowRightBold />

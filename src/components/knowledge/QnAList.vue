@@ -76,15 +76,26 @@ const deleteQa = async (idx) => {
         // })
     })
 }
-const testQa = async () => {
-    const t = await httpReq('GET', 'kb/qa/dryrun', { robotId: robotId, text: '' }, null, null);
-    console.log(t);
+const testQa = (text) => {
+    loading.value = true;
+    (async function (text) {
+        const t = await httpReq('GET', 'kb/qa/dryrun', { robotId: robotId, text: text }, null, null);
+        console.log(t);
+        if (t.status == 200)
+            testQnAResult.value = t.data[0].answer + ' (Distance: ' + t.data[1] + ')';
+        else
+            testQnAResult.value = t.err.message;
+    })(text).then(() => loading.value = false);
 }
 const goBack = () => {
     router.push({ name: 'robotDetail', params: { robotId: robotId } });
 }
 
 const dialogVisible = ref(false)
+const dryRunFormVisible = ref(false)
+const loading = ref(false)
+const testQnAText = ref('')
+const testQnAResult = ref('')
 const formLabelWidth = '120px'
 </script>
 <style scoped>
@@ -108,18 +119,21 @@ tr:hover {
 
 td {
     border: none;
+    font-size: 15px;
 }
 </style>
 <template>
-    <el-page-header :title="$t('lang.common.back')" @back="goBack">
+    <!-- <el-page-header :title="$t('lang.common.back')" @back="goBack">
         <template #content>
             <span class="text-large font-600 mr-3">Question and answers</span>
         </template>
-    </el-page-header>
-    <br />
-    <!-- <h3>QA</h3> -->
-    <el-button type="success" @click="newQa">Add QnA pair</el-button>
+</el-page-header>
+<br /> -->
+    <h1>Questions and answer</h1>
+    <el-button type="primary" @click="newQa">Add QnA pair</el-button>
+    <el-button type="primary" @click="dryRunFormVisible = true">Test QnA</el-button>
     <div v-for="(qa, index) in tableData" :id="index" :key="index">
+        <el-divider />
         <table cellspacing="0">
             <tbody>
                 <tr>
@@ -151,7 +165,6 @@ td {
                 </tr>
             </tbody>
         </table>
-        <el-divider />
     </div>
     <el-dialog v-model="dialogVisible" title="Add new QA" width="800">
         <el-form :model="qaData">
@@ -180,5 +193,18 @@ td {
             </div>
         </template>
     </el-dialog>
-
+    <el-drawer v-model="dryRunFormVisible" title="Test QnA" direction="rtl" size="50%">
+        <el-form>
+            <el-form-item label="">
+                <el-input v-model="testQnAText" style="width: 240px" placeholder="Please input some texts" />
+            </el-form-item>
+            <el-form-item label="">
+                <div>{{ testQnAResult }}</div>
+            </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+            <el-button type="primary" :loading="loading" @click="testQa(testQnAText)">Test</el-button>
+            <el-button @click="dryRunFormVisible = false">Close</el-button>
+        </div>
+    </el-drawer>
 </template>

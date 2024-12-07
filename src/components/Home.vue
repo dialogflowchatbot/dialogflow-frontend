@@ -327,9 +327,9 @@ const compareDifferentRobotTypeData = [
       </el-form-item>
     </el-form>
     <el-table :data="compareDifferentRobotTypeData">
-      <el-table-column property="rtype" label="" width="150" />
-      <el-table-column property="dialogNodeAnswerTextType" label="Dialog node" width="50" />
-      <el-table-column property="llmChatNodeAsyncResponse" label="Llm chat node" width="50" />
+      <el-table-column property="rtype" label="" width="190" />
+      <el-table-column property="dialogNodeAnswerTextType" label="Dialog node" width="150" />
+      <el-table-column property="llmChatNodeAsyncResponse" label="Llm chat node streaming" width="200" />
     </el-table>
     <template #footer>
       <el-button type="primary" @click="newRobot()">{{ $t('lang.common.save') }}</el-button>

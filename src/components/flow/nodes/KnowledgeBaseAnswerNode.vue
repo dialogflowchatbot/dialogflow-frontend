@@ -1,6 +1,6 @@
 <script setup>
 import { inject, onMounted, reactive, ref } from 'vue';
-import { copyProperties } from '../../../assets/tools.js'
+import { copyProperties, getDefaultBranch } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
@@ -12,8 +12,10 @@ node.on("change:data", ({ current }) => {
 const nodeData = reactive({
     nodeName: 'Knowledge base answer node',
     recallThresholds: 85,
-    noAnswerThen: 'GotoAnotherNode',
-    alternativeAnswer: '',
+    noAnswerThenChoice: 'GotoAnotherNode',
+    noAnswerThen: null,
+    alternateAnswer: '',
+    branches: [],
     valid: false,
     invalidMessages: [],
     newNode: true,
@@ -22,10 +24,10 @@ const brief = ref('')
 const genBrief = () => {
     let h = 'Knowledge recall thresholds: ' + nodeData.recallThresholds
     h += '%\nWhen no knowledge is recalled then: ';
-    if (nodeData.noAnswerThen == 'GotoAnotherNode')
+    if (nodeData.noAnswerThenChoice == 'GotoAnotherNode')
         h += 'Goto next node.';
-    else if (nodeData.noAnswerThen == 'ReturnAlternativeAnswerInstead') {
-        h += 'Return "' + nodeData.alternativeAnswer + '" instead.';
+    else if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead') {
+        h += 'Return "' + nodeData.alternateAnswer + '" instead.';
     }
     brief.value = h;
 }
@@ -69,13 +71,26 @@ onMounted(async () => {
     validate();
 })
 const validate = () => {
-    if (nodeData.noAnswerThen == 'ReturnAlternativeAnswerInstead' && !nodeData.alternativeAnswer)
+    if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead' && !nodeData.alternateAnswer)
         nodeData.invalidMessages.push('Please enter an alternate answer.')
     nodeData.valid = nodeData.invalidMessages.length == 0;
 }
 const saveForm = () => {
+    const ports = node.getPorts();
+    const branch = getDefaultBranch();
+    branch.branchName = ports[0].attrs.text.text;
+    branch.branchId = ports[0].id;
+    branch.branchType = 'GotoAnotherNode';
+    nodeData.branches.splice(0, nodeData.branches.length, branch);
+    delete nodeData.noAnswerThen;
+    if (nodeData.noAnswerThenChoice == 'GotoAnotherNode')
+        nodeData.noAnswerThen = nodeData.noAnswerThenChoice;
+    else if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead')
+        nodeData.noAnswerThen = {'ReturnAlternateAnswerInstead': nodeData.alternateAnswer};
     validate()
     genBrief()
+    node.removeData({ silent: true });
+    node.setData(nodeData, { silent: false });
     hideForm()
 }
 const hideForm = () => {
@@ -123,15 +138,15 @@ const nodeSetFormVisible = ref(false)
                     <el-input-number v-model="nodeData.recallThresholds" :min="1" :max="100" />%
                 </el-form-item>
                 <el-form-item label="When no knowledge is recalled" :label-width="formLabelWidth">
-                    <el-radio-group v-model="nodeData.noAnswerThen">
+                    <el-radio-group v-model="nodeData.noAnswerThenChoice">
                         <el-radio value="GotoAnotherNode">Goto the next node</el-radio>
-                        <el-radio value="ReturnAlternativeAnswerInstead">Return to the text below instead and stay at
+                        <el-radio value="ReturnAlternateAnswerInstead">Return to the text below instead and stay at
                             the current node.</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="Alternative answer" :label-width="formLabelWidth"
-                    v-show="nodeData.noAnswerThen == 'ReturnAlternativeAnswerInstead'">
-                    <el-input v-model="nodeData.alternativeAnswer" placeholder="" />
+                <el-form-item label="Alternate answer" :label-width="formLabelWidth"
+                    v-show="nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead'">
+                    <el-input v-model="nodeData.alternateAnswer" placeholder="" />
                 </el-form-item>
             </el-form>
             <div class="demo-drawer__footer">

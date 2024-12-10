@@ -169,12 +169,12 @@ async function saveForm() {
         <el-table-column prop="varName" :label="tm('lang.var.table')[0]" width="300" />
         <el-table-column prop="varTypeT" :label="tm('lang.var.table')[1]" width="180" />
         <el-table-column prop="varValueSourceT" :label="tm('lang.var.table')[2]" width="200" />
-        <el-table-column fixed="right" :label="tm('lang.var.table')[3]" width="120">
+        <el-table-column fixed="right" :label="tm('lang.var.table')[3]" min-width="40">
             <template #default="scope">
-                <el-button link type="primary" size="small" @click="editVar(scope.$index, scope.row)">
+                <el-button link type="primary" @click="editVar(scope.$index, scope.row)">
                     {{ $t('lang.common.edit') }}
                 </el-button>
-                <el-button link type="primary" size="small" @click="deleteVar(scope.$index, scope.row)">
+                <el-button link type="primary" @click="deleteVar(scope.$index, scope.row)">
                     {{ $t('lang.common.del') }}
                 </el-button>
             </template>

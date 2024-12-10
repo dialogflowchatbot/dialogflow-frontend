@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { httpReq } from '../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
@@ -36,6 +36,17 @@ const newQa = () => {
     qaData.answer = ''
     dialogVisible.value = true
 }
+const showQaDetail = (idx) => {
+    qaDetailIdx.value = idx
+    const d = tableData[idx];
+    if (d) {
+        qaData.id = d.id;
+        qaData.question.question = d.question.question;
+        qaData.similarQuestions.splice(0, qaData.similarQuestions.length, ...d.similarQuestions);
+        qaData.answer = d.answer
+        qaDetailVisible.value = true
+    }
+}
 const editQa = (idx) => {
     const d = tableData[idx];
     if (d) {
@@ -67,7 +78,10 @@ const deleteQa = async (idx) => {
             qaData.id = d.id;
             const t = await httpReq('DELETE', 'kb/qa', { robotId: robotId }, null, qaData);
             console.log(t);
-            listQa()
+            nextTick(() => {
+                qaDetailVisible.value = false
+                listQa()
+            })
         }
     }).catch(() => {
         // ElMessage({
@@ -92,6 +106,8 @@ const goBack = () => {
 }
 
 const dialogVisible = ref(false)
+const qaDetailVisible = ref(false)
+const qaDetailIdx = ref(0)
 const dryRunFormVisible = ref(false)
 const loading = ref(false)
 const testQnAText = ref('')
@@ -99,7 +115,7 @@ const testQnAResult = ref('')
 const formLabelWidth = '120px'
 </script>
 <style scoped>
-table {
+/* table {
     border-collapse: collapse;
     border-spacing: 0;
     border: none;
@@ -120,7 +136,7 @@ tr:hover {
 td {
     border: none;
     font-size: 15px;
-}
+} */
 </style>
 <template>
     <!-- <el-page-header :title="$t('lang.common.back')" @back="goBack">
@@ -132,7 +148,19 @@ td {
     <h1>Questions and answer</h1>
     <el-button type="primary" @click="newQa">Add QnA pair</el-button>
     <el-button type="primary" @click="dryRunFormVisible = true">Test QnA</el-button>
-    <div v-for="(qa, index) in tableData" :id="index" :key="index">
+    <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="question.question" label="Question" width="360" />
+        <el-table-column prop="similarQuestions.length" label="No. of similar questions" width="180" />
+        <el-table-column prop="answer" label="Answer" />
+        <el-table-column fixed="right" label="Operations" min-width="40">
+            <template #default="scope">
+                <el-button link type="primary" @click="showQaDetail(scope.$index)">Detail</el-button>
+                <el-button link type="primary" @click="editQa(scope.$index)">Edit</el-button>
+                <el-button link type="danger" @click="deleteQa(scope.$index)">Delete</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <!-- <div v-for="(qa, index) in tableData" :id="index" :key="index">
         <el-divider />
         <table cellspacing="0">
             <tbody>
@@ -165,7 +193,7 @@ td {
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div> -->
     <el-dialog v-model="dialogVisible" title="Add new QA" width="800">
         <el-form :model="qaData">
             <el-form-item label="Question" :label-width="formLabelWidth">
@@ -193,13 +221,34 @@ td {
             </div>
         </template>
     </el-dialog>
+    <el-drawer v-model="qaDetailVisible" title="Detail of QnA" direction="rtl" size="50%">
+        <el-form>
+            <el-form-item label="Question" :label-width="formLabelWidth">
+                {{ qaData.question.question }}
+            </el-form-item>
+            <el-form-item label="Similar questions" :label-width="formLabelWidth"
+                v-show="qaData.similarQuestions.length > 0">
+                <div v-for="(item, idx) in qaData.similarQuestions" :id="idx" :key="idx">
+                    {{ item.question }}
+                </div>
+            </el-form-item>
+            <el-form-item label="Answer" :label-width="formLabelWidth">
+                {{ qaData.answer }}
+            </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+            <el-button type="primary" :loading="loading" @click="dialogVisible = true">Edit</el-button>
+            <el-button type="danger" :loading="loading" @click="deleteQa(qaDetailIdx)">Delete</el-button>
+            <el-button @click="qaDetailVisible = false">Close</el-button>
+        </div>
+    </el-drawer>
     <el-drawer v-model="dryRunFormVisible" title="Test QnA" direction="rtl" size="50%">
         <el-form>
             <el-form-item label="">
                 <el-input v-model="testQnAText" style="width: 240px" placeholder="Please input some texts" />
             </el-form-item>
             <el-form-item label="">
-                <div>{{ testQnAResult }}</div>
+                {{ testQnAResult }}
             </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">

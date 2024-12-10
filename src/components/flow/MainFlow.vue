@@ -125,18 +125,18 @@ const saveForm = async () => {
     <h1>{{ $t('lang.mainflow.title') }}</h1>
     <el-button type="primary" class="ml-2" @click="newMainFlow()">{{ $t('lang.mainflow.add') }}</el-button>
     <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="id" label="Id" width="270" />
-        <el-table-column prop="name" :label="tm('lang.mainflow.table')[0]" width="360" />
+        <el-table-column prop="id" label="Id" width="240" />
+        <el-table-column prop="name" :label="tm('lang.mainflow.table')[0]" width="500" />
         <!-- <el-table-column prop="enabled" :label="tm('lang.mainflow.table')[1]" width="80" /> -->
-        <el-table-column fixed="right" :label="tm('lang.mainflow.table')[2]" width="270">
+        <el-table-column fixed="right" :label="tm('lang.mainflow.table')[2]" min-width="40">
             <template #default="scope">
-                <el-button link type="primary" size="small" @click="toSubflow(scope.$index, scope.row)">
+                <el-button link type="primary" @click="toSubflow(scope.$index, scope.row)">
                     {{ $t('lang.common.edit') }}
                 </el-button> |
-                <el-button link type="primary" size="small" @click="editMainFlow(scope.$index, scope.row)">
+                <el-button link type="primary" @click="editMainFlow(scope.$index, scope.row)">
                     {{ $t('lang.common.edit') }} name
                 </el-button> |
-                <el-button link type="primary" size="small" @click="deleteMainFlow(scope.$index, scope.row)">
+                <el-button link type="primary" @click="deleteMainFlow(scope.$index, scope.row)">
                     {{ $t('lang.common.del') }}
                 </el-button>
             </template>

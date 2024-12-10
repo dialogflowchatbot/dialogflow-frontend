@@ -80,12 +80,12 @@ const delApi = (idx, row) => {
     <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="name" label="HTTP name" width="450" />
         <el-table-column prop="description" label="Description" width="500" />
-        <el-table-column fixed="right" :label="tm('lang.mainflow.table')[2]" width="270">
+        <el-table-column fixed="right" :label="tm('lang.mainflow.table')[2]" min-width="40">
             <template #default="scope">
-                <el-button link type="primary" size="small" @click="editApi(scope.$index, scope.row)">
+                <el-button link type="primary" @click="editApi(scope.$index, scope.row)">
                     Edit
                 </el-button> |
-                <el-button link type="primary" size="small" @click="delApi(scope.$index, scope.row)">
+                <el-button link type="primary" @click="delApi(scope.$index, scope.row)">
                     Delete
                 </el-button>
             </template>

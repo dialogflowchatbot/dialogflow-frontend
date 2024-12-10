@@ -119,15 +119,15 @@ function detectIntent() {
         }}</el-button>
     <el-button type="primary" @click="dryRunFormVisible = true">Test intent detection</el-button>
     <el-table :data="intentData" stripe style="width: 100%">
-        <el-table-column prop="name" :label="tm('lang.intent.table')[0]" width="180" />
+        <el-table-column prop="name" :label="tm('lang.intent.table')[0]" width="220" />
         <el-table-column prop="keyword_num" :label="tm('lang.intent.table')[1]" width="180" />
         <el-table-column prop="regex_num" :label="tm('lang.intent.table')[2]" width="180" />
         <el-table-column prop="phrase_num" :label="tm('lang.intent.table')[3]" width="230" />
-        <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" width="120">
+        <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" min-width="40">
             <template #default="scope">
-                <el-button link type="primary" size="small" @click="editIntent(scope.$index, scope.row)">{{
+                <el-button link type="primary" @click="editIntent(scope.$index, scope.row)">{{
                     $t('lang.common.edit') }}</el-button>
-                <el-button link type="primary" size="small" @click="deleteIntent(scope.$index, scope.row)">{{
+                <el-button link type="primary" @click="deleteIntent(scope.$index, scope.row)">{{
                     $t('lang.common.del') }}</el-button>
             </template>
         </el-table-column>

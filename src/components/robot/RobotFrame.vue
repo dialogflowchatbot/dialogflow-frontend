@@ -12,6 +12,13 @@ import EpSetting from '~icons/ep/setting'
 const route = useRoute()
 const robotId = route.params.robotId
 const isCollapse = ref(false)
+const menuDefaultActive = () => {
+    const h = location.hash;
+    if (h && h.length > 1)
+        return h.substring(1);
+    return '/robot/' + robotId;
+}
+console.log(menuDefaultActive())
 </script>
 <style scoped>
 .toggle-button {
@@ -32,7 +39,7 @@ const isCollapse = ref(false)
                     '&lt;&lt;&lt;' }}
             </div>
             <el-menu active-text-color="#409Eff" background-color="#545c64" text-color="#fff" :collapse="isCollapse"
-                :collapse-transition="false" router :default-active="'/robot/' + robotId">
+                :collapse-transition="false" router :default-active="menuDefaultActive()">
                 <el-menu-item index="/">
                     <el-icon>
                         <MaterialSymbolsHouseOutline />

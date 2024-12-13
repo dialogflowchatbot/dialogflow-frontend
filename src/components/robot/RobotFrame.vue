@@ -12,13 +12,6 @@ import EpSetting from '~icons/ep/setting'
 const route = useRoute()
 const robotId = route.params.robotId
 const isCollapse = ref(false)
-const menuDefaultActive = () => {
-    const h = location.hash;
-    if (h && h.length > 1)
-        return h.substring(1);
-    return '/robot/' + robotId;
-}
-console.log(menuDefaultActive())
 </script>
 <style scoped>
 .toggle-button {
@@ -39,7 +32,7 @@ console.log(menuDefaultActive())
                     '&lt;&lt;&lt;' }}
             </div>
             <el-menu active-text-color="#409Eff" background-color="#545c64" text-color="#fff" :collapse="isCollapse"
-                :collapse-transition="false" router :default-active="menuDefaultActive()">
+                :collapse-transition="false" router :default-active="route.path">
                 <el-menu-item index="/">
                     <el-icon>
                         <MaterialSymbolsHouseOutline />
@@ -50,7 +43,7 @@ console.log(menuDefaultActive())
                     <el-icon>
                         <RiRobot2Line />
                     </el-icon>
-                    <template #title>Robot</template>
+                    <template #title>This robot</template>
                 </el-menu-item>
                 <el-menu-item :index="'/robot/' + robotId + '/mainflows'">
                     <el-icon>

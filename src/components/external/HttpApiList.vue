@@ -85,7 +85,7 @@ const delApi = (idx, row) => {
                 <el-button link type="primary" @click="editApi(scope.$index, scope.row)">
                     Edit
                 </el-button> |
-                <el-button link type="primary" @click="delApi(scope.$index, scope.row)">
+                <el-button link type="danger" @click="delApi(scope.$index, scope.row)">
                     Delete
                 </el-button>
             </template>

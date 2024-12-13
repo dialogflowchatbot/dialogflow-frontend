@@ -127,7 +127,7 @@ function detectIntent() {
             <template #default="scope">
                 <el-button link type="primary" @click="editIntent(scope.$index, scope.row)">{{
                     $t('lang.common.edit') }}</el-button>
-                <el-button link type="primary" @click="deleteIntent(scope.$index, scope.row)">{{
+                <el-button link type="danger" @click="deleteIntent(scope.$index, scope.row)">{{
                     $t('lang.common.del') }}</el-button>
             </template>
         </el-table-column>

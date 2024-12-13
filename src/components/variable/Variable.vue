@@ -174,7 +174,7 @@ async function saveForm() {
                 <el-button link type="primary" @click="editVar(scope.$index, scope.row)">
                     {{ $t('lang.common.edit') }}
                 </el-button>
-                <el-button link type="primary" @click="deleteVar(scope.$index, scope.row)">
+                <el-button link type="danger" @click="deleteVar(scope.$index, scope.row)">
                     {{ $t('lang.common.del') }}
                 </el-button>
             </template>

@@ -136,7 +136,7 @@ const saveForm = async () => {
                 <el-button link type="primary" @click="editMainFlow(scope.$index, scope.row)">
                     {{ $t('lang.common.edit') }} name
                 </el-button> |
-                <el-button link type="primary" @click="deleteMainFlow(scope.$index, scope.row)">
+                <el-button link type="danger" @click="deleteMainFlow(scope.$index, scope.row)">
                     {{ $t('lang.common.del') }}
                 </el-button>
             </template>

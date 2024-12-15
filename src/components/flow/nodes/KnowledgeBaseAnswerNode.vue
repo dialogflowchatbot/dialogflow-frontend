@@ -15,6 +15,7 @@ const nodeData = reactive({
     noAnswerThenChoice: 'GotoAnotherNode',
     noAnswerThen: null,
     alternateAnswer: '',
+    retrieveAnswerSources: [],
     branches: [],
     valid: false,
     invalidMessages: [],
@@ -71,8 +72,11 @@ onMounted(async () => {
     validate();
 })
 const validate = () => {
+    nodeData.invalidMessages.splice(0, nodeData.invalidMessages.length);
     if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead' && !nodeData.alternateAnswer)
-        nodeData.invalidMessages.push('Please enter an alternate answer.')
+        nodeData.invalidMessages.push('Please enter an alternate answer.');
+    if (nodeData.retrieveAnswerSources == null || nodeData.retrieveAnswerSources.length < 1)
+        nodeData.invalidMessages.push('Please select at least one source of knowledge base answers.');
     nodeData.valid = nodeData.invalidMessages.length == 0;
 }
 const saveForm = () => {
@@ -86,7 +90,7 @@ const saveForm = () => {
     if (nodeData.noAnswerThenChoice == 'GotoAnotherNode')
         nodeData.noAnswerThen = nodeData.noAnswerThenChoice;
     else if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead')
-        nodeData.noAnswerThen = {'ReturnAlternateAnswerInstead': nodeData.alternateAnswer};
+        nodeData.noAnswerThen = { 'ReturnAlternateAnswerInstead': nodeData.alternateAnswer };
     validate()
     genBrief()
     node.removeData({ silent: true });
@@ -136,6 +140,11 @@ const nodeSetFormVisible = ref(false)
             <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 460px">
                 <el-form-item label="Knowledge recall thresholds" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.recallThresholds" :min="1" :max="100" />%
+                </el-form-item>
+                <el-form-item label="Retrieve answer from" :label-width="formLabelWidth">
+                    <el-select multiple v-model="nodeData.retrieveAnswerSources" style="width: 240px">
+                        <el-option v-for="item in ['QnA']" :key="item" :label="item" :value="item" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="When no knowledge is recalled" :label-width="formLabelWidth">
                     <el-radio-group v-model="nodeData.noAnswerThenChoice">

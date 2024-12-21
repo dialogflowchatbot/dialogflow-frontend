@@ -24,7 +24,8 @@ const nodeData = reactive({
 const brief = ref('')
 const genBrief = () => {
     let h = 'Knowledge recall thresholds: ' + nodeData.recallThresholds
-    h += '%\nWhen no knowledge is recalled then: ';
+    h += '%\nRetrieve answer from: ' + nodeData.retrieveAnswerSources.join(',');
+    h += '\nWhen no knowledge is recalled then: ';
     if (nodeData.noAnswerThenChoice == 'GotoAnotherNode')
         h += 'Goto next node.';
     else if (nodeData.noAnswerThenChoice == 'ReturnAlternateAnswerInstead') {

@@ -152,7 +152,7 @@ td {
         <el-table-column prop="question.question" label="Question" width="360" />
         <el-table-column prop="similarQuestions.length" label="No. of similar questions" width="180" />
         <el-table-column prop="answer" label="Answer" />
-        <el-table-column fixed="right" label="Operations" min-width="40">
+        <el-table-column fixed="right" label="Operations" width="200">
             <template #default="scope">
                 <el-button link type="primary" @click="showQaDetail(scope.$index)">Detail</el-button>
                 <el-button link type="primary" @click="editQa(scope.$index)">Edit</el-button>

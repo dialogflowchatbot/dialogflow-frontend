@@ -9,7 +9,7 @@ import { copyProperties, httpReq } from '../../../assets/tools.js'
 import { useI18n } from 'vue-i18n'
 import EpWarning from '~icons/ep/warning'
 const { t, tm, rt } = useI18n();
-
+const { robotId } = inject('robotId');
 // const getGraph = inject('getGraph');
 const getNode = inject('getNode');
 const { subflowNames, updateSubFlowNames } = inject('subFlowNamesFn');
@@ -67,7 +67,7 @@ onMounted(async () => {
     nodeData.newNode = false;
     validate();
 
-    const r = await httpReq('GET', 'mainflow', null, null, null);
+    const r = await httpReq('GET', 'mainflow', { robotId: robotId, }, null, null);
     // console.log(r);
     if (r.status == 200)
         mainFlows.value = r.data;
@@ -82,13 +82,15 @@ async function selectGotoType(t) {
     } else if ('GotoSubFlow' == t) {
         subFlowNames.value = updateSubFlowNames();
         showSubFlowOptions.value = true;
+    } else {
+        showSubFlowOptions.value = false;
     }
 }
 
 async function selectedMainFlow(id) {
     // console.log(id);
     if (id) {
-        const r = await httpReq('GET', 'subflow/simple', { mainFlowId: id, data: '' }, null, null);
+        const r = await httpReq('GET', 'subflow/simple', { robotId: robotId, mainFlowId: id, data: '' }, null, null);
         // console.log(r);
         if (r.status == 200)
             subFlowNames.value = r.data;
@@ -155,7 +157,7 @@ function saveForm() {
     hideForm();
 }
 
-const formLabelWidth = '110px'
+const formLabelWidth = '130px'
 </script>
 <style scoped>
 .nodeBox {

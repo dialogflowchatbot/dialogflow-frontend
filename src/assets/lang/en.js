@@ -85,7 +85,7 @@ export default {
             errors: ['Node name not filled in', 'Collection type not choosed', 'Saving variable not choosed', 'Branches were missing'],
             cTypeName: 'Collection type',
             varName: 'Assignment variable',
-            labels: ['Collection type', 'Choose a collection type', 'Customize Regular Expression', 'Assignment variable', 'Choose a variable'],
+            labels: ['Collection type', 'Choose a collection type', 'Customize RegEx', 'Assignment variable', 'Choose a variable'],
         },
         gotoNode: {
             types: ['Conclusion of dialogues', 'Goto another flow', 'Goto sub-flow', 'External link'],

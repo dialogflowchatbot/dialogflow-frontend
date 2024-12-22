@@ -139,12 +139,15 @@ const nodeSetFormVisible = ref(false)
         <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
             :append-to-body="true" :destroy-on-close="true">
             <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 460px">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                    <el-input v-model="nodeData.nodeName" />
+                </el-form-item>
                 <el-form-item label="Knowledge recall thresholds" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.recallThresholds" :min="1" :max="100" />%
                 </el-form-item>
                 <el-form-item label="Retrieve answer from" :label-width="formLabelWidth">
                     <el-select multiple v-model="nodeData.retrieveAnswerSources" style="width: 240px">
-                        <el-option v-for="item in ['QnA']" :key="item" :label="item" :value="item" />
+                        <el-option v-for="item in ['QnA', 'Document']" :key="item" :label="item" :value="item" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="When no knowledge is recalled" :label-width="formLabelWidth">

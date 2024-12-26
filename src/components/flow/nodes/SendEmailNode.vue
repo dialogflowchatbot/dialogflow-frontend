@@ -29,6 +29,7 @@ const smtpHost = ref('')
 const emailVerificationRegex = ref('')
 const nodeSetFormVisible = ref(false)
 const getNode = inject('getNode');
+const { robotId } = inject('robotId');
 const node = getNode();
 const variables = []
 node.on("change:data", ({ current }) => {
@@ -64,7 +65,7 @@ onMounted(async () => {
             this.push({ label: item.varName, value: item.varName });
         }, variables);
     }
-    t = await httpReq('GET', 'management/settings', null, null, null);
+    t = await httpReq('GET', 'management/settings', { robotId: robotId }, null, null);
     // console.log(t);
     if (t && t.status == 200 && t.data) {
         smtpHost.value = t.data.smtpHost
@@ -217,16 +218,38 @@ const hideForm = () => {
         <div>To: {{ nodeData.to }}</div>
         <div>Subject: {{ nodeData.subject }}</div>
         <!-- <teleport to="body"> -->
-        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%" :append-to-body="true"
-            :destroy-on-close="true">
+        <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="70%"
+            :append-to-body="true" :destroy-on-close="true">
             <el-form :label-position="labelPosition" label-width="100px" :model="nodeData" style="max-width: 500px">
                 <el-form-item :label="t('lang.common.nodeName')">
                     <el-input v-model="nodeData.nodeName" />
                 </el-form-item>
-                <el-form-item label="From" :label-width="formLabelWidth">
+                <el-form-item label="From" :label-width="formLabelWidth" prop="from" :rules="[
+                    {
+                        required: true,
+                        message: 'Please input email address',
+                        trigger: 'blur',
+                    },
+                    {
+                        type: 'email',
+                        message: 'Please input correct email address',
+                        trigger: ['blur', 'change'],
+                    },
+                ]">
                     <el-input v-model="nodeData.from" placeholder="" />
                 </el-form-item>
-                <el-form-item label="To">
+                <el-form-item label="To" prop="to" :rules="[
+                    {
+                        required: true,
+                        message: 'Please input email address',
+                        trigger: 'blur',
+                    },
+                    {
+                        type: 'email',
+                        message: 'Please input correct email address',
+                        trigger: ['blur', 'change'],
+                    },
+                ]">
                     <el-input v-model="nodeData.to" placeholder="" />
                 </el-form-item>
                 <el-form-item label="">
@@ -238,10 +261,14 @@ const hideForm = () => {
                 <el-form-item label="Bcc">
                     <el-input v-model="nodeData.bcc" placeholder="" />
                 </el-form-item>
-                <el-form-item label="Subject">
+                <el-form-item label="Subject" prop="subject" :rules="[
+                    { required: true, message: 'Subject is required' },
+                ]">
                     <el-input v-model="nodeData.subject" placeholder="" />
                 </el-form-item>
-                <el-form-item label="Content">
+                <el-form-item label="Content" prop="content" :rules="[
+                    { required: true, message: 'Content is required' },
+                ]">
                     <el-input v-model="nodeData.content" :rows="2" type="textarea" placeholder="Please input" />
                 </el-form-item>
                 <el-form-item label="Content type">

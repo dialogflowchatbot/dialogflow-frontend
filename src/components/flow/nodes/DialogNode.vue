@@ -70,7 +70,7 @@ export default defineComponent({
             preview: '',
             nodeSetFormVisible: false,
             varDialogVisible: false,
-            formLabelWidth: '90px',
+            formLabelWidth: '100px',
             vars: [],
             selectedVar: '',
             nodeData: {
@@ -650,7 +650,9 @@ watch(this.nodeData.dialogText, async (newT, oldT) => {
         <el-drawer v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl" size="72%"
             :append-to-body="true" :destroy-on-close="true">
             <el-form :model="nodeData">
-                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth" prop="nodeName" :rules="[
+                    { required: true, message: 'nodeName is required' },
+                ]">
                     <el-input v-model="nodeData.nodeName" autocomplete="off" />
                 </el-form-item>
                 <!-- <el-form-item label="Text from" :label-width="formLabelWidth">

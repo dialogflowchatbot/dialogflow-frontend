@@ -18,7 +18,7 @@ const nodeData = reactive({
     responseStreaming: false,
     connectTimeout: 1000,
     readTimeout: 10000,
-    whenTimeoutThen: null,
+    whenTimeoutThen: 'GotoAnotherNode',
     valid: false,
     invalidMessages: [],
     branches: [],
@@ -34,7 +34,7 @@ const modelId = ref('')
 const modelName = ref('')
 const nodeName = ref();
 const overrideTimeoutEnabled = ref(false)
-const whenTimeoutThen = ref('DoNothing')
+const whenTimeoutThen = ref('GotoAnotherNode')
 const responseAlternateText = ref('')
 
 getNode().on("change:data", ({ current }) => {
@@ -90,12 +90,6 @@ onMounted(async () => {
         });
     }
     nodeData.newNode = false;
-    if (typeof (nodeData.whenTimeoutThen) == 'string')
-        whenTimeoutThen.value = nodeData.whenTimeoutThen;
-    else {
-        whenTimeoutThen.value = 'ResponseAlternateText'
-        responseAlternateText.value = nodeData.whenTimeoutThen.ResponseAlternateText;
-    }
     validate();
     httpReq("GET", 'management/settings', { robotId: robotId }, null, null).then((res) => {
         // const r = res.json();
@@ -110,6 +104,12 @@ onMounted(async () => {
                 nodeData.readTimeout = settings.chatProvider.readTimeoutMillis;
         }
     })
+    if (typeof (nodeData.whenTimeoutThen) == 'string')
+        whenTimeoutThen.value = nodeData.whenTimeoutThen;
+    else {
+        whenTimeoutThen.value = 'ResponseAlternateText'
+        responseAlternateText.value = nodeData.whenTimeoutThen.ResponseAlternateText;
+    }
     const r = await httpReq('GET', 'intent', { robotId: robotId }, null, null);
     // console.log(r);
     if (r.status == 200) {
@@ -221,14 +221,18 @@ const hideForm = () => {
         <el-drawer v-if="nodeSetFormVisible" v-model="nodeSetFormVisible" :title="nodeData.nodeName" direction="rtl"
             size="70%" :append-to-body="true" :destroy-on-close="true">
             <el-form :label-position="labelPosition" label-width="135px" :model="nodeData" style="max-width: 800px">
-                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth">
+                <el-form-item :label="t('lang.common.nodeName')" :label-width="formLabelWidth" prop="nodeName" :rules="[
+                    { required: true, message: 'nodeName is required' },
+                ]">
                     <el-input v-model="nodeData.nodeName" />
                 </el-form-item>
                 <el-form-item label="Chat model" :label-width="formLabelWidth">
                     {{ modelId }} - {{ modelName }}
                     (<router-link :to="{ name: 'settings', params: { robotId: robotId } }">change</router-link>)
                 </el-form-item>
-                <el-form-item label="Prompt" :label-width="formLabelWidth">
+                <el-form-item label="Prompt" :label-width="formLabelWidth" prop="promptText" :rules="[
+                    { required: true, message: 'Prompt is required' },
+                ]">
                     <el-input v-model="nodeData.promptText" :rows="6" type="textarea" placeholder="" />
                 </el-form-item>
                 <el-form-item label="Context length" :label-width="formLabelWidth">
@@ -260,8 +264,8 @@ const hideForm = () => {
                 <el-form-item label="Timeout" :label-width="formLabelWidth">
                     <el-checkbox label="Override timeout of settings" v-model="overrideTimeoutEnabled" />
                     <el-divider direction="vertical" />
-                    Current settings are: [Connect: {{ settings.chatProvider.connectTimeoutMillis }} millis, Read: {{
-                        settings.chatProvider.readTimeoutMillis }} mills]
+                    Current settings are: [Connect: {{ settings.chatProvider?.connectTimeoutMillis }} millis, Read: {{
+                        settings.chatProvider?.readTimeoutMillis }} mills]
                 </el-form-item>
                 <el-form-item label="Connection" :label-width="formLabelWidth">
                     <el-input-number v-model="nodeData.connectTimeout" :min="100" :max="65500"

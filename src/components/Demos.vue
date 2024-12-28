@@ -5,12 +5,14 @@ const props = defineProps({
         default: '',
     }
 })
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 // import { ElMessageBox } from 'element-plus'
 import { isOnGithub } from '../assets/tools.js'
 const { t, locale } = useI18n();
+const route = useRoute()
 const router = useRouter();
+const robotId = route.params.robotId;
 function gotoDemo(id, name) {
     if (isOnGithub()) {
         ElMessageBox.alert(t('lang.home.demoUnvailableContent'), t('lang.home.demoUnvailableTitle'), {
@@ -26,7 +28,7 @@ function gotoDemo(id, name) {
             },
         });
     } else {
-        router.push({ name: 'subflow', params: { id: id, name: name } });
+        router.push({ name: 'subflow', params: { id: id, name: name, robotId: robotId } });
     }
 }
 // console.log("parentPage=" + props.parentPage);

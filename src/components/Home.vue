@@ -232,11 +232,6 @@ const compareDifferentRobotTypeData = [
         </h1>
       </el-col> -->
     </el-row>
-    <el-row>
-      <el-col :span="12">
-        <Demos :parentPage="HomeV2" />
-      </el-col>
-    </el-row>
     <p>&nbsp;</p>
     <el-space wrap size="large">
       <div class="grid-content bg-color-light" v-for="n in robots" :key="n.robotId">
@@ -245,7 +240,7 @@ const compareDifferentRobotTypeData = [
             <el-image :src="getBotAvatar(n.robotType)" />
           </template>
           <template #extra>
-            <el-button type="primary" @click="robotDetail(n.robotId, n.robotName)">Detail</el-button>
+            <el-button size="large" type="primary" @click="robotDetail(n.robotId, n.robotName)">Detail</el-button>
           </template>
         </el-result>
       </div>

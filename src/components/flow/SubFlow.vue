@@ -610,7 +610,7 @@ function subFlowId(idx) {
 
 function goBack() {
     if (isDemo)
-        router.push({ name: 'robotDetail', params: { robotId: robotId } });
+        router.go(-1);
     else
         router.push({ name: 'mainflows', params: { robotId: robotId } });
 }

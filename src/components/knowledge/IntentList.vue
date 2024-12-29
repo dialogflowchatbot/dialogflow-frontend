@@ -37,7 +37,7 @@ async function newIntent() {
         await list();
 }
 function editIntent(idx, row) {
-    router.push({ path: '/robot/' + robotId + '/intent/detail', query: { id: intentData.value[idx].id, idx: idx, name: row.name } });
+    router.push({ path: '/robot/' + robotId + '/intent/detail', query: { id: intentData.value[idx].intent_id, idx: idx, name: row.name } });
 }
 async function deleteIntent(idx, row) {
     ElMessageBox.confirm(
@@ -49,7 +49,7 @@ async function deleteIntent(idx, row) {
             type: 'warning',
         }
     ).then(async () => {
-        const formData = { robotId: robotId, id: intentData.value[idx].id, data: idx.toString() };
+        const formData = { robotId: robotId, id: intentData.value[idx].intent_id, data: idx.toString() };
         const t = await httpReq('DELETE', 'intent', null, null, formData);
         console.log(t.data);
         if (t.status == 200) {
@@ -119,11 +119,23 @@ function detectIntent() {
         }}</el-button>
     <el-button type="primary" @click="dryRunFormVisible = true">Test intent detection</el-button>
     <el-table :data="intentData" stripe style="width: 100%">
-        <el-table-column prop="name" :label="tm('lang.intent.table')[0]" width="220" />
-        <el-table-column prop="keyword_num" :label="tm('lang.intent.table')[1]" width="180" />
-        <el-table-column prop="regex_num" :label="tm('lang.intent.table')[2]" width="180" />
-        <el-table-column prop="phrase_num" :label="tm('lang.intent.table')[3]" width="230" />
-        <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" min-width="40">
+        <el-table-column prop="intent_name" :label="tm('lang.intent.table')[0]" width="220" />
+        <el-table-column :label="tm('lang.intent.table')[1]" width="180">
+            <template #default="scope">
+                {{ scope.row.keywords.length }}
+            </template>
+        </el-table-column>
+        <el-table-column :label="tm('lang.intent.table')[2]" width="180">
+            <template #default="scope">
+                {{ scope.row.regexes.length }}
+            </template>
+        </el-table-column>
+        <el-table-column :label="tm('lang.intent.table')[3]" width="230">
+            <template #default="scope">
+                {{ scope.row.phrases.length }}
+            </template>
+        </el-table-column>
+        <el-table-column fixed="right" :label="tm('lang.intent.table')[4]" min-width="100">
             <template #default="scope">
                 <el-button link type="primary" @click="editIntent(scope.$index, scope.row)">{{
                     $t('lang.common.edit') }}</el-button>
@@ -151,7 +163,8 @@ function detectIntent() {
     <el-drawer v-model="dryRunFormVisible" title="Test intent detection" direction="rtl" size="50%">
         <el-form>
             <el-form-item label="">
-                <el-input v-model="testIntentDetectionText" style="width: 240px" placeholder="Please input some texts" />
+                <el-input v-model="testIntentDetectionText" style="width: 240px"
+                    placeholder="Please input some texts" />
             </el-form-item>
             <el-form-item label="">
                 <div>{{ intentDetectResult }}</div>

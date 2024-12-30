@@ -44,7 +44,7 @@ const defaultConditionGroup = [[]];
 const types18 = tm('lang.conditionNode.types')
 const conditionTypes = [
     { label: types18[0], value: 'UserIntent' },
-    { label: 'Zero-Shot Classification', value: 'ZeroShotTextClassification' },
+    // { label: 'Zero-Shot Classification', value: 'ZeroShotTextClassification' },
     { label: types18[1], value: 'UserInput' },
     { label: types18[2], value: 'FlowVariable' },
 ];
@@ -111,7 +111,7 @@ onMounted(async () => {
         d.splice(0, d.length);
         t.data.forEach(function (item, index, arr) {
             // console.log(item.name)
-            this.push({ label: item.name, value: item.name });
+            this.push({ label: item.intent_name, value: item.intent_name });
         }, d);
     }
     t = await httpReq('GET', 'variable', { robotId: robotId }, null, null);

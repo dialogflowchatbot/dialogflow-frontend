@@ -56,7 +56,7 @@ async function save() {
     <el-row>
         <el-col :span="12" :offset="1">
             <el-form :model="settings">
-                <el-form-item label="IP addr (v4 or v6)" :label-width="formLabelWidth">
+                <el-form-item label="Listening IP addr (v4 or v6)" :label-width="formLabelWidth">
                     <el-input v-model="settings.ip" placeholder="" />
                 </el-form-item>
                 <el-form-item label="" :label-width="formLabelWidth">

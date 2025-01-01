@@ -84,7 +84,7 @@ const isCollapse = ref(false)
                     <el-icon>
                         <EpSetting />
                     </el-icon>
-                    <template #title>Settings</template>
+                    <template #title>Robot settings</template>
                 </el-menu-item>
             </el-menu>
         </el-aside>

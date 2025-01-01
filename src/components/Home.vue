@@ -284,7 +284,7 @@ const compareDifferentRobotTypeData = [
         <EpArrowRightBold />
       </el-icon>
       <!-- <router-link to="/docs">{{ $t('lang.guide.nav5') }}</router-link> -->
-      <a href="https://dialogflowchatbot.github.io/docs" target="_blank">
+      <a href="https://dialogflowchatbot.github.io/doc" target="_blank">
         {{ $t('lang.guide.nav5') }}
         <el-icon>
           <BiBoxArrowUpRight />
@@ -304,16 +304,20 @@ const compareDifferentRobotTypeData = [
       email to: dialogflow@yeah.net
     </div>
     <div class="text-center">
-      Icons were created by
+      Some icons were created by
       <a href="https://www.flaticon.com/" target="_blank">Flaticon</a>
     </div>
   </div>
   <el-dialog v-model="setFormVisible" title="Create a new robot" width="60%">
     <el-form :model="robotData">
-      <el-form-item label="Name" :label-width="formLabelWidth">
+      <el-form-item label="Name" :label-width="formLabelWidth" prop="robotName" :rules="[
+        { required: true, message: 'Robot name is required' },
+      ]">
         <el-input v-model="robotData.robotName" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="Type" :label-width="formLabelWidth">
+      <el-form-item label="Type" :label-width="formLabelWidth" prop="robotType" :rules="[
+        { required: true, message: 'Please choose a type of robot' },
+      ]">
         <el-select v-model="robotData.robotType" placeholder="">
           <el-option label="Text bot" value="TextBot" />
           <el-option label="Inbound call bot" value="InboundCallBot" />
@@ -327,7 +331,7 @@ const compareDifferentRobotTypeData = [
       <el-table-column property="llmChatNodeAsyncResponse" label="Llm chat node streaming" width="200" />
     </el-table>
     <template #footer>
-      <el-button type="primary" @click="newRobot()">{{ $t('lang.common.save') }}</el-button>
+      <el-button type="primary" @click="newRobot()">Create</el-button>
       <el-button @click="setFormVisible = false">{{ $t('lang.common.cancel') }}</el-button>
     </template>
   </el-dialog>

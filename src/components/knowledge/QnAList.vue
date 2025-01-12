@@ -205,7 +205,7 @@ td {
                 <el-button circle @click="qaData.similarQuestions.splice(index, 1)">-</el-button>
             </el-form-item>
             <el-form-item label="" :label-width="formLabelWidth">
-                <el-button plain @click="qaData.similarQuestions.push({ question: '' })">New similar
+                <el-button plain @click="qaData.similarQuestions.push({ question: '' })">Add similar
                     question</el-button>
             </el-form-item>
             <el-form-item label="Answer" :label-width="formLabelWidth">

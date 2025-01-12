@@ -232,7 +232,6 @@ const compareDifferentRobotTypeData = [
         </h1>
       </el-col> -->
     </el-row>
-    <p>&nbsp;</p>
     <el-space wrap size="large">
       <div class="grid-content bg-color-light" v-for="n in robots" :key="n.robotId">
         <el-result :title="n.robotName" :sub-title="getBotType(n.robotType)">

@@ -1,6 +1,6 @@
 # Dialog flow chat bot front end project
 
-This project has been migrated to: https://github.com/dialogflowchatbot/dialogflow/tree/main/frontend
+This project has been migrated to: https://github.com/easyflow-ai/easyflow/tree/main/frontend
 
 <!-- <img src="https://img.shields.io/badge/Vue-3-blue" />
 
